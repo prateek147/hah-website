@@ -1,10 +1,11 @@
 title: Prateekg147
-url: https://bitbrain.github.io
+# url: https://bitbrain.github.io
 author: Prateek Gianchandani
 email: prateek@damnvulnerableiosapp.com
 description: > # this means to ignore newlines until "show_exerpts:"
   I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE. 
-  I have interests in Exploit Development, Mobile and Browser Security.
+  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about">
+  Continue</a>
 show_excerpts: true # set to true to show excerpts on the homepage
 
 paginate: 20
@@ -19,8 +20,8 @@ tag_page_dir: tag
 dash:
   date_format: "%b %-d, %Y"
 
-  disqus:
-    shortname: bitbrain-github-io
+  # disqus:
+  #   shortname: bitbrain-github-io
 
   # generate social links in footer
   # supported colors: green, red, orange, blue, cyan, pink, teal, yellow, indigo, purple
