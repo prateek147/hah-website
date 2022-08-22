@@ -1,11 +1,9 @@
-
-
 name: Deploy to Github Pages 
 
 on:
   push:
     branches:
-      - main 
+      - master 
   schedule:
       - cron:  '0 0 * * *'
 
@@ -24,3 +22,4 @@ jobs:
         with:
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           target_branch: gh-pages
+          
