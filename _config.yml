@@ -1,65 +1,48 @@
-title: dash
-author: GitHub User
-email: miguel-gonzalez@gmx.de
+title: Prateekg147
+url: https://bitbrain.github.io
+author: Prateek Gianchandani
+email: prateek@damnvulnerableiosapp.com
 description: > # this means to ignore newlines until "show_exerpts:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+  I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE. 
+  I have interests in Exploit Development, Mobile and Browser Security.
 show_excerpts: true # set to true to show excerpts on the homepage
 
-paginate: 8
+paginate: 20
 paginate_path: "/blog/page:num/"
 
 tag_permalink_style: pretty
 tag_page_layout: tag_page
 tag_page_dir: tag
 
-include: [CNAME]
-
 # jekyll-dash date format
 # refer to http://shopify.github.io/liquid/filters/date/ if you want to customize this
 dash:
-  # the way how dates should be displayed
   date_format: "%b %-d, %Y"
 
-  # (optional) discqus comment configuration
   disqus:
     shortname: bitbrain-github-io
 
   # generate social links in footer
   # supported colors: green, red, orange, blue, cyan, pink, teal, yellow, indigo, purple
   social_links:
-    - url: https://twitter.com/bitbrain_
+    - url: https://twitter.com/prateekg147
       icon: twitter-square
       color: cyan
-    - url: https://bitbrain.itch.io
-      icon: itch-io
-      color: red
-    - url: https://github.com/bitbrain
+    - url: https://www.linkedin.com/in/prateekgianchandani/
+      icon: linkedin
+      color: indigo
+    - url: https://github.com/prateek147
       icon: github-square
-      color: purple
-
-  # wether the author box should be displayed
-  show_author: true
-
-  # the animation speed of the scroll-in effect
-  animation_speed: 50
-
-  # wether to enable Right-to-Left support or not
-  rtl: false
-
-  # Replaces the default avatar provider (gravatar)
-  #avatar_source: github
-  #github_username: bitbrain
-  #avatar_source: local
-  #avatar_path: /assets/avatar.png
+      color: yellow
+      
+  avatar_source: local
+  avatar_path: https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
 
 # Build settings
 theme: jekyll-dash
 
 plugins:
- - jekyll-feed
- - jekyll-seo-tag
- - jekyll-paginate
- - liquid-md5
- - jekyll/tagging
+  - liquid-md5
+  - jekyll/tagging
+
+
