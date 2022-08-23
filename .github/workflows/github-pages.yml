@@ -22,4 +22,3 @@ jobs:
         with:
           token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
           target_branch: gh-pages
-          
