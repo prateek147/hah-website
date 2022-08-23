@@ -16,7 +16,7 @@ One of the first and foremost things while testing w3af is to have a test enviro
 
 Once you have downloaded Web Security Dojo, go to Applications-->Targets-->w3af Test Environment. You will be greeted with a message as shown below.
 
-![1]( /images/posts/w3af2/1.png)
+![1](/images/posts/w3af2/1.png)
 
 Please note that even though Web Security Dojo is very useful for performing w3af tests, i would always recommend to use Backtrack 5 for the same purpose. One of the major problems with Web Sec Dojo is that it may not have the latest version of w3af. For e.g in the version of Web Sec Dojo which i have, the auth plugin is not there. You can just copy the w3af test environment folder (present in /var/www/w3af) from Web Sec dojo to your Backtrack machine and you are all set and ready to go. Also, please keep your w3af updated as major bug fixes are done with every new revision.
 
@@ -24,83 +24,83 @@ Please note that even though Web Security Dojo is very useful for performing w3a
 
 So Let's go to the Audit section in the w3af test environment. As we can see, the page has different links categorized on the basis of the vulnerabilities.
 
-![2]( /images/posts/w3af2/2.png)
+![2](/images/posts/w3af2/2.png)
 
 If we go on the page _Cross Site Scripting_ we see that there are a number of url's that are vulnerable to Cross Site Scripting.
 
-![3]( /images/posts/w3af2/3.png)
+![3](/images/posts/w3af2/3.png)
 
 Hence the next step is to give the url to w3af and scan it for XSS vulnerabilities. Open up w3af GUI. Once it is open, on the left hand side, we can see an option to choose from various profiles.
 
-![4]( /images/posts/w3af2/4.png)
+![4](/images/posts/w3af2/4.png)
 
 We can choose any profile from the list depending on our need, as well as the time availability. These profiles already has configurations to use some specific plugins for a particular task. For e.g if we if look the profile OWASP_TOP10, we will see that it uses several of the Audit, Grep and Discovery plugins to perform its tasks.
 
-![5]( /images/posts/w3af2/5.png)
+![5](/images/posts/w3af2/5.png)
 
 For the time being, we are going to use an _Empty profile_ as we just want to check a single url for an XSS vulnerability. Note that this is usually not the way in which we will use the w3af framework. In a real world environment, we will choose some specific discovery plugins to find different url's to check for injections, auth plugins to automatically log in to forms and crawl ahead, grep plugins to look for interesting information in the response, and audit plugins to scan for vulnerabilities in the found injection points.
 
 Type in the url in the target field and choose the _xss_ plugin from the audit plugins.
 
-![6]( /images/posts/w3af2/6.png)
+![6](/images/posts/w3af2/6.png)
 
 Once this is done, click on _Start_. This will start the scan on the given url. As we can see from the output, it found a XSS vulnerability.
 
-![7]( /images/posts/w3af2/7.png)
+![7](/images/posts/w3af2/7.png)
 
 If you are interested in knowing what actually happened, go to the _Results_ Tab. Click on _xss_ on the left side. On the right side, you can see a description of how the vulnerability was found. On the bottom right, you can also see the request and response which led to the identification of the vulnerability. It is a very good practice to look at the requests and responses sent through by w3af as this lets us know what's going on under the hood.
 
-![31]( /images/posts/w3af2/31.png)
+![31](/images/posts/w3af2/31.png)
 
 So basically what happened was that w3af sent javascript strings to every parameter in the url, and then checked for those strings in the response. In case of stored XSS, w3af takes a note of the injected string and makes a request again to the url looking for that string. If it finds that string, then a stored XSS has been identified.
 
 Let's now use an OS commanding vulnerability to obtain a shell on the system. From the OS commanding section in the w3af test environment, choose a url and give it as target to w3af. Under the audit plugins section, check the OS commanding plugin.
 
-![8]( /images/posts/w3af2/8.png)
+![8](/images/posts/w3af2/8.png)
 
 Once this is done, click on start to launch the vulnerability scan. As we can see from the output, w3af identified an OS commanding vulnerability.
 
-![9]( /images/posts/w3af2/9.png)
+![9](/images/posts/w3af2/9.png)
 
 w3af supports detection of both simple and blind OS commanding vulnerability. In simple OS commanding, it sends a simple command to every parameter and then looks for a response to that command in the output. In case of blind OS commanding in which the response is not present in the output, it uses time delays to identify if a vulnerability is present. For e.g if it sends a command which delays the response for some seconds, and if we note a delay in the output, we can say that a blind OS commanding vulnerability is present.
 
 Again, in the results section, we can see the request and the response which led to identification of the vulnerability.
 
-![10]( /images/posts/w3af2/10.png)
+![10](/images/posts/w3af2/10.png)
 
 w3af also allows us to exploit vulnerabilities. If we go under the _Exploit_ section, we can see the identified vulnerability in the _Vulnerabilities_ section. If we click on it, we can see that _osCommandignShell_ in the Exploits section turns black. This is an indication that the vulnerability can be exploited using the osCommandingShell plugin in w3af. Right click on osCommandingShell and click on _Exploit ALL vulns_.
 
-![11]( /images/posts/w3af2/11.png)
+![11](/images/posts/w3af2/11.png)
 
 Once this is done, if the vulnerability is exploited successfully, we will get a shell on the target machine. We can see the list of shells on the right side. Note that it is not possible to get a shell in case of every vulnerability.
 
-![12]( /images/posts/w3af2/12.png) Just double click on the shell and you are all set and ready to go. ![13]( /images/posts/w3af2/13.png)
+![12](/images/posts/w3af2/12.png) Just double click on the shell and you are all set and ready to go. ![13](/images/posts/w3af2/13.png)
 
 Similarly, let's use a file upload vulnerability to get a shell. Give the vulnerable url as a target to w3af. Make sure, the _fileUpload_ plugin is checked in the audit plugins list.
 
-![14]( /images/posts/w3af2/14.png)
+![14](/images/posts/w3af2/14.png)
 
 Also make sure to check the extensions option in the _fileUpload_ plugin. Since in some cases, the web application allows only some specific extensions, it would be favorable to add those extensions to the list as well.
 
-![15]( /images/posts/w3af2/15.png)
+![15](/images/posts/w3af2/15.png)
 
 Click on _Start_. As we can see from the output, w3af identified a file Upload vulnerability.
 
-![16]( /images/posts/w3af2/16.png)
+![16](/images/posts/w3af2/16.png)
 
 Click on the _Results_ Tab. You can see that w3af tried to upload a file named w3af_dt4LqT.html. It did this by sending the file object in the uploadedfile parameter. It then looked for these files in common directories like uploads etc. If the file is found, then it can be said that a Insecure File Upload vulnerability exists. However, this is not always the case as most of the web application filter files based on their extension. To bypass this w3af has templates for some of the most common file extensions. These templates have valid extensions but have a section that can be replaced with scripting code. The figure below shows the files with different extensions present in w3af.
 
-![17]( /images/posts/w3af2/17.png)
+![17](/images/posts/w3af2/17.png)
 
 If we open up any of these files with Kate, we can see the content inside it. As we can see from the figure below, the file template.png has a string of A's in its comment section. This string can actually be replaced by scripting code like php.
 
-![18]( /images/posts/w3af2/18.png)
+![18](/images/posts/w3af2/18.png)
 
 With all of these basics out of the way, let's exploit this vulnerability using the _fileUploadShell_ plugin. You can also set the configuration of these plugins by right clicking on them and clicking on _Configure the plugin_.
 
 As we can see from the figure below, the vulnerability was successfully exploited and we got a shell on the target machine.
 
-![19]( /images/posts/w3af2/19.png)
+![19](/images/posts/w3af2/19.png)
 
 Similarly you can perform tests for many other exploits like Local File Inclusion, Remote File Inclusion, SQL Injection etc.
 
@@ -114,53 +114,53 @@ In cases where the web application uses Javascript or Flash, the spiderMan plugi
 
 Let's run the webSpider plugin on the w3af test environment. Give the url of the test environment as the target url, make sure only the webSpider plugin is checked inside discovery plugins and click on _Start_.
 
-![20]( /images/posts/w3af2/20.png)
+![20](/images/posts/w3af2/20.png)
 
 We can see from the Log that the webSpider plugin has been able to identify some new url's. The graph below gives a good idea of the information obtained with time.
 
-![21]( /images/posts/w3af2/21.png)
+![21](/images/posts/w3af2/21.png)
 
 As the scan is progressing, go to the Results Tab, click on _URLs_. As we can see from the figure below, w3af has made a graphical diagram which defines the web application structure. On the left hand side, you can click on the _+_ sign to see detailed information about a particular branch.
 
-![22]( /images/posts/w3af2/22.png)
+![22](/images/posts/w3af2/22.png)
 
 Let's do another example of webSpider plugin. Give the target as the dvwa login page, make sure the WebSpider plugin is checked and click start. In the result, we obtain a graphical structure of the application as shown below.
 
-![23]( /images/posts/w3af2/23.png)
+![23](/images/posts/w3af2/23.png)
 
 This, however is not correct. This is because DVWA has a whole list of url's inside the vulnerabilities folder. However webSpider plugin was not able to crawl to that directory because it required us to enter a login form as shown below.
 
-![24]( /images/posts/w3af2/24.png)
+![24](/images/posts/w3af2/24.png)
 
 This is where the spiderMan plugin comes into use. A good idea is to use the SpiderMan and WebSpider plugin in conjunction with each other. This is because the SpiderMan plugin will help us in reaching places where the webSpider crawler cannot go, and the webSpider crawler can them carry on from those places to crawl the rest of the web application.
 
 Let's do the same test again using the SpiderMan plugin as well. Make sure both SpiderMan and WebSpider plugin are enabled and click on start. Also make sure to check the listen Address and listen port as well.
 
-![25]( /images/posts/w3af2/25.png)
+![25](/images/posts/w3af2/25.png)
 
 Once this is done, we need to configure our browser to use the SpiderMan proxy for navigation. If we have to terminate the SpiderMan plugin, we have to browse to a specific url as clearly indicated in the figure below.
 
-![26]( /images/posts/w3af2/26.png)
+![26](/images/posts/w3af2/26.png)
 
 Now we need to configure our browser to use the SpiderMan proxy for navigation. In my case, i changed the port number to 44448\. It is usually 44444 by default in w3af.
 
-![27]( /images/posts/w3af2/27.png)
+![27](/images/posts/w3af2/27.png)
 
 Once this is done, log in to the dvwa application (default credentials: admin/password) and start navigating to different url's. You can see these requests are noted by the spiderMan plugin as shown in the figure below.
 
-![28]( /images/posts/w3af2/28.png)
+![28](/images/posts/w3af2/28.png)
 
 To terminate the spiderMan plugin, browse over to the following url as shown below.
 
-![29]( /images/posts/w3af2/29.png)
+![29](/images/posts/w3af2/29.png)
 
 Once this is done, the SpiderMan plugin will terminate and the information will be passed over to the different plugins. As we can see from the figure below, the webSpider plugin has found some new url's (for e.g http://localhost/dvwa/vulnerabilities/csrf/) to which it was able to crawl to using the information from the spiderMan plugin.
 
-![30]( /images/posts/w3af2/30.png)
+![30](/images/posts/w3af2/30.png)
 
 If we look at the structure of the application, we see that it is actually correct as even the vulnerabilities section was identified.
 
-![32]( /images/posts/w3af2/32.png)
+![32](/images/posts/w3af2/32.png)
 
 ## Conclusion
 

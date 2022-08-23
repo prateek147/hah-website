@@ -60,15 +60,15 @@ It is possible to just hook the evaluatePolicy:localizedReason:reply: method and
 
 </pre>
 
-![1]( /images/posts/ios50/1.png)
+![1](/images/posts/ios50/1.png)
 
 Now go the Touch/Face ID Bypass -> Objective-C implementation in DVIA-v2 and tap on the fingerprint button.
 
-![2]( /images/posts/ios50/2.PNG)
+![2](/images/posts/ios50/2.PNG)
 
 Now put the incorrect fingerprint. You will see that since the method is hooked, the authentication is successful.
 
-![3]( /images/posts/ios50/3.PNG)
+![3](/images/posts/ios50/3.PNG)
 
 The following function from DVIA-v2 shows the Swift implementation of the same thing. Since this can't be manipulated, it can still be patched and the function flow could be modified to go inside the if loop directly. The patching can be done with Hopper followed by signing with jtool.
 

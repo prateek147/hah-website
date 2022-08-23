@@ -52,7 +52,7 @@ Hence the SQL statement selects the user admin if a user with the username "admi
 
 Note that not all the values in a cookie are related to maintaining the user's session with the website. Some of them could just be used to monitor the user's activities or for some other reasons. Let's do a quick dissection of the cookies set on our system while using Facebook. I will be using the Firefox Add-on _Cookie Manager_ to view the cookies set by Facebook. It is a very handy add-on for monitoring and changing cookies.
 
-![Screen Shot 2012 01 15 At 5.58.25 PM]( /images/posts/webauth2//Screen Shot 2012-01-15 at 5.58.25 PM.png)
+![Screen Shot 2012 01 15 At 5.58.25 PM](/images/posts/webauth2//Screen Shot 2012-01-15 at 5.58.25 PM.png)
 
 As we can see there are a number of name-value pairs in the cookies stored by facebook on our system. Also, not all of them are related to the user's session. In my case i modified the cookie value with the name "s" and found out that i was still able to browse through facebook, hence the session was still maintained. But when i modified the cookie value with the name "c_user", and tried to surf pages across facebook i found out that i was logged out, i.e the session state was broken and i had to reenter my credentials.
 
@@ -76,7 +76,7 @@ This type of attack can be prevented by using appropriate flags (Secure and HTTP
 
 The following screenshot shows the session ID passed in a request to the application DVWA. Using Burpsuite it is possible to brute force with the session ID as the changing parameter. To learn more on how to brute force using Burp, refer to the [Part 1](http://resources.infosecinstitute.com/authentication-hacking-pt1/) of this article.
 
-![Screen Shot 2012 01 16 At 1.17.54 PM]( /images/posts/webauth2//Screen shot 2012-01-16 at 1.17.54 PM.png)
+![Screen Shot 2012 01 16 At 1.17.54 PM](/images/posts/webauth2//Screen shot 2012-01-16 at 1.17.54 PM.png)
 
 There are various ways in which the attacker can steal the session of the victim. One of these methods is called a Session Fixation attack. In this attack, the attacker can control the session ID which a user will obtain once the user logs in to a particular website. He can do this by making the user click on a link with a specific session id, for e.g the url could be site.com?session_id=3ejn324n23j423n3 . Once the user logs in, he is given the session id "3ejn324n23j423n3". The attacker can now simply impersonate the victim by using the same Session ID. Note that this method will only work in cases when only the Session ID parameter is used to authenticate the victim. If some other parameter like the Ip-address, Mac address etc is used to validate the victim too, this method will not work.
 

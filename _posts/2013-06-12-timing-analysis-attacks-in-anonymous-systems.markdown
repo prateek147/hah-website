@@ -13,11 +13,11 @@ Anonymous systems are used to allow users to surf the web, communicate with serv
 
 Tor can be downloaded from [here](https://www.torproject.org/download/download.html.en). The following figure shows TOR running on my system using _Vidalia_. Vidalia is a kind of GUI for TOR. It lets us perform various operations like Start/Stop Tor, View the Network of users which form a part of the TOR network, Setup relaying and so on.
 
-![Img1]( /images/posts/timing/img1.png)
+![Img1](/images/posts/timing/img1.png)
 
 We can also set up our system to be a part of the TOR network.You can find more information about that [here](https://www.torproject.org/docs/tor-doc-relay.html.en).Click on _View the Network_ to see the number of systems acting as relays for the TOR network.
 
-![Img2]( /images/posts/timing/img2.png)
+![Img2](/images/posts/timing/img2.png)
 
 Please note that it is possible to run your system as a middle relay or an exit relay. The exit relay is the last relay through which the traffic on a certain communication path passes through before reaching the final destination. There can be many exit nodes on the whole network. In case an illegal activity is performed by someone using TOR, the exit relay could be blamed for that because the IP address of the exit relay will appear to be the source address in the logs of the victim. Hence people who want to run exit relays should be aware of these kind of things.
 
@@ -43,7 +43,7 @@ To counter the threat of Timing analysis attacks , a number of defenses and algo
 
 ## Testing
 
-These kind of attacks can be tested by setting up a private TOR network. It is always a challenging task to test these attacks mainly because they involve us to control a lot of systems at once. [Planetlab](http://www.planet-lab.org/) and [Deterlab](http://www.isi.deterlab.net/index.php3) make this very easy for us. Planetlab consists of a group of computers contributed from different sites across the world to serve as a testbed for performing experiments that involve a large number of nodes. Different universities and corporations across the world provide their own systems to be used for performing experiments, development and research. Access is not provided to all users but only to those members who are a part of an institution that is a member of the PlanetLab Consortium. Every institution which is a part of Planetlab has a Principal Investigator that should approve accounts for the members of their own institution. Deterlab is another testbed for conducting network security related experiments. To have access to Deterlab the head of the project must register for a new project on Deterlab's website. Different projects could be run on the same nodes without affecting each other. We can also set up the topology of the  /images/posts/dns/ in Deterlab.
+These kind of attacks can be tested by setting up a private TOR network. It is always a challenging task to test these attacks mainly because they involve us to control a lot of systems at once. [Planetlab](http://www.planet-lab.org/) and [Deterlab](http://www.isi.deterlab.net/index.php3) make this very easy for us. Planetlab consists of a group of computers contributed from different sites across the world to serve as a testbed for performing experiments that involve a large number of nodes. Different universities and corporations across the world provide their own systems to be used for performing experiments, development and research. Access is not provided to all users but only to those members who are a part of an institution that is a member of the PlanetLab Consortium. Every institution which is a part of Planetlab has a Principal Investigator that should approve accounts for the members of their own institution. Deterlab is another testbed for conducting network security related experiments. To have access to Deterlab the head of the project must register for a new project on Deterlab's website. Different projects could be run on the same nodes without affecting each other. We can also set up the topology of the /images/posts/dns/ in Deterlab.
 
 ## Conclusion
 

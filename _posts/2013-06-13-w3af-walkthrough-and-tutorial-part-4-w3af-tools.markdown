@@ -12,71 +12,71 @@ In the previous articles in this series, we looked at all the plugins available 
 
 **1)Manual Request -**The Manual Request feature in w3af allows us to send specially crafted requests and then analyze the response. This technique could be used in various cases which includes testing for SQL Injection, Cross Site Scripting etc. The tools present in w3af can be found by clicking on the _Tools_ menu as shown in the figure below. Click on _Manual Request_ to open up the Manual Request editor tool.
 
-![1]( /images/posts/w3af4/1.png)
+![1](/images/posts/w3af4/1.png)
 
 Once this is done, you can write your own manual request and send it to analyze the response. As you can see from the figure below, i am making a simple GET request to http://google.com . Also, you might want to change the _User-Agent_ field as this gives away the fact that the request is coming from w3af.
 
-![2]( /images/posts/w3af4/2.png)
+![2](/images/posts/w3af4/2.png)
 
 Click on _Send Request_ to send the request. Once this is done, the response will be displayed. You can then simply analyze the response or send it to other w3af tools.
 
-![3]( /images/posts/w3af4/3.png)
+![3](/images/posts/w3af4/3.png)
 
 It is also possible to send requests to the Manual Request Editor from the results of scans by clicking on its corresponding button below the request/response as shown in the figure below. Same applies to all the other tools like Encoder/Decoder, Fuzzy Request editor, Export Requests etc.
 
-![X]( /images/posts/w3af4/X.png)
+![X](/images/posts/w3af4/X.png)
 
-**2)Fuzzy Request -** The Fuzzy Request feature present in w3af allows us to send different requests with varying data and analyze the responses. ![4]( /images/posts/w3af4/4.png)
+**2)Fuzzy Request -** The Fuzzy Request feature present in w3af allows us to send different requests with varying data and analyze the responses. ![4](/images/posts/w3af4/4.png)
 
 The fuzzy request editor is shown in the figure above. The varying text is added between the dollar sign ($). It is clear from the figure above that the varying data is determined by the syntax "$xrange(10)$" which includes numbers from 0 to 9\. In case two such text generators are present, then the requests will be combined. For e.g if one of the generator generates 5 values whereas the other generator generates 6 values, then the total number of requests that will be sent will be 30\. Some of the common syntax used to generate variable text is shown in the figure below from w3af GUI.
 
-![5]( /images/posts/w3af4/5.png)
+![5](/images/posts/w3af4/5.png)
 
 Once we have written the generators, we can simply click on _Analyze_ to analyze the requests that will be generated during the fuzzing test. This is useful because it allows you to actually see these requests before sending them.
 
-![6]( /images/posts/w3af4/6.png)
+![6](/images/posts/w3af4/6.png)
 
 Click on the play button in the bottom left to send the requests. Once the requests have been sent, you can analyze the responses by clicking on the Response tab.
 
-![7]( /images/posts/w3af4/7.png)
+![7](/images/posts/w3af4/7.png)
 
 Once the responses are received, you can seperate these responses into different clusters. There are different clustering methods present in w3af which have different ways of determining the distance between these HTTP responses. Using these responses, different clusters are created and the responses with the minimum difference between them are added to the same cluster. This is a quick way to determine which response stands out as different from the other responses which is an important step in Fuzzing.
 
 The figure below shows the cluster created by using the method _Levenshtein distance of the HTTP bodies_. w3af also allows you to write a customized clustering method to perform the task. It is also possible to send requests to the Fuzzy Request generator from the results of scans.
 
-![8]( /images/posts/w3af4/8.png)
+![8](/images/posts/w3af4/8.png)
 
 **3)Encode/Decode -** The Encode/Decode tool in w3af is used to encode or decode strings, urls etc. You can choose from a variety of encoding and decoding options. The figure below shows a base64 encoded string being decoded by the w3af decode tool.
 
-![9]( /images/posts/w3af4/9.png)
+![9](/images/posts/w3af4/9.png)
 
 **4)Export Requests -** The Export Requests tools allows us to generate code in different languages which when run will regenerate the request. In the figure below, i am generating some code in Python, which when run will regenerate the original request. The Export Requests tool allow you to generate code in HTML, Ajax, Python and Ruby.
 
-![10]( /images/posts/w3af4/10.png)
+![10](/images/posts/w3af4/10.png)
 
 **5)Compare -** The Compare tool is used to perform comparison between 2 requests/responses. As shown in the figure below, i have sent the comparer tool 2 responses for 2 different requests. The difference between these responses is highlighted by the comparer tool.
 
-![11]( /images/posts/w3af4/11.png)
+![11](/images/posts/w3af4/11.png)
 
 **6)Proxy -** w3af also comes with an intercepting proxy that allow us to intercept requests, and modify them on the fly. To use this proxy, we have to configure our browser to use this proxy. In case of real world web application testing, it is important that we intercept only those requests that we want. The figure below shows the configuration for the proxy. We can see that it is running on port 8080\. We have also configured the proxy to not trap requests for certain images, css, swf files etc.
 
-![12]( /images/posts/w3af4/12.png)
+![12](/images/posts/w3af4/12.png)
 
 Let's configure our browse to route traffic through this proxy.
 
-![13]( /images/posts/w3af4/13.png)
+![13](/images/posts/w3af4/13.png)
 
 Once this is done, start browsing through your browser. You will see the requests and the responses appearing in the History tab as shown in the figure below. Right now the requests and responses are being passed through the proxy without interception.
 
-![14]( /images/posts/w3af4/14.png)
+![14](/images/posts/w3af4/14.png)
 
 As discussed before in this article, you can send the requests/responses to the other tools like Manual Request editor, Fuzzy Request editor etc present in w3af. Click on the arrow pointing downwards on the top left to start intercepting the requests. If you browse through the proxy now, you will notice that the requests are being intercepted by the proxy as shown in the figure below.
 
-![15]( /images/posts/w3af4/15.png)
+![15](/images/posts/w3af4/15.png)
 
 You can simply Drop the request so that it doesn't reach its destination, forward it as it was or modify the request and then forward it. For e.g in the intercepted request shown in the figure below, we can see that the search query was _w3af_. We can easily change it to whatever search query we want it to be. Some of the other uses of w3af proxy could be finding out the parameter names through which the authentication credentials are sent in a login submission.
 
-![16]( /images/posts/w3af4/16.png)
+![16](/images/posts/w3af4/16.png)
 
 ## w3af scripting
 
@@ -84,25 +84,25 @@ Many times we have to perform scans on different websites with the same set of p
 
 Let's start by writing a simple script to demonstrate the use of w3af scripts. In the figure below, i am writing a script that sets some plugins for a vulnerability scan. As it is clear from the figure below, i am using the webSpider discovery plugin, the xss and sqli audit plugins and the getMails grep plugin.
 
-![17]( /images/posts/w3af4/17.png)
+![17](/images/posts/w3af4/17.png)
 
 Once this is done, we save the file as simple-config.w3af. To run the script we just have to use the command _"./w3af_console -s simple-config.w3af"_.
 
-![18]( /images/posts/w3af4/18.png)
+![18](/images/posts/w3af4/18.png)
 
 We can see the output in the figure below. Once this is done, we can simply set the target ourselves and start the scan. Hence, having prewritten w3af scripts for different kinds of scans can save us a lot of time.
 
-![19]( /images/posts/w3af4/19.png)
+![19](/images/posts/w3af4/19.png)
 
 The following figure below shows another example of a w3af script which when run enables some plugins and starts the scan against the specified target.
 
-![20]( /images/posts/w3af4/20.png)
+![20](/images/posts/w3af4/20.png)
 
 ## w3af profiles
 
 A w3af profile can be defined as a profile with preconfigured plugins made for a specific scenario keeping the resources and time availability in mind. We can also create our own w3af profile. However, w3af offers some of its own set of profiles which we can use in our scan as shown in the figure below.
 
-![21]( /images/posts/w3af4/21.png)
+![21](/images/posts/w3af4/21.png)
 
 Let's discuss all these profiles in brief.
 

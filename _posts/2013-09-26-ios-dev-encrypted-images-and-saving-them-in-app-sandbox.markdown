@@ -6,7 +6,7 @@ comments: true
 tags: [ios]
 ---
 
-One of the requirements in my latest project was to encrypt an image and save it on the device in the application's sandbox, then decrypt is during runtime and upload it to the server. I looked at the documentation for Apple's CommonCrypto Framework, but it was taking me plenty of time to implement it so instead i decided to use some wrappers that would get the job done for me. I found the [RNCryptor](https://github.com/rnapier/RNCryptor) library on Github that uses AES encrypton. It was pretty simple to implement it. First, download the files from its github url and include all the files that are relevant to you present inside the **RNCryptor** folder on your project. In my case, i just imported all of them for now. ![1]( /images/posts/imageen/1.png) Then use the following code to encrypt the image.
+One of the requirements in my latest project was to encrypt an image and save it on the device in the application's sandbox, then decrypt is during runtime and upload it to the server. I looked at the documentation for Apple's CommonCrypto Framework, but it was taking me plenty of time to implement it so instead i decided to use some wrappers that would get the job done for me. I found the [RNCryptor](https://github.com/rnapier/RNCryptor) library on Github that uses AES encrypton. It was pretty simple to implement it. First, download the files from its github url and include all the files that are relevant to you present inside the **RNCryptor** folder on your project. In my case, i just imported all of them for now. ![1](/images/posts/imageen/1.png) Then use the following code to encrypt the image.
 
 <!-- more -->
 

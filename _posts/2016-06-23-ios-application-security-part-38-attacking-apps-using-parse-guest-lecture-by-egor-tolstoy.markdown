@@ -13,26 +13,26 @@ tags: security
 
 <!--more-->
 
-<div>![]( /images/posts/ios38/8822BC1A-FA0D-4BFF-8DC0-8CC103DFB92D.png)  
+<div>![](/images/posts/ios38/8822BC1A-FA0D-4BFF-8DC0-8CC103DFB92D.png)  
 </div>
 
 <div>For those who don’t know what this service is, let’s make a brief introduction. Parse provides a lot of useful capabilities to mobile developer: cloud data storage, push notifications, usage statistics and crash logs gathering, code hosting, background jobs and a many other things. Within the boundaries of thes research we are interested in the cloud data storage, named _Cloud Core_.</div>
 
 <div>All the data in Cloud Core is stored in so called custom classes (ordinary database tables).</div>
 
-<div>![]( /images/posts/ios38/8879CA5B-B494-43CD-A136-1DB8059F5AC1.png)  
+<div>![](/images/posts/ios38/8879CA5B-B494-43CD-A136-1DB8059F5AC1.png)  
 </div>
 
 <div>You can set a number of different client permissions for each of these classes: _GET, FIND, UPDATE, CREATE, DELETE_ and _ADD FIELDS_. All of them are _Public_ by default. Of course, most of the developers forget about the need of setting client access permissions once they configure their tables.</div>
 
-<div>![]( /images/posts/ios38/FDF17B0E-CD2B-47AB-BB46-F0D0BE9BDE7E.png)  
+<div>![](/images/posts/ios38/FDF17B0E-CD2B-47AB-BB46-F0D0BE9BDE7E.png)  
 </div>
 
 <div>I’ve closely faced Parse during one of my work projects and spent a lot of time configuring ACLs properly - so I became interested in how other developers maintain their Parse accounts. I’ve found the object for my little research right on [parse.com/customers](https://parse.com/customers). It was [Cubefree](http://cubefreeapp.com/) - a service for locating cowering spaces.</div>
 
 <div>A pair of keys is used for connecting to Parse account from a mobile application: _Application ID_ and _Client Key_. We’ve got to find out these strings in order to manipulate the data in Cloud Core. Let’s decrypt the application binary with the help of [idb](https://github.com/dmayer/idb) - an awesome iOS pentesting utility. While the decryption process is going on, we can check _NSUserDefaults_ - a rather common place for storing such kind of data (only for reckless developers, of course).</div>
 
-<div>![]( /images/posts/ios38/03B3C111-1C51-4330-899E-7E5873D94B7F.png)  
+<div>![](/images/posts/ios38/03B3C111-1C51-4330-899E-7E5873D94B7F.png)  
 </div>
 
 <div>As you can see, nothing criminal was found - no signs of confidential data. Let’s get back to our decrypted application binary and feed it to [Hopper](http://www.hopperapp.com/) - a well known disassembler, specialized in reverse-engineering Objective-C applications. Our quest for Parse keys will begin in <span style="color: rgb(34, 34, 34); font-family: 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif; background-color: rgb(255, 255, 255);">_application:didFinishLaunchingWithOptions method_ of _App Delegate._ One of the noteworthy Hopper features is the ability to represent any procedure in pseudocode form, which flattens the reversed code understanding curve.</span></div>
@@ -40,7 +40,7 @@ tags: security
 <div><span style="color: rgb(34, 34, 34);">  
 </span></div>
 
-<div>![]( /images/posts/ios38/AB772C3F-377A-4B02-BA39-946D0B54831C.png)<span style="color: rgb(34, 34, 34);">  
+<div>![](/images/posts/ios38/AB772C3F-377A-4B02-BA39-946D0B54831C.png)<span style="color: rgb(34, 34, 34);">  
 </span></div>
 
 <div><span style="color: rgb(34, 34, 34);">  
@@ -56,7 +56,7 @@ tags: security
 <div><span style="color: rgb(34, 34, 34);">  
 </span></div>
 
-<div>![]( /images/posts/ios38/FC415E09-109A-460B-9E04-763532556FDB.png)<span style="color: rgb(34, 34, 34);">  
+<div>![](/images/posts/ios38/FC415E09-109A-460B-9E04-763532556FDB.png)<span style="color: rgb(34, 34, 34);">  
 </span></div>
 
 <div><span style="color: rgb(34, 34, 34);">  
@@ -72,12 +72,12 @@ tags: security
 
 <div>The knowledge of classes organization, however, is not enough. We should try to inspect access permissions for all the Parse classes to determine how we can influence the application behaviour. It’s quite simple - all we have to do is to make a couple of queries to Parse and analyse their results. I’ve wrote a small utility - [Parse Revealer](https://github.com/igrekde/ParseRevealer), which simplifies these routine actions and automatically determines the access permissions for all known classes.</div>
 
-<div>![]( /images/posts/ios38/E171D146-358B-41FD-98E2-FBC293EBAFEF.png)  
+<div>![](/images/posts/ios38/E171D146-358B-41FD-98E2-FBC293EBAFEF.png)  
 </div>
 
 <div>We can create a table using all the derived data:</div>
 
-<div>![]( /images/posts/ios38/%D0%A1%D0%BA%D1%80%D0%B8%D0%BD%D1%88%D0%BE%D1%82%202015-01-24%2020.41.30.png)  
+<div>![](/images/posts/ios38/%D0%A1%D0%BA%D1%80%D0%B8%D0%BD%D1%88%D0%BE%D1%82%202015-01-24%2020.41.30.png)  
 </div>
 
 <div>As we can see from the list of permissions, the developers tried to implement a security policy, but it wasn’t enough. Let’s show what we can achieve by manipulating the _ChatMessage_ class.</div>
@@ -87,7 +87,7 @@ tags: security
 <div>[https://gist.github.com/igrekde/cb8e2c12408715c9f739#file-parse-security-2](https://gist.github.com/igrekde/cb8e2c12408715c9f739#file-parse-security-2)  
 </div>
 
-<div>![]( /images/posts/ios38/cubefree-screen.png)  
+<div>![](/images/posts/ios38/cubefree-screen.png)  
 </div>
 
 <div>We can also post new messages to any chat by providing a new _PFObject_ with a correct chatId. But we are noble pentesters, so let’s pay attention to the fact that we aren’t able to delete any message due to developers paranoia :).</div>

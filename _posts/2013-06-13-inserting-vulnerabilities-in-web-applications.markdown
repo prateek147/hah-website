@@ -44,41 +44,41 @@ This feature allows the server to display errors. Though this might be a useful 
 
 Once you have made these changes, save the _php.ini_ file (make sure that it is writable). Restart the server to make the changes come into effect.
 
-![First]( /images/posts/insvul/first.png)
+![First](/images/posts/insvul/first.png)
 
 The next step is to download Joomla, which is an open source Content Management System. Joomla can be downloaded from [here.](http://www.joomla.org/download.html) Once it is downloaded, install in on your system and remove the installation directory. Once all of these steps are done, the Joomla home page should look like this.
 
-![1]( /images/posts/insvul/1.png)
+![1](/images/posts/insvul/1.png)
 
 Let's go the Joomla directory and analyze the code. The joomla directory has a .htaccess file. Let's see what are the configurations in it. Open up the .htaccess file .
 
-![2]( /images/posts/insvul/2.png)
+![2](/images/posts/insvul/2.png)
 
 As we can see that their is a lot of interesting stuff here. Let's analyze them one by one.
 
-![3]( /images/posts/insvul/3.png)
+![3](/images/posts/insvul/3.png)
 
 This code is used to stop someone from using base64 encoding to perform attacks like script execution, login bypass etc.
 
-![3]( /images/posts/insvul/4.png)
+![3](/images/posts/insvul/4.png)
 
 Protection against Cross Site Scripting.
 
-![5]( /images/posts/insvul/5.png)
+![5](/images/posts/insvul/5.png)
 
 Protection against various types of Inclusion attacks like Local file inclusion and Remote file inclusion
 
-![6]( /images/posts/insvul/6.png)
+![6](/images/posts/insvul/6.png)
 
 Protection against File Inclusion attacks like Local file inclusion and Remote file inclusion and also SQL Injection to some extent. This is because the attacker might modify the parameters sent via GET or POST Request.
 
-![7]( /images/posts/insvul/7.png)
+![7](/images/posts/insvul/7.png)
 
 In case the user tries to browse somewhere he doesn't have access to.
 
 Now we know what to do. In order to insert vulnerablities into Joomla, these rules should not be there. Comment out these rules so that the file appears like this.
 
-![8]( /images/posts/insvul/8.png)
+![8](/images/posts/insvul/8.png)
 
 **1) Inserting Reflected XSS (Cross Site Scripting)**
 
@@ -88,7 +88,7 @@ Let's say we add the following code to index.php file in Joomla
 
 The Joomla main page takes a name parameter in it's url and displays a welcome message at the top of the main page as shown in the figure below.
 
-![9]( /images/posts/insvul/9.png)
+![9](/images/posts/insvul/9.png)
 
 We are right now not sure if the application is vulnerable to Cross Site Scripting, but we know that there is a possibility because the parameter we pass in the url is displayed in the main page without validating it. We also removed the checks for the _script_ tag previously. Hence if we input some script as the parameter and it gets executed, then we know that it is definitely a vulnerability.
 
@@ -96,7 +96,7 @@ Let's enter the following url in the input
 
 <pre>http://127.0.0.1/Joomla/index.php?name=%3Cscript%3Ealert%28%22This%20is%20definitely%20a%20vulnerability%22%29;%3C/script%3E</pre>
 
-![10]( /images/posts/insvul/10.png)
+![10](/images/posts/insvul/10.png)
 
 The script gets executed and we are shown an alert. Hence we can confirm that we just inserted a XSS vulnerability in the application.
 
@@ -106,7 +106,7 @@ Local file inclusion occur when it is possible to include a file on the server f
 
 Joomla allows us to create components, in this case we will be creating a custom component. To do this just make a folder named com_COMPONENTNAME in the components folder. In this case our component name would be _com_infosec_.
 
-![11]( /images/posts/insvul/11.png)
+![11](/images/posts/insvul/11.png)
 
 Copy all the files from any component and rename it according to the current component, i.e infosec. Once this is done, add the following code in it's infosec.php file.
 
@@ -118,7 +118,7 @@ Go to the following url:
 
 <pre>http://127.0.0.1/Joomla/index.php?option=com_infosec&name=InfosecInstitute&imp_file=../../../../../etc/passwd</pre>
 
-![13]( /images/posts/insvul/13.png)
+![13](/images/posts/insvul/13.png)
 
 As we can see that we get a dump of the _/etc/passwd_ file of the server. Note that the number of _"../"_ might be different in your case. Hence we have successfully inserted a local file inclusion vulnerability in the web application. Please note that this is also a Remote file Inclusion vulnerability. Let's try and load up google.com on the Joomla home page.
 
@@ -126,7 +126,7 @@ Go to the following url:
 
 <pre>http://127.0.0.1/Joomla/index.php?option=com_infosec&name=InfosecInstitute&imp_file=http://google.com</pre>
 
-![14]( /images/posts/insvul/14.png)
+![14](/images/posts/insvul/14.png)
 
 We just successfully loaded a remote url on Joomla's web page. Imagine the consequences of such a vulnerability. It is now possible to execute any remote script present anywhere on the web on the victim.
 
@@ -144,17 +144,17 @@ Hence in this case our url would be..
 
 Almost all the web applications have some sort of configuration file. In Joomla, it goes by the name _"configurations.php"_ and is located in its root directory. Some developers like to keep a backup for their configuration file. The usual norm is to keep it by the extension _".bak"_. Hence the backup file for the configuration file _"configurations.php"_ would be named as "configurations.php.bak". However their is a security issue with this. A bak file when accessed from the browser via url will prompt for a download of the file. Hence any user from outside can download the configuration file and hence see all the settings like username, password for Joomla. This needs some guess work from the attacker's side, though it can also be done by the use of automated tools. The .bak file looks something like this.
 
-![Config File]( /images/posts/insvul/config_file.png)
+![Config File](/images/posts/insvul/config_file.png)
 
 As we can see, a lot of things like the Username, Password for the administrator are clearly visible in the configuration file. Disclosure of the configuration file can lead to complete compromise of the web application.
 
 Sometimes the admin might need to store his password or some other confidential information in a file on the server, but may not want other users to access it, so he puts it in a directory and gives it a wierd name 21lnkqasdsacnd1eqwdn22qwd2wd. To protect the directory from google and other search engines he modifies the _robots.txt_ file as shown to disallow web crawlers to index that directory. But the problem is that the robots.txt file is world readable and hence the attacker can figure out the name of the directory once he browses to the _robots.txt_ file. When we browse to the robots.txt file for Joomla we get something like this.
 
-![16]( /images/posts/insvul/16.png)
+![16](/images/posts/insvul/16.png)
 
 We now know that the admin is protecting something from the web crawlers, a folder with a weird name _21lnkqasdsacnd1eqwdn22qwd2wd_. Let's check it out.
 
-![17]( /images/posts/insvul/17.png)
+![17](/images/posts/insvul/17.png)
 
 The _password.txt_ file is available for anyone to view. Some developers think that the _robots.txt_ file is used for hiding subdomains and directories.But in actual it is used to provide direction to web crawlers about what publicly available information should and should not be indexed. Hence if a directory is non-public, then it should not be linked anywhere on the site and it should not be included in robots.txt, because that essentially makes it public. If it is not linked, there is no reason to include it in the robots.txt in the first place.
 
@@ -198,11 +198,11 @@ Phpmyadmin comes with a footer.php file where we can write code which should app
 
 Here is how the footer appears in phpMyAdmin
 
-![PhpRemoteExexVuln]( /images/posts/insvul/phpRemoteExexVuln.png)
+![PhpRemoteExexVuln](/images/posts/insvul/phpRemoteExexVuln.png)
 
 Once we click on submit, the output result looks like this. We can easily deduce that we now have the ability to execute remote commands on the server.
 
-![RemoteExecResult]( /images/posts/insvul/remoteExecResult.png)
+![RemoteExecResult](/images/posts/insvul/remoteExecResult.png)
 
 Here is the code for the file "config.footer.inc.php"
 

@@ -20,21 +20,21 @@ One of the most common ways of saving user preferences and properties in an appl
 
 Download the sample application from my [github](https://github.com/prateek147/localDataStorageDemo) page and run it. You will get this view. Now enter some info in the text field related to NSUserDefaults and tap the button that says _Save in NSUserDefaults_. This will save the data to NSUserDefaults.
 
-![1]( /images/posts/ios20/1.png)
+![1](/images/posts/ios20/1.png)
 
 What most people do not realize is that the data saved by NSUserDefaults is not encrypted and can be easily viewed from the application bundle. It is stored in a plist file with the name as the _bundle Id_ of the application. First of all, we must find the application bundle for our application. Since we are running the application on our system, we can find our applications on the path /Users/$username/Library/Application Support/iPhone Simulator/$ios version of simulator/Applications/. In my case, the location is "Users/prateekgianchandani/Library/Application Support/iPhone Simulator/6.1/Applications"
 
 Once we go to that directory, we can see a bunch of applications. These are all the application that we run via Xcode for that particular iOS version. We can find our application by the date modified tag as it would have the latest modified date.
 
-![2]( /images/posts/ios20/2.png)
+![2](/images/posts/ios20/2.png)
 
 Go inside the app bundle. All the contents saved by NSUserDefaults is saved inside a plist file that can be found under Library -> Preferences -> $AppBundleId.plist as shown in the image below.
 
-![3]( /images/posts/ios20/3.png)
+![3](/images/posts/ios20/3.png)
 
 Open up the plist file and you can easily view the contents of the file.
 
-![4]( /images/posts/ios20/4.png)
+![4](/images/posts/ios20/4.png)
 
 Sometimes, the plist files can be in binary format and hence not easily viewable at first. You can either convert it into xml format using the _plutil_ utility or just view the application in a device using the tool _iExplorer_.
 
@@ -42,7 +42,7 @@ Sometimes, the plist files can be in binary format and hence not easily viewable
 
 Another common way of storing data is in the plist files. Plist files should always be used for saving information that is not confidential as they are unencrypted and can be easily be fetched even from a non-jailbroken device. There have been [vulnerabilities](http://garethwright.com/facebook-mobile-security-hole-allows-identity-theft/) reported where big companies have been found to store condifential data like Access tokens, Usernames and passwords in plist files. In the demo app, lets enter the information for plist and tap on _Save in plist file_.
 
-![5]( /images/posts/ios20/5.png)
+![5](/images/posts/ios20/5.png)
 
 Here is the code for saving data to the plist file.
 
@@ -58,37 +58,37 @@ Here is the code for saving data to the plist file.
 
 As you can see from the code, you can always specify a custom path for the plist file. We can then search the entire application bundle for all plist files. In this case, we find a file named userinfo.plist inside the application bundle.
 
-![6]( /images/posts/ios20/6.png)
+![6](/images/posts/ios20/6.png)
 
 As we can see, it contains the user/pass combination that we had entered in the fields before.
 
-![7]( /images/posts/ios20/7.png)
+![7](/images/posts/ios20/7.png)
 
 ## CoreData and Sqlite files
 
 Since CoreData basically uses Sqlite internally to save information, we are only going to cover CoreData here. If you don't know what CoreData is , here is a screenshot from Apple's documentation about CoreData.
 
-![8]( /images/posts/ios20/8.png) ![9]( /images/posts/ios20/9.png)
+![8](/images/posts/ios20/8.png) ![9](/images/posts/ios20/9.png)
 
 So basically, CoreData can be used to create a model, manage relationships between different types of objects, save the data locally, and fetch them from the local cache whenever you want with queries. In this tutorial, we will be using a sample application from [github](https://github.com/ChrisDrit/Core-Data-Example-Code). Once you run it you will see that is is just a simple RSS feed.
 
-![10]( /images/posts/ios20/10.png)
+![10](/images/posts/ios20/10.png)
 
 This application uses Core Data to save its information. It is important to note that the Core Data framework internally uses Sql queries to store its data and hence all the files are stored as .db files. Let's go to the app bundle for this app and look at where this information is stored. In the app bundle for this application, you can see that there is a file named MyCoreData.sqlite.
 
-![11]( /images/posts/ios20/11.png)
+![11](/images/posts/ios20/11.png)
 
 Let's analyze it using sqlite3\. In my case, the location of the sqlite file is at _~/Library/Application Support/iPhone Simulator/6.1/Applications/51038055-3CEC-4D90-98B8-A70BF12C7E9D/Documents_.
 
-![12]( /images/posts/ios20/12.png)
+![12](/images/posts/ios20/12.png)
 
 As we can see, there is a table named _ZSTORIES_. In Core Data, every table name is appended with Z at the beginning. This means that the entity name is actually STORIES as we can clearly see from the source files in the project.
 
-![13]( /images/posts/ios20/13.png)
+![13](/images/posts/ios20/13.png)
 
 We can easily dump all the values from this table. Make sure the headers are on.
 
-![14]( /images/posts/ios20/14.png)
+![14](/images/posts/ios20/14.png)
 
 As we can see, by default, all the data stored in CoreData is unencrypted and can be easily fetched out. Therefore, we should not use CoreData for saving confidential information ever. There are libraries available that act as a wrapper over CoreData and claim to save encrypted dat. There are other implementations as well that store encrypted data on the device without using CoreData. For e.g the Salesforce Mobile SDK use a feature known as [SmartStore](http://www.modelmetrics.com/tomgersic/storing-data-offline-with-salesforce-mobile-sdk-smartstore/) that can store encrypted data on the device in the form of Soups.
 

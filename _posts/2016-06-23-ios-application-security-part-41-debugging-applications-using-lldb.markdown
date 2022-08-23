@@ -33,7 +33,7 @@ Hence, the first step to do is to mount Xcode's developer disk image on your Mac
 
 _hdiutil attach /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/DeviceSupport/[ios version]\ \(12B411\)/DeveloperDiskImage.dmg_
 
-![1]( /images/posts/ios41/1.png) ![2]( /images/posts/ios41/2.png)
+![1](/images/posts/ios41/1.png) ![2](/images/posts/ios41/2.png)
 
 Once this is done, create a new file with the name entitlements.plist and enter the following data in it.
 
@@ -51,26 +51,26 @@ Once this is done, create a new file with the name entitlements.plist and enter 
 
 Now, you have to resign the debugserver binary with the new entitlements file.
 
-_codesign -s - --entitlements entitlements.plist -f debugserver_ ![3]( /images/posts/ios41/3.png)
+_codesign -s - --entitlements entitlements.plist -f debugserver_ ![3](/images/posts/ios41/3.png)
 
 Once this is done, deploy the binary to the device. To start debugserver on the device, use the command shown below, and also specify the name of the application you want to hook to, which in this case is Twitter.
 
-![4]( /images/posts/ios41/4.png)
+![4](/images/posts/ios41/4.png)
 
 Now on your computer, start lldb to enter the lldb interpreter. Now use the following commands as shown below to to connect to the device. Make sure to replace the IP address here with the IP address of your device.
 
-![5]( /images/posts/ios41/5.png)
+![5](/images/posts/ios41/5.png)
 
 Once this is done, you will see that you are successfully able to debug the application.
 
-![6]( /images/posts/ios41/6.png)
+![6](/images/posts/ios41/6.png)
 
 Now you can use the po command to print out specific objects instantiated in the application.
 
-![7]( /images/posts/ios41/7.png) ![8]( /images/posts/ios41/8.png)
+![7](/images/posts/ios41/7.png) ![8](/images/posts/ios41/8.png)
 
 The syntax for LLDB is a bit different. For e.g, here is the syntax for printing all the register variables.
 
-![9]( /images/posts/ios41/9.png)
+![9](/images/posts/ios41/9.png)
 
 That's it for this article. In this article, we learnt how to deploy LLDB to the device and use it to run some basic commands. In the next article, we will look at some advanced usage of LLDB and how it can be used to find sensitive information in memory.

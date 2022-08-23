@@ -56,7 +56,7 @@ Different types of Resource Records exist within a Zone file. However we are goi
 
 Let's do a demo to make this clear. I have purposely added some records in my website searching-eye.com for this article,so they may not be available when you perform this, however you can try the same exercise on other domains, type in the commands as shown in the figure below.
 
-![Nslookup Detail]({{site.baseurl}}/images/posts/dns/nslookup-detail.png)
+![Nslookup Detail](/images/posts/dns/nslookup-detail.png)
 
 a) In the first command in nslookup I set the type to A which means I want Ip-address for a particular domain. I type in the domain name as the second command and get the corresponding Ip-address for it.
 
@@ -68,7 +68,7 @@ d)Next i set the type to CNAME and type in a subdomain, i get a cannonical name 
 
 I will take this moment to introduce DIG which is a handy little tool, we can also do the same queries using DIG. Let's search for MX records in the same domain. I would suggest you try querying for the other domains yourself.
 
-![Dig Intro]({{site.baseurl}}/images/posts/dns/dig intro.png)
+![Dig Intro](/images/posts/dns/dig intro.png)
 
 * * *
 
@@ -76,25 +76,25 @@ I will take this moment to introduce DIG which is a handy little tool, we can al
 
 **DNS Lookup**-Let's peform a DNS Lookup ourselves for infosecinstitute.com. We will do this by traversing the entire DNS hierarchy from the root servers to the Top level domain. Open up the terminal in Backtrack (you can use your own favourite distro) and type in "dig". You will get something as shown in the figure below.
 
-![Dig]({{site.baseurl}}/images/posts/dns/dig.png)
+![Dig](/images/posts/dns/dig.png)
 
 What we get is a list of the Root DNS Servers. Let's use this root DNS server to query infosecinstitute.com. We do this as shown in the figure below
 
-![Dig 1st Query]({{site.baseurl}}/images/posts/dns/dig 1st query.png)
+![Dig 1st Query](/images/posts/dns/dig 1st query.png)
 
 What we get is a list of authoritative name servers for the com domain. Notice the dot (.) at the end, this is what makes this a fully qualified domain name (FQDN). Let's use these Name servers to query again.
 
-![Dig 2nd Query]({{site.baseurl}}/images/posts/dns/dig 2nd query.png)
+![Dig 2nd Query](/images/posts/dns/dig 2nd query.png)
 
 Now we get the list of authoritative name servers for infosecinstitute.com (which is ns1.pairnic.com and ns2.pairnic.com). Now we need to query these name servers to get the Ip-address of Infosecinstitute.com
 
-![Dig 3rd Query]({{site.baseurl}}/images/posts/dns/dig 3rd query.png)
+![Dig 3rd Query](/images/posts/dns/dig 3rd query.png)
 
 And now in the Answer Section we can see that the Ip-address for infosecinstitute.com is 216.92.251.5\. SUCCESS !
 
 **Reverse DNS Lookup**- Performing Reverse DNS Lookup converts an Ip-address into it's hostname. For this we need to write the Ip address in reverse order (for eg 192.168.1.1 will be 1.1.168.192) and then append ".in-addr.arpa." to it. Next we need to make a query for a PTR Record using DIG. Let's make a DNS PTR query for 216.92.251.5, the command here would be "dig 5.251.92.216.in-addr.arpa PTR"
 
-![Dig Reverse Lookup]({{site.baseurl}}/images/posts/dns/dig-reverse-lookup.png)
+![Dig Reverse Lookup](/images/posts/dns/dig-reverse-lookup.png)
 
 As we can clearly see, this ip address resolves to infosecinstitute.com. As Simple as that!
 
@@ -112,7 +112,7 @@ As we can clearly see, this ip address resolves to infosecinstitute.com. As Simp
 
 Let's see an example of a Zone transfer. We will be using the tool Fierce present by default in Backtrack. Fierce is one of the best tools available out there for DNS Analysis. Type in the following command "perl fierce.pl -dns searching-eye.com". We get something as shown in the figure below.
 
-![Fierce Start Zone Transfer]({{site.baseurl}}/images/posts/dns/fierce-start-zone-transfer.png) ![Fierce End Zone Transfer]({{site.baseurl}}/images/posts/dns/fierce-end-zone-transfer.png)
+![Fierce Start Zone Transfer](/images/posts/dns/fierce-start-zone-transfer.png) ![Fierce End Zone Transfer](/images/posts/dns/fierce-end-zone-transfer.png)
 
 What fierce does is that it first finds out the nameservers for the domain. It then checks to see if they allow zone transfers. Since one of the nameservers is not properly configured, it allows zone transfer and what we see is a dump of all the information (records , subdomains etc).
 
@@ -128,7 +128,7 @@ To protect your nameservers from leaking valuable information, one must allow zo
 
 Let's see this through a demo. We will again use the tool "Fierce". Fierce is a very handy tool for DNS Analysis and it is something everyone should have in their armory. Fierce will first check if Zone transfers are allowed or not, if zone transfers are allowed, it will dump all the information and exit happily, otherwise it will bruteforce it. We need to supply Fierce with a wordlist containing a list of all the possible subdomain names (for e.g. hosts,ads,contracts). Fierce comes with an inbuilt wordlist file "hosts.txt" and we will be using the same for our demo.
 
-![Fierce Bruteforcing]({{site.baseurl}}/images/posts/dns/fierce-bruteforcing.png) ![Fierce Bruteforcing2]({{site.baseurl}}/images/posts/dns/fierce-bruteforcing2.png)
+![Fierce Bruteforcing](/images/posts/dns/fierce-bruteforcing.png) ![Fierce Bruteforcing2](/images/posts/dns/fierce-bruteforcing2.png)
 
 As we can see, Fierce dumps out information about the subdomains of google.com
 

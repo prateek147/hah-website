@@ -6,7 +6,7 @@ comments: true
 tags: security
 ---
 
-I am glad to release a completely new version of [Damn Vulnerable iOS App](http://damnvulnerableiosapp.com) written in Swift 4\. With developers now migrating to Swift for developing apps, it is important to have a testbed app for iOS in Swift. Though I have added some sections in Objective-C too which the users can test to learn Objective-C related vulns. ![1]( /images/posts/dvia2/dvia.png) The following vulnerabilities are covered in this version.
+I am glad to release a completely new version of [Damn Vulnerable iOS App](http://damnvulnerableiosapp.com) written in Swift 4\. With developers now migrating to Swift for developing apps, it is important to have a testbed app for iOS in Swift. Though I have added some sections in Objective-C too which the users can test to learn Objective-C related vulns. ![1](/images/posts/dvia2/dvia.png) The following vulnerabilities are covered in this version.
 
 <!--more-->
 

@@ -24,7 +24,7 @@ In this article we will be discussing each of them in detail.
 
 In this exercise we will use Iodine (available by default in Backtrack 5) to encapsulate IPv4 traffic into DNS Traffic .But first let's understand how DNS Tunneling works.
 
-![DNS Tunneling]( /images/posts/Maintaining-Access//DNS-Tunneling.png)
+![DNS Tunneling](/images/posts/Maintaining-Access//DNS-Tunneling.png)
 
 1) The client (in this case our victim) uses a program (in this case Iodine) to encapsulate Ipv4 traffic into DNS traffic and sends the entire traffic to a subdomain (for e.g tunnel.example.com) controlled by us. Let's say the client(or victim) had tried to contact our control machine, through which we control the victim. Note that the control machine and the subdomain to which traffic is being sent are entirely different. The client sends the traffic to the control machine through our subdomain. Also, it is important to note that the subdomain should be running a DNS server.
 
@@ -38,13 +38,13 @@ We will need a client running iodine (which in our case will be the victim , and
 
 The first step is to check if DNS traffic is actually allowed to pass through or not. For this just go to the terminal and try pinging any domain from the victim machine. If we get an IP-address in the reply section, then it means that DNS packets are allowed, because the query went to the DNS server and it returned back the IP-Address of the domain.
 
-![Ping]( /images/posts/Maintaining-Access//ping.png)
+![Ping](/images/posts/Maintaining-Access//ping.png)
 
 Ok Cool , so DNS packets are allowed on the network. The next step is to start the Iodine server on our server machine. Note that this machine acts as an intermediate between the victim and the control machine. The traffic is encapsulated onto DNS only between between the victim and the intermediate machine. For e.g let's say the victim is set to send requests to tunnel.infosecinstitute.com . The query will first reach the infosecinstitute.com server. If it has a A record for tunnel.infosecinstitute.com , the request will reach the tunnel.infosecinstitute.com server. Note that in order to direct the request for tunnel.infosecinstitute.com to your server, we should have an NS record in the zone file of infosecinstitute.com server. This server is the one running the Iodine program. This DNS server will then forward our requests to whichever domain we had queried for, get the response back, encapsulate it into DNS and then send the response back to the victim.
 
 Type in the following command to start Iodine server
 
-![1]( /images/posts/Maintaining-Access//1.png)
+![1](/images/posts/Maintaining-Access//1.png)
 
 a) We use ./iodined as we want to start the iodine server
 
@@ -56,11 +56,11 @@ d)Iodine will then ask for a password. This is the password that is used to auth
 
 Type "ifconfig dns0" to check that a new virtual interface has been created with the IP 10.0.1.2 .
 
-![3]( /images/posts/Maintaining-Access//3.png)
+![3](/images/posts/Maintaining-Access//3.png)
 
 It is now time to set up the client. To do that go to your client and type the following command as shown in the figure below.
 
-![4]( /images/posts/Maintaining-Access//4.png)
+![4](/images/posts/Maintaining-Access//4.png)
 
 a)We use ./iodine as we want to start the iodine client.
 
@@ -72,15 +72,15 @@ d)Finally we enter the same password we entered while setting up the server. Onc
 
 All right, let's now do a quick "ifconfig dns0" on the client, we will see that a virtual interface named dns0 has been created on the client side as well and assigned the IP-Address 10.0.1.1 ,which is in the same subnet as the server IP( 10.0.1.2).
 
-![6]( /images/posts/Maintaining-Access//6.png)
+![6](/images/posts/Maintaining-Access//6.png)
 
 To check if the tunnel is working, let's do a ping to the server (10.0.1.2) from our client. As we can see that we get a response, this means the tunnel works.
 
-![7]( /images/posts/Maintaining-Access//7.png)
+![7](/images/posts/Maintaining-Access//7.png)
 
 If we see the packets in Wireshark, we will see that all the packets appear as DNS, even though right now ICMP ping requests and responses are being sent. This proves that all the traffic going through the tunnel appears as DNS traffic.
 
-![8]( /images/posts/Maintaining-Access//8.png)
+![8](/images/posts/Maintaining-Access//8.png)
 
 ## b)Ping Tunneling
 
@@ -88,11 +88,11 @@ Ping Tunneling is the process of encapsulating different protocols into ICMP pro
 
 To set up the ptunnel server, just go to the ptunnel directory in Backtrack and type in ./ptunnel .
 
-![9]( /images/posts/Maintaining-Access//9.png)
+![9](/images/posts/Maintaining-Access//9.png)
 
 This sets up the server side of the ping Tunnel. To set up the client side type in the following command as shown in the figure below.
 
-![10]( /images/posts/Maintaining-Access//10.png)
+![10](/images/posts/Maintaining-Access//10.png)
 
 a) -p 192.168.0.135 - This specifies the IP-address of the server running the ptunnel server.
 
@@ -102,19 +102,19 @@ c) -da and -dp specify the destination address and port we want to forward all t
 
 Once this is done, we need to connect to port 8000 via ssh. To do this we need to configure ssh to run on port 8000\. To do this edit the file "/etc/ssh/sshd_config" to run the ssh service on port 8000.
 
-![11]( /images/posts/Maintaining-Access//11.png)
+![11](/images/posts/Maintaining-Access//11.png)
 
 Once this is done, restart the ssh service and check to see if ssh is listening for connections on port 8000.
 
-![12]( /images/posts/Maintaining-Access//12.png)
+![12](/images/posts/Maintaining-Access//12.png)
 
 Finally connect to the ssh service from the localhost by typing "ssh -p 8000 root@localhost" .Type in the root password ("toor" by default) and we get the screen as shown below.
 
-![13]( /images/posts/Maintaining-Access//13.png)
+![13](/images/posts/Maintaining-Access//13.png)
 
 SUCCESS! We just set up a ping tunnel ! Once the data flow has started, you can see the notification both on the server side and on the client side.
 
-![14]( /images/posts/Maintaining-Access//14.png)
+![14](/images/posts/Maintaining-Access//14.png)
 
 **2)OS Backdoors**-The next category of tools are OS Backdoors .These backdoors when installed on the victim system can be used to create connections between the victim and the attacker machine. It can also be used to download files, execute commands and carry numerous other tasks.
 
@@ -122,7 +122,7 @@ SUCCESS! We just set up a ping tunnel ! Once the data flow has started, you can 
 
 Here are the commands on the victim machine
 
-![15]( /images/posts/Maintaining-Access//15.png)
+![15](/images/posts/Maintaining-Access//15.png)
 
 a) -l tells it to listen for connections.
 
@@ -134,7 +134,7 @@ d) -v asks netcat to be more verbose.
 
 and here's the configuration on the attacker machine
 
-![16]( /images/posts/Maintaining-Access//16.png)
+![16](/images/posts/Maintaining-Access//16.png)
 
 To connect, we just need to specify the IP-address and the port. As we can see once we are connected we can execute commands on the victim machine and also see the results. In this case we run the commands "ls" and "cat /etc/passwd" on the victim.
 
@@ -142,15 +142,15 @@ To connect, we just need to specify the IP-address and the port. As we can see o
 
 In this case we will be using sbd to transfer files from the client to the server.Here are the commands on the victim side. I would recommend you to explore the different options available in sbd to create covert connections.
 
-![17]( /images/posts/Maintaining-Access//17.png)
+![17](/images/posts/Maintaining-Access//17.png)
 
 Here are the results obtained when we connect to the victim machine. As we can see that we see a dump of the file.
 
-![18]( /images/posts/Maintaining-Access//18.png)
+![18](/images/posts/Maintaining-Access//18.png)
 
 3) Msfpayload and Msfencode - Msfpayload is a part of the Metasploit framework. It allows us to create custom backdoors. These backdoors when executed on the victim can allow us to open up a connection between the victim and the attacker machine. However it is important for the backdoor to evade detection from the antivirus. For this we use MsfEncode which encodes the payload so that it is not detected by the antivirus. For Msfencode to encode the payload, we need to give it the file created by Msfpayload in Raw Format (by using the R option). In the diagram below we can see an example of creating an encoded executable file which can act as a backdoor.
 
-![Msf]( /images/posts/Maintaining-Access//msf.png)
+![Msf](/images/posts/Maintaining-Access//msf.png)
 
 a) windows/meterpreter/bind_tcp is the payload we want to use. A payload is the code which is executed on the victim machine upon successful completion of the exploit.
 
@@ -174,23 +174,23 @@ Once this file is run on the victim machine, all we need to do is run a handler 
 
 We will be using backtrack as the victim server in this case, for this we need to install a backdoor in it's "/var/www" folder and then we will start the apache server. Backtrack already comes with some backdoors that are located in "/pentest/backdoors/web/webshells" directory. To do these things, type in the commands as shown in the figure below.
 
-![20]( /images/posts/Maintaining-Access//20.png)
+![20](/images/posts/Maintaining-Access//20.png)
 
 Once we have set up the backdoor, migrate to it from the browser
 
-![21]( /images/posts/Maintaining-Access//21.png)
+![21](/images/posts/Maintaining-Access//21.png)
 
 As we can see it allows us to carry out remote commands on the system, let's try the command "cat /etc/passwd". We will see that we get a dump of the whole file.
 
-![22]( /images/posts/Maintaining-Access//22.png)
+![22](/images/posts/Maintaining-Access//22.png)
 
 Let's try this out for another backdoor named "php-backdoor.php". First let's move it to the /var/www folder.
 
-![23]( /images/posts/Maintaining-Access//23.png)
+![23](/images/posts/Maintaining-Access//23.png)
 
 And now let's migrate to the file from the browser. As we can see that it provides us with a beautiful interface, we can execute commands, browse to directories, upload files, and even execute mysql queries.
 
-![24]( /images/posts/Maintaining-Access//24.png)
+![24](/images/posts/Maintaining-Access//24.png)
 
 ## Conclusion
 

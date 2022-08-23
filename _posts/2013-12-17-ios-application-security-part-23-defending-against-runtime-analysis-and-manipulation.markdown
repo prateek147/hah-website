@@ -19,11 +19,11 @@ In Xcode, there are certain checks that an attacker can use to determine whether
 
 As the name specifies, this macro returns _nil_ if the application is being debugged. You can put this check in important places in your application where you think important data is being accessed or returned in a function. If the application is being debugged at that moment, then this macro will return nil and hence your application wont function normally thereby causing problems for the attacker. Or you can simply call this macro with a timer and whenever you find that your application is being debugged, you delete all the important information stored in the app, remove all the important files etc. But please note that the attacker can just hijack your method implementation using Cycript, hence it is advisable to just use a macro instead of using this macro inside a method. Please note that this macro only works in release mode. To test it on your device, you will have to enable release mode on your build. To do that, select your scheme and click on _Edit Scheme_
 
-![1]( /images/posts/ios23/1.png)
+![1](/images/posts/ios23/1.png)
 
 Then under Info, set the Build configuration to _Release_.
 
-![2]( /images/posts/ios23/2.png)
+![2](/images/posts/ios23/2.png)
 
 Now, you can just run this application on your device using Xcode and you will see that the check for debugger will succeed. This is because Xcode attaches a debugger while running an application.
 
@@ -31,11 +31,11 @@ Again, this does not guarantee that your application will not be debugged. A ski
 
 Another technique to prevent these debuggers from attaching to your application is by using the ptrace function. Using this function with a specific parameter, you can just deny any other debugger the ablity to attach to your application. The ptrace function is used by the debuggers like GDB and LLDB to attach to a process. Using the ptrace command with the parameter PT_DENY_ATTACH will tell the function to not allow this application to be traced. Here is a screenshot that tells about the PT_DENY_ATTACH parameter from [Apple's documentation](https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man2/ptrace.2.html).
 
-![3]( /images/posts/ios23/3.png)
+![3](/images/posts/ios23/3.png)
 
 Lets try this out. Create a new Project in Xcode. Click File->New->Project->Single View Application. Then run it in the simulator. You will see an empty view this.
 
-![4]( /images/posts/ios23/4.png)
+![4](/images/posts/ios23/4.png)
 
 Now go to the main.m file and modify it by adding the following code.
 
@@ -48,7 +48,7 @@ Import the ptrace.h file and add the following code inside the main function.
 
 Your main.m file should look like this.
 
-![5]( /images/posts/ios23/5.png)
+![5](/images/posts/ios23/5.png)
 
 Now run the application. You will see that the application fails to launch. This is because when Xcode launches this application, it tries to attach a debugger (LLDB or GDB) to the application. Because of the code that we just wrote in the main.m file, it is unable to do so and hence it quits the application.
 

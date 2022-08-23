@@ -33,7 +33,7 @@ To save info in the keychain, just use the setObject:forKey: method. In this cas
 
 The _kSecAttrAccessible_ variable is used to specify when does the application need access to that data. We should be careful while using this option and use the most restrictive option. There are six possible values for this key which can be found in the screenshot below from Apple's [documentation](http://developer.apple.com/library/mac/#documentation/Security/Conceptual/keychainServConcepts/iPhoneTasks/iPhoneTasks.html#//apple_ref/doc/uid/TP30000897-CH208-SW1).
 
-![1]( /images/posts/ios12/1.png)
+![1](/images/posts/ios12/1.png)
 
 Ofcourse, we should never use _kSecAttrAccessibleAlways_. A safe option to go for would be _kSecAttrAccessibleWhenUnlocked_. Also, there are options that end with _ThisDeviceOnly_. If this option is chosen, the data is encrypted with a hardware specific key and hence could not be transferred to or viewed from another device. Even though they enforce additional security, it might not be a good idea to use them unless you have a good reason to not allow the migration of data between backups.
 
@@ -45,23 +45,23 @@ To fetch information from the keychain, use this.
 
 One of the great tools to analyze the data being written to the keychain is Snoop-it. If you haven't seen it yet, check out [this](http://resources.infosecinstitute.com/ios-application-security-part-9-analyzing-security-of-ios-applications-using-snoop-it/) tutorial in the same series on Snoop-it. Now run the project [GenericKeychain](http://developer.apple.com/library/ios/#samplecode/GenericKeychain/Introduction/Intro.html) on your jailbroken device and analyze it using Snoop-it. There is already a tutorial for running applications with self-signed certificates in this series which could be found [here](http://resources.infosecinstitute.com/ios-application-security-part-7-installing-and-running-custom-applications-on-device-without-a-registered-developer-account/). This app is just a sample project to demonstrate how to read and write from Keychain using a Obective-C wrapper class KeychainWrapper. Make sure this app is being analyzed using Snoop-it. Now open the app and this is the interface that we see.
 
-![Q]( /images/posts/ios12/q.PNG)
+![Q](/images/posts/ios12/q.PNG)
 
 Now enter some username and password and save it. In this case, lets enter the username as "Test User" and the password as "password". You will see that Snoop-it detects any change to the keychain and is able to tell us the information stored in the keychain. It also tells us the protection attributes for the saved information.
 
-![R]( /images/posts/ios12/r.png)
+![R](/images/posts/ios12/r.png)
 
 Here is the info that gives away the username and password.
 
-![S]( /images/posts/ios12/s.png)
+![S](/images/posts/ios12/s.png)
 
 Now, enter an account number. Snoop-it is able to detect that as well.
 
-![T]( /images/posts/ios12/t.png)
+![T](/images/posts/ios12/t.png)
 
 As you can clearly note, Snoop-it is able to detect the action on the keychain database file as well, i.e whether it is a read, write or a delete. If you reset the contents of the keychain by tapping on Reset, you will see that it detects that as well.
 
-![G]( /images/posts/ios12/g.png)
+![G](/images/posts/ios12/g.png)
 
 ## Dumping Keychain data using Keychain Dumper
 
@@ -72,23 +72,23 @@ One of the most popular tools for dumping information from the keychain is Keych
 
 Just upload this binary into your device in the /tmp folder and make sure its executable.
 
-![X]( /images/posts/ios12/x.png)
+![X](/images/posts/ios12/x.png)
 
 Now make sure that the keychain database file stored at the location _/private/var/Keychains/keychain-2.db_ is world readable.
 
-![Y]( /images/posts/ios12/y.png)
+![Y](/images/posts/ios12/y.png)
 
 Now run the binary.
 
-![3]( /images/posts/ios12/3.png) ![3x]( /images/posts/ios12/3x.png)
+![3](/images/posts/ios12/3.png) ![3x](/images/posts/ios12/3x.png)
 
 As you can see, it dumps all the keychain information. You can see a lot of usernames and passwords stored here. For e.g, we can see that the Mail app stores the username/password of your account in the keychain. Similarly, it is possible to find passwords of some wireless networks that you have previously connected to and much more information. By default, the command above will only dump out the generic and internet passwords. You can see the usage information by using the "-h" command.
 
-![4]( /images/posts/ios12/4.png)
+![4](/images/posts/ios12/4.png)
 
 You can dump all the information using the "-a" command.
 
-![5]( /images/posts/ios12/5.png)
+![5](/images/posts/ios12/5.png)
 
 One of the things that could make the information in the keychain more secure is using a strong passcode. This is because the passcode is used to encrypt the data in the keychain for specific protection attributes and hence having a strong passcode would enforce better security. iOS by default allows for a 4 digit passcode which could range from 0-9999 and hence could be bruteforced in a few minutes. We will look at bruteforcing passcodes later in this series. But there is also another option to set alphanumeric passwords which would take significantly more time to be bruteforced. A combination of a proper protection attribute combined with a strong passcode will help in keeping the data in the keychain much more difficult to be fetched out.
 

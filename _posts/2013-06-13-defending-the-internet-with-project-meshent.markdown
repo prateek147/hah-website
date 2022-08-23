@@ -32,57 +32,57 @@ First of all, it is important to make sure that you have all the dependencies in
 
 First, lets clone the latest from CJDNS's github repository.
 
-![1]( /images/posts/meshnet/1.png)
+![1](/images/posts/meshnet/1.png)
 
 Then, go to the cjdns directory and build using the "./do" command as shown in the figure below. You will require to have some dependencies like wget etc installed on your system for doing a proper build. Otherwise, the build would fail.
 
-![2]( /images/posts/meshnet/2.png)
+![2](/images/posts/meshnet/2.png)
 
 The build would take some time so please be patient.
 
-![3]( /images/posts/meshnet/3.png)
+![3](/images/posts/meshnet/3.png)
 
 Here's how it would look like while performing the build. Also, please note that you must have an internet connection during this whole process.
 
-![4]( /images/posts/meshnet/4.png)
+![4](/images/posts/meshnet/4.png)
 
 Once the build is complete, you will get a "Build completed successfully" message as shown in the figure below. If you don't see this message, then something is wrong and the build wasn't successful.
 
-![5]( /images/posts/meshnet/5.png)
+![5](/images/posts/meshnet/5.png)
 
 Now we need to create a config file which will give a public and private key and an IP address for our node. Run the command as shown in the figure below to achieve that task.
 
-![6]( /images/posts/meshnet/6.png)
+![6](/images/posts/meshnet/6.png)
 
 This will create the config file named cjdroute.conf. If you open the file, you will see that we have assigned a Private Key, a Public Key and an IPv6 address. Yes, meshnet runs by tunneling IPv6 packets in UDP/IPv4 packets. This is because CJDNS and Hyperboria are still in the early stages of development.
 
-![7]( /images/posts/meshnet/7.png)
+![7](/images/posts/meshnet/7.png)
 
 Right now, since Meshnet doesn't have a lot of user base around the world, the Meshnet team has made some public peers available around the world to connect to. Please visit http://wiki.projectmeshnet.org/Public_peers for more info regarding that.
 
 It's always good to check if these servers can be reached by pinging them before we connect to them using Meshnet. For e.g, in the figure below i am pinging a server in the United States to see if it is reachable.
 
-![9]( /images/posts/meshnet/9.png)
+![9](/images/posts/meshnet/9.png)
 
 Next, we need to configure the config file to connect to that peer. If you open your config file, you will see the following section in your config file.
 
-![10]( /images/posts/meshnet/10.png)
+![10](/images/posts/meshnet/10.png)
 
 We need to provide the information of the peer that we will be connecting to in this file. As you can see from the figure below, i have configured the config file to connect to two peers. We can connect to a maximum of 3 peers at once. We can also add some more options such as Trust and Auth Type. The trust level signifies how much you trust a peer that you are connecting to. It is advisable to use a higher trust value for those nodes to which you have already connected to in the past. The trust feature has not been implemented in Meshnet yet.
 
-![11]( /images/posts/meshnet/11.png)
+![11](/images/posts/meshnet/11.png)
 
 Once you are done with setting up the configuration, start up CJDNS by typing the command as shown in the figure below. You will need admin privileges to run the daemon.
 
-![12]( /images/posts/meshnet/12.png)
+![12](/images/posts/meshnet/12.png)
 
 Once you have provided your password, CJDNS will run and you will see the log messages as shown below.
 
-![13]( /images/posts/meshnet/13.png) ![14]( /images/posts/meshnet/14.png)
+![13](/images/posts/meshnet/13.png) ![14](/images/posts/meshnet/14.png)
 
 CJDNS is now properly running and communicating with the other peers. If you do a quick "ifconfig" on your system, you will see that a new interface by the name "utun0" has been created. This is the interface used by Meshnet to communicate with the other peers in Hyperboria.
 
-![15]( /images/posts/meshnet/15.png)
+![15](/images/posts/meshnet/15.png)
 
 ## Conclusion
 

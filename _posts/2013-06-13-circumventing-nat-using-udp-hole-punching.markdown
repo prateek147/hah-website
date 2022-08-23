@@ -26,11 +26,11 @@ UDP Hole punching is a technique via which it is possible to traverse NAT's and 
 
 First let's do a small experiment. Make sure your system is behind a NAT. Then go to the terminal and do a ping on any website.
 
-![1]( /images/posts/nat-traversal/1.png)
+![1](/images/posts/nat-traversal/1.png)
 
 Open up Wireshark to see the packets flowing through as shown in the figure below. We will see responses coming from the destination. But since our system is behind a NAT, how does the incoming packet know that the response is directed to us ? Well, the answer is simple. When our first packet went out of the network, NAT A noticed it and realized that some sort of communication was being established. Hence it decided that any sort of response which corresponds to this outgoing request will be forwarded to the system A. It then sees that the response had the content of the initial outgoing request and realized that it was meant for A, and hence forwarded the packet to A. What this did was that it basically punched a hole in the firewall, through which the firewall now allows incoming response which correspond to the request from A.
 
-![2]( /images/posts/nat-traversal/2.png)
+![2](/images/posts/nat-traversal/2.png)
 
 ## How UDP Hole punching works.
 
@@ -78,27 +78,27 @@ According to their paper, the technique proposed by them works quite well for th
 
 a) Open up pwnat in Backtrack. We can see that it can be run in server as well as client mode. We will run both on our local machine just to understand how the communication happens.
 
-![3]( /images/posts/nat-traversal/3.png)
+![3](/images/posts/nat-traversal/3.png)
 
 b) Type in the following command as shown below to start the server. 10.0.2.15 stands for the IP address of our local machine and 2222 is the port from which our packets will generate.
 
-![4]( /images/posts/nat-traversal/4.png)
+![4](/images/posts/nat-traversal/4.png)
 
 c) Now open up Wireshark and start sniffing packets. We notice that some ping requests are going to the non-existent IP address 3.3.3.3\. Note that since the packets are being passed from the NAT, the NAT will allow incoming packets from random IP address which appear to be a response for this request. Note that i am saying random IP address because the response could be from a hop on the way to the destination 3.3.3.3 (which is non-existent) and if it can prove to the NAT that it was a response for the initial request, then it will be allowed into the network and directed to our local machine.
 
-![5]( /images/posts/nat-traversal/5.png)
+![5](/images/posts/nat-traversal/5.png)
 
 d) Now we will start the client. Type in the following command as shown in the figure below to start the pwnat client. 8000 is the port on the client from where we want the connection to be initiated. localhost 80 is the host and port to which we want to be redirected to through the communication channel.
 
-![6]( /images/posts/nat-traversal/6.png)
+![6](/images/posts/nat-traversal/6.png)
 
 On the server side, we can see that it has got a connection request and is regularly receiving packets from the client. This confirms that a communication channel has been established. The packets that the server is regularly receiving are the keep alive packets sent by the client in order to maintain the connection state.
 
-![7]( /images/posts/nat-traversal/7.png)
+![7](/images/posts/nat-traversal/7.png)
 
 If we look at the wireshark trace, we can see "TTL exceeded" packets being sent to the server. If we look at the content of one of the packets, we can see that the content contains the original request packet. This packet is actually a fake reply to the server indicating that the TTL has expired for the ping request to 3.3.3.3\. This packet is actually sent by the client and when it reaches the NAT of A, the NAT recognizes it as a response to the initial ping request to 3.3.3.3 sent by A and hence routes it to A. Once the packet reaches A, A figures out the IP address and port of the client and hence a bidirectional communication channel can now be established.
 
-![8]( /images/posts/nat-traversal/8.png)
+![8](/images/posts/nat-traversal/8.png)
 
 In cases where both the systems are behind NAT, the payload of the reply from the client to the server could contain the IP address of the client as well as the port number on which it wants to initiate the connection. One of the other issues with this could be that the fake ICMP replies sent by the client could be rejected by the client's NAT. Hence this many not work in all cases. The pwnat tool though has support for communicating between NAT to NAT peers.
 

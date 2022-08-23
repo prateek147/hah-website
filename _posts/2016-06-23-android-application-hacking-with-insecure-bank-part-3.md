@@ -76,23 +76,23 @@ Whether or not the activity can be launched by components of other applications 
 
 Hence, if an activity is exported, it can be called by external applications. In order to test the vulnerable activity exercise in InsecureBank application, let's first start the application on Genymotion emulator and start the backend server as well.
 
-![1]( /images/posts/ib3/1.png)
+![1](/images/posts/ib3/1.png)
 
 Once we start the app, we are presented with this login page. If the activity after a successful login is exported, then we can call that activity directly.
 
-![2]( /images/posts/ib3/2.png)
+![2](/images/posts/ib3/2.png)
 
 Let's have a look at the manifest file of the application to see if we can find the relevant activity. To look at the manifest file, first decompress the application using apktool as shown in the image below. This will create an application folder and the manifest file will be located inside it.
 
-![4]( /images/posts/ib3/4.png)
+![4](/images/posts/ib3/4.png)
 
 Here is how the manifest file looks like. As you can see, there is an activity named _.PostLogin_ which is set as exported.
 
-![3]( /images/posts/ib3/3.png)
+![3](/images/posts/ib3/3.png)
 
 We can call this activity directly using the activity manager tool in the emulator. Let's have a look at the usage first.
 
-![5]( /images/posts/ib3/5.png)
+![5](/images/posts/ib3/5.png)
 
 To start an activity with the am tool, here is the command.
 
@@ -104,11 +104,11 @@ In this case, the package name is com.android.insecurebankv2 as can be seen from
 
 So let's call the PostLogin activity by using the command shown below.
 
-![6]( /images/posts/ib3/6.png)
+![6](/images/posts/ib3/6.png)
 
 In the application, you can see that you have successfully bypassed the login page.
 
-![7]( /images/posts/ib3/7.png)
+![7](/images/posts/ib3/7.png)
 
 You can also call activity or other components using drozer. We will look at drozer in the next article.
 

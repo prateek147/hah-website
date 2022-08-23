@@ -14,11 +14,11 @@ By default, on compiling and building a tweak, it gets converted into the .dylib
 
 If you have a jailbroken device and have installed tweaks before from Cydia, you can clearly see these tweaks being injected into different applications during runtime by simply looking at the logs. Go to Xcode -> Window -> Organizer -> Devices & select your device and click on Console. Make sure your device is connected to your computer. You will see the tweaks being loaded into your application as you open applications on your device.
 
-![1]( /images/posts/ios33/1.png)
+![1](/images/posts/ios33/1.png)
 
 It is also a good idea to check the folder _/Library/MobileSubstrate/DynamicLibraries_ on your device and see all the tweaks you have installed on your device. You can do this by using a simple utility like iExplorer. Also, it is recommended to check the plist files for these installed extensions to see how they impose their restrictions on specific libraries and applications.
 
-![2]( /images/posts/ios33/2.png)
+![2](/images/posts/ios33/2.png)
 
 By far, the most preferred way of creating tweaks for iOS is by using Theos. To set up theos on your device, you can follow the instructions mentioned [here](http://iphonedevwiki.net/index.php/Theos/Getting_Started). It's pretty straightforward but make sure that the path where you are creating tweaks doesn't include some directories that have spaces in them. It has caused problems for me in the past and hence i would recommend you to avoid it.
 
@@ -28,15 +28,15 @@ Please note that if something goes wrong once you build and deploy a tweak then 
 
 So let's write a tweak. We will test our skills on [Damn Vulnerable iOS Application](http://damnvulnerableiosapp.com). We will solve the first challenge in the Runtime Manipulation section, where we have to bypass the login check on tapping _Login Method 1_ as shown in the image below.
 
-![3]( /images/posts/ios33/3.PNG)
+![3](/images/posts/ios33/3.PNG)
 
 Open theos and select the option to create a tweak. Let's name the project as DVIABypass. It will also ask you to specify the bundle identifier. Since we only want the tweak to hook into DVIA, we will specify the bundle identifier for DVIA only. In case you don't know how to find out the bundle identifier for a particular application, you can always find it out by inspecting the Info.plist file in the application folder for a particular app using iExplorer. You will see that this bundle identifier will automatically get added in the plist file for your tweak created by Theos.
 
-![8]( /images/posts/ios33/8.png)
+![8](/images/posts/ios33/8.png)
 
 As we can see, the project folder has been created. Let's navigate inside it.
 
-![5]( /images/posts/ios33/5.png)
+![5](/images/posts/ios33/5.png)
 
 Here you can see some weird files. The plist file is the one that we discussed about previously. This file is copied over to your device along with the generated dynamic library. The Tweak.xm file is where all your hooking code will go. The Makefile is where you will add all the needed frameworks and other global variables.
 
@@ -44,29 +44,29 @@ In order to write a tweak for a particular application or library method, we mus
 
 By looking at the class information for DVIA, we can figure out that we want to hook into the method _isLoginValidated_ in the view controller _RuntimeManipulationDetailsVC_.
 
-![6]( /images/posts/ios33/6.png)
+![6](/images/posts/ios33/6.png)
 
 Now lets look at the Tweak.xm file. Just reading it will tell you a lot about how to go ahead and write and your own tweak. I am not going to explain what is already written here, it will be very easy to understand it anyways.
 
-![7]( /images/posts/ios33/7.png)
+![7](/images/posts/ios33/7.png)
 
 Replace your Tweak.xm file with the following lines of code. As you can clearly note here, this patch hooks into the class RuntimeManipulationDetailsVC, hijacks the implementation of the method isLoginValidated, and replaces it with our own implementation which returns TRUE every time.
 
-![9]( /images/posts/ios33/9.png)
+![9](/images/posts/ios33/9.png)
 
 Now make sure you have all the proper variables set. Make sure your computer and device are connected to the same wifi network. The first time you make a package and install it on the device, you will be prompted for the ssh password.
 
-![10]( /images/posts/ios33/10.png)
+![10](/images/posts/ios33/10.png)
 
 Now build the package and install it by using the command _make package install_
 
-. ![11]( /images/posts/ios33/11.png)
+. ![11](/images/posts/ios33/11.png)
 
 And now everytime you tap on the button that says _Login Method 1_ in [DVIA](http://damnvulnerableiosapp.com), you will notice that the login will be bypassed.
 
 You can also double check whether the package has been installed on your device by looking for the dylib file for your package in the directory _/Library/MobileSubstrate/DynamicLibraries_.
 
-![12]( /images/posts/ios33/12.png)
+![12](/images/posts/ios33/12.png)
 
 And if you feel that you have screwed up with your tweak, just remove the dylib and plist files from this folder and restart your device.
 

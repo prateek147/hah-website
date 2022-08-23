@@ -44,18 +44,18 @@ To encrypt SQlite files, you should also consider using [SQLCipher](http://sqlci
 
 *   Remember that with a copy of your application binary, a hacker is in complete control. It is therefore important to make his job as difficult as possible. One of the ways to do that is to block debuggers to attach to the application. We have already learnt how to do that in [Part 23](http://resources.infosecinstitute.com/ios-application-security-part-23-defending-runtime-analysis-manipulation/)
 
-![3]( /images/posts/ios25/3.png)
+![3](/images/posts/ios25/3.png)
 
 This will block debuggers from attaching to this application. We have already learnt how we were able to trace calls using [Snoop-it](http://highaltitudehacks.com/2013/08/20/ios-application-security-part-9-analyzing-security-of-ios-applications-using-snoop-it). Here is a screenshot from the same article.
 
-![1]( /images/posts/ios25/1.png)
+![1](/images/posts/ios25/1.png)
 
 With the line of code added above in main.m file, we wouldn't be able to do this now. This is because Snoop-it traces calls by attaching a debugger to the application when it starts, and now with the above check, it won't be able to do that and the application will crash. Please note that this will not prevent the application from tools like Cycript because they do not trace the application.
 
 ### Some other minor things
 
 *   TextFields that have inputs as passwords should be used with _Secure_ option. This is because iOS usually caches all the things that you enter in textfields, provided it doesn't have the _Secure_ tag. Also disable _AutoCorrection_ for those text fields. In the image below, you can see that the textfield has _AutoCorrection_ set to NO and the _Secure_ tag is being enabled.
-![2]( /images/posts/ios25/2.png)
+![2](/images/posts/ios25/2.png)
 
 *   Clear the Pasteboard once the application enters background. You can do this by adding the following line in the method _- (void)applicationDidEnterBackground:(UIApplication *)application_ in AppDelegate. Ify you are using a custom Pasteboard, replace _[UIPasteboard generalPasteboard]_ with your custom pasteboard.
 

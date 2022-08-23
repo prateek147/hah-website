@@ -10,17 +10,17 @@ This article will discuss about the talks and events that happened on Defcon day
 
 ## Venue: Rio Hotel and Casino
 
-![1]( /images/posts/defcon1//1.JPG)
+![1](/images/posts/defcon1//1.JPG)
 
 We reached Rio Hotel at around 8 am. We thought we did good on time until a nice gentleman came to us and said "It's a 3 hour long line guys !". We however got through the line in about 90 minutes, thanks to the nice staff at Defcon.
 
-![3]( /images/posts/defcon1//3.JPG)
+![3](/images/posts/defcon1//3.JPG)
 
 One you get through the registration process, you are offered a Defcon badge which is your entry pass to Defcon and a booklet that informs you about the whole Defcon schedule.
 
 <!--more-->
 
-![IMG 0909]( /images/posts/defcon1//IMG_0909.JPG) ![IMG 0914]( /images/posts/defcon1//IMG_0914.JPG) ![IMG 0915]( /images/posts/defcon1//IMG_0915.JPG)
+![IMG 0909](/images/posts/defcon1//IMG_0909.JPG) ![IMG 0914](/images/posts/defcon1//IMG_0914.JPG) ![IMG 0915](/images/posts/defcon1//IMG_0915.JPG)
 
 ## to Digital Forensics: Tools and Tactics
 
@@ -50,6 +50,6 @@ Well there is more to Defcon than just the talks. Its also about the Defco night
 
 Well that's it for Defcon day 1\. I will be writing about Defcon day 2 and day 3 also. Please let me know if there is something specific about Defcon that you want me to write about. I leave you now with some pictures from the event.
 
-![IMG 0951]( /images/posts/defcon1//IMG_0951.JPG) ![IMG 0965]( /images/posts/defcon1//IMG_0965.JPG) ![IMG 0970]( /images/posts/defcon1//IMG_0970.JPG)
+![IMG 0951](/images/posts/defcon1//IMG_0951.JPG) ![IMG 0965](/images/posts/defcon1//IMG_0965.JPG) ![IMG 0970](/images/posts/defcon1//IMG_0970.JPG)
 
 This article was originally published on the [resources](http://resources.infosecinstitute.com/) page at [Infosec Institute](http://infosecinstitute.com/). For more information, please visit my author [page](http://resources.infosecinstitute.com/author/prateek/).

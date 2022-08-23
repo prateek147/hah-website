@@ -43,7 +43,7 @@ Before we get started, you will need the following files to follow along.
 
 The iOS Kernelcache comprises of the core kernel and it's kernel extensions. The kernel code in itself is closed source; however, it is based on a fork of the open source XNU Kernel which is also used on Mac OS. The XNU kernel can be downloaded from opensource.apple.com.
 
-![1]( /images/1.png)
+![1](/images/1.png)
 
 Since the last couple of years, Apple has been open sourcing the ARM specific code as well, that can be found under **ifdef CONFIG_EMBEDDED** statements. Apple however still decides to keep some implementations to itself.
 
@@ -91,11 +91,11 @@ To find the decompressed kernelcache, simple unzip the ipsw file and look for th
 
 To list all the kernel extensions and split them into corresponding kext files, you can use ****jtool2****.
 
-![3]( /images/3.png)
+![3](/images/3.png)
 
 IDA detects a kernelcache by its magic value and gives you an option to split the kernelcache into its corresponding kext files as well. You can now reverse these kernel extensions separately in order to find vulnerabilities within them.
 
-![5]( /images/5.png)
+![5](/images/5.png)
 
 On a jailbroken iOS device, the decompressed kernelcache can be found under **/System/Library/Caches/com.apple.kernelcaches/kernelcache**. Some jailbreaks use this file in order to find the address of certain symbols and offsets dynamically rather than using hardcoded offsets. An excellent example of this is the Qilin toolkit created by @morpheus.
 
@@ -103,15 +103,15 @@ On a jailbroken iOS device, the decompressed kernelcache can be found under **/S
 
 Symbolicating a binary can involve a lot of manual effort. Until iOS 11, the kernelcache used to ship with certain symbols. Since iOS 12, Apple decided to strip the kernelcache of all symbols, but not before mistakingly releasing a beta version with all symbols intact. The IPSW was later removed from the downloads section. The following image shows the symbol count obtained by **jtool2** on an iOS 12 kernelcache (stripped) and the iOS 12 beta kernelcache that was released with all symbols intact.
 
-![6]( /images/6.png)
+![6](/images/6.png)
 
 The one kernelcache that was released with symbols was then later used by **jtool2** in creating symbols for the newer iOS kernelcaches. One of the most useful features of **jtool2** is its **analyze** command where you can feed it an iOS 12 kernelcache, and it will spit out the symbols for it.
 
-![7]( /images/7.png)
+![7](/images/7.png)
 
 As we can see, the companion file generated has about 12000 symbols.
 
-![8]( /images/8.png)
+![8](/images/8.png)
 
 In case you have the $$$, one of the easiest ways is to use the Lumina feature introduced with IDA 7.2 to get the symbols.
 
@@ -443,7 +443,7 @@ MIG's specification files have the extension **defs**, and when the kernel is co
 
 If you want to generate the MIG wrappers, you can simple run mig on any def file from a clean directory.
 
-![16]( /images/16.png)
+![16](/images/16.png)
 
 During compilation, the **mig** tool creates three files based on the subsystem name. For e.g, for the task subsystem, the following files are created
 
@@ -559,7 +559,7 @@ Similarly, the task ports serve as an abstraction over the task. The APIs can be
 {% endhighlight %}
 These APIs are quite powerful and allow full interaction with the target task. Having a send right to the task port of a process will give full control over that task, which includes reading, writing and allocating of memory in the target tasks memory region. Btw, we are mentioning Task (coming from Mach) ports of a process (coming from BSD), this might seem wierd and it is important to note that while these are 2 different flavours of Mach, they are internally linked. Every associated BSD process has a corresponding Mach task and vice versa. The task struct can be found under **osfmk/kern/task.h** , this has a **bsd_info** field which is a pointer to the **proc** structure in **bsd/sys/proc_internal.h**. Similarly, the task field in the proc structure is a pointer to the task structure of that process.
 
-![21]( /images/21.png)
+![21](/images/21.png)
 
 Using the Mach Trap **task_for_pid**, it is possible to get a send right to the task port corresponding to the target PID to the caller. As can be seen from the comments below in the implementation in the file **bsd/vm/vm_unix.c**, it is only permitted to privileged processes or processes with the same user ID. Apart from being privileged, calling this API also requires certain entitlements (**get-task-allow** and **task_for_pid-allow**).
 
@@ -1468,15 +1468,15 @@ One can then scour these structs using again the same function **pid_for_task()*
 
 This is a very brief discussion about Heap Allocation in iOS. In iOS, the heap memory is divided into various zones. Allocations of same size will go into same zones, unless for certain objects which have their own special zones (ports, vouchers etc). These zones grow as more objects are allocated, with the new pages being fetched from the zone map. One can see the zones allocated with the **zprint** command on Mac OS. It is assumed that a lot of heap allocation techniques will still be the same in iOS. Another thing is to note that iOS has zone garbage collection as well.
 
-![30]( /images/30.png)
+![30](/images/30.png)
 
 As discussed, certain objects have their own special zones. A zone is a collection of fixed size data blocks for which quick allocation and deallocation is possible. For e.g, in the image below, we can see that the a lot of the IPC objects, which includes ports, vouchers etc have their own zones. Hence if you are able to free a voucher let's say, you won't be able to overlap it with another object, unless you trigger zone garbage collection and move the page containing that address somewhere else to be reallocated again with a different kind of object.
 
-![31]( /images/31.png)
+![31](/images/31.png)
 
 The heap has been hardened significantly in the last few iOS versions. I highly recommend checking out [this](https://gsec.hitb.org/materials/sg2016/D2%20-%20Stefan%20Esser%20-%20iOS%2010%20Kernel%20Heap%20Revisited.pdf) talk on iOS Kernel Heap by Stefan Esser. Additionally, you can also check out the kernel source code. Start by looking **osfmk/kern/zalloc.c** which has some comments on heap allocation and just follow along from there.
 
-![38]( /images/38.png)
+![38](/images/38.png)
 
 One of the common techniques used in recent exploits for heap spraying is to fill the memory with an array of Port pointers by sending a Mach message with the option **MACH_MSG_OOL_PORTS_DESCRIPTOR**. This calls the method **ipc_kmsg_copyin_ool_ports_descriptor** in **ipc/ipc_kmsg.c** which has a kalloc call (**kalloc(ports_length)**) that fills the heap with port pointers. The advantage of this is in the voucher_swap exploit was that while the allocation of Ports would have put them into their own **ipc.port** zones, in the case of port pointers this is not the case and hence reallocation on top of freed objects with port pointers is possible. Well, again this is not entirely true and reallocation with ports is possible as you can do enough spraying with Ports such that the kernel is force to do garbage collection and allocate fresh pages from the zone map which might include the freed objects. This is discussed in Part 2 of this series.
 

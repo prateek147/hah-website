@@ -15,11 +15,11 @@ In the previous article, we looked at Frida APIs and some examples of how to hoo
 
 Let’s attach to the application first.
 
-![1]( /images/posts/ios49/1.png) 
+![1](/images/posts/ios49/1.png) 
 
 A quick reverse and subsequent trace of the application shows the method that is of interest. Since this method is Objective-C it can be swizzled.
 
-![2]( /images/posts/ios49/2.png)
+![2](/images/posts/ios49/2.png)
 
 Let’s use the following code to log the return value.
 
@@ -37,11 +37,11 @@ Let’s use the following code to log the return value.
 	});
 </pre>
 
-![3]( /images/posts/ios49/3.png)
+![3](/images/posts/ios49/3.png)
 
 As we can see, the return value is 1, which means the device is detected as jailbroken. Our task is to bypass this check. So we need to make the return value as 1.
 
-![4]( /images/posts/ios49/4.PNG)
+![4](/images/posts/ios49/4.PNG)
 
 We can do so with the following script. And let's also throw an if condition to check if the Objective C runtime is available.
 
@@ -65,7 +65,7 @@ We can do so with the following script. And let's also throw an if condition to 
 
 And as we can see, now the device is detected as Not Jailbroken.
 
-![6]( /images/posts/ios49/6.PNG) ![7]( /images/posts/ios49/7.png)
+![6](/images/posts/ios49/6.PNG) ![7](/images/posts/ios49/7.png)
 
 Let's use the exact same technique to bypass the challenge for Login Bypass (Runtime Manipulation -> Login Method 1)
 
@@ -89,7 +89,7 @@ Let's use the exact same technique to bypass the challenge for Login Bypass (Run
 
 </pre>
 
-![8]( /images/posts/ios49/8.PNG)  
-![9]( /images/posts/ios49/9.png)
+![8](/images/posts/ios49/8.PNG)  
+![9](/images/posts/ios49/9.png)
 
 In the next article, we will look at some more examples of Frida.
