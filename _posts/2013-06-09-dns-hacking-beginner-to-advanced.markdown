@@ -26,7 +26,7 @@ So Let's understand how DNS resolution works. Let's say the user opens up the br
 
 Let's do a quick demo. We are going to use the nslookup utility for this demo. Just type in the commands as shown in the figure below.
 
-![Nslookup Intro]({{site.baseurl}}/images/posts/dns/nslookup-intro.png)
+![Nslookup Intro](/images/posts/dns/nslookup-intro.png)
 
 a)In the second line we set the type = a . This means that we are querying for the A records which will return us an Ip-address in return for the domain we query. We will look more into records in the next section.
 

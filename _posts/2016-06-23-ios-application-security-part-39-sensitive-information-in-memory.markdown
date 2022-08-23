@@ -14,23 +14,23 @@ Basically, the memory of the application will contain a lot of information, most
 
 We will be solving the Sensitive information in memory challenge in [Damn Vulnerable iOS application](http://damnvulnerableiosapp.com)
 
-. ![1]({{site.baseurl}}/images/posts/ios39/1.PNG)
+. ![1]( /images/posts/ios39/1.PNG)
 
 If we look at the challenges, the first challenge is to find properties named username and password. To do that, first we have to get the reference to the current view controller. From the class-dump output of the application, it is easy to figure out that the class name of this view controller is _SensitiveInformationDetailsVC_. We can find the reference to this class objects using the choose function in cycript. The choose function takes an Objective-C class as an argument, and attempts to scavenge the heap looking for regions of memory that are the right size and shape as the class (or any subclasses of that class) you have specified. So basically, it will find references to all objects of the classes and subclasses that you have provided.
 
 Hence, to find the instances of the class _SensitiveInformationDetailsVC_, let's use the choose function with the class name as the argument.
 
-![2]({{site.baseurl}}/images/posts/ios39/2.png)
+![2]( /images/posts/ios39/2.png)
 
 As we can see, there is only one reference, and can be accessed using the index 0.
 
 To find out all properties, use the command a[0]->isa.messages.
 
-![3]({{site.baseurl}}/images/posts/ios39/3.png)
+![3]( /images/posts/ios39/3.png)
 
 Now, you can scan the output for all property names that you find interesting. Since we already know the property names in the challenge, which is username and password, we can directly access them using the commands shown below.
 
-![4]({{site.baseurl}}/images/posts/ios39/4.png)
+![4]( /images/posts/ios39/4.png)
 
 That's it. Pretty simple isn't it.
 
@@ -40,7 +40,7 @@ function tryPrintIvars(a){ var x={}; for(i in *a){ try{ x[i] = (*a)[i]; } catch(
 
 Now, lets give the input as the instance of the class _SensitiveInformationDetailsVC_ and we can see that it printed out all the instance variables along with their values.
 
-![5]({{site.baseurl}}/images/posts/ios39/5.png)
+![5]( /images/posts/ios39/5.png)
 
 However, we cannot find an instance variable named passwd. What's going on ? Well, here's the thing. The thing with instance variables is that they can be initialized within a particular method. If the function hasn't been called, the instance variable wouldn't be initialized. Also, because of a feature knows an ARC (Automatic reference counting) in iOS, the variables will automatically be released once the function has stopped executing. In some cases, you might not be able to call a function via manual browsing of the application, and that's where cycript becomes useful. Going back to the methods of this class, we see that there is a method named _initializeLogin_. And since it is the only other method apart from the regular iOS methods like viewDidLoad and didReceiveMemoryWarning, it is safe to assume that the instance variable is created in this method.
 

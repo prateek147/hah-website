@@ -14,7 +14,7 @@ Web Application vulnerabilities in social networking sites is very common these 
 
 Let's say i want to share a link http://google.com on my Timeline. Whenever i type the link, Facebook automatically identifies it as a url and sends a request to http://google.com. This is because it wants to display a quick snapshot of what actually appears to be in the link. As we can see from the image below, Facebook has displayed a quick snapshot of how http://google.com appears like today.
 
-![1]({{site.baseurl}}/images/posts/content-forgery/1.png)
+![1]( /images/posts/content-forgery/1.png)
 
 These requests to the google.com server are easily identifiable because the user-agent of the incoming request is an indication of the social networking site being used or the IP address of the incoming request resolves to a particular domain name. For e.g Facebook uses a custom user-agent with the name "facebookexternalhit" and have their IP addresses resolve to tfbnw.net whereas Google+ uses a custom user-agent with the name "Feedfetcher-Google".
 
@@ -40,15 +40,15 @@ Similarly the POC code for Reddit is demonstrated below. This code has been take
 
 Their is also a POC facebook application available at [http://www.chokepoint.net/?id=5](http://www.chokepoint.net/?id=5). It allows us to input an image and a redirect URL. As you can see below, i have given the input image as the image of the Google Logo whereas the redirect url is http://youtube.com.
 
-![2]({{site.baseurl}}/images/posts/content-forgery/2.png)
+![2]( /images/posts/content-forgery/2.png)
 
 Once this is done, click on Submit. You will see a like button, a send button as well as a Reddit this! button appear. You can now send this request to yourself to check this vulnerability.
 
-![4]({{site.baseurl}}/images/posts/content-forgery/4.png)
+![4]( /images/posts/content-forgery/4.png)
 
 Here is how the sent message looks like. As you can see, the snapshot contains the image of the google URL.
 
-![3]({{site.baseurl}}/images/posts/content-forgery/3.png)
+![3]( /images/posts/content-forgery/3.png)
 
 However, when we click on the url, we will be redirected to youtube.com. Try this yourself to see !
 

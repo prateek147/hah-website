@@ -12,19 +12,19 @@ In this article, we will look at how we can use a feature in iOS named url schem
 
 The first step is to find the actual url scheme an application is registered to. This information can be found by looking at the info.plist file in the application sandbox folder using any file explorer utility like iExplorer.
 
-![2]({{site.baseurl}}/images/posts/ios30/2.png) 
+![2]( /images/posts/ios30/2.png) 
 
 In this case, we can see that the url scheme for the [DVIA](http://damnvulnerableiosapp.com) application is dvia.
 
-![1]({{site.baseurl}}/images/posts/ios30/1.png)
+![1]( /images/posts/ios30/1.png)
 
 An application can register for more than 1 url scheme. For e.g, in the image below, we can see that the Facebook iOS application registers for about 8 url schemes.
 
-![3]({{site.baseurl}}/images/posts/ios30/3.png)
+![3]( /images/posts/ios30/3.png)
 
 The next step is to find the actual url structure the application is looking for in order to perform some action. There are a couple of ways of doing it and these steps may or may not work in all the cases. One of the very simple ways is to look for any string in the application starting with that url scheme. This can be done using the strings commands or a utility like Hopper. Note that you will first have to decrypt the application binary using clutch in case the application was downloaded from the App store as all app store binaries are encrypted.So let me copy the decrypted Whatsapp app binary to desktop and open it using Hopper. I know that it's url scheme is whatsapp, so let me search for the string whatsapp://
 
-![4]({{site.baseurl}}/images/posts/ios30/4.png)
+![4]( /images/posts/ios30/4.png)
 
 This can give you some information about the endpoints the application is expecting. For e.g, over here you can open a url like whatsapp://image/xyz to see how the application reacts to it. By supplying a url, i mean just going to safari and typing in the url and see how the whatsapp application reacts to it.
 

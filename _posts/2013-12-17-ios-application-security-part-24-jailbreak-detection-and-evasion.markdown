@@ -106,18 +106,18 @@ Honestly speaking, there is no foolproof method of detecting jailbroken devices.
 
 He can first find the class information of the application using Class-dump-z. Over here, he can see a method named +(BOOL)isJailbroken in the JailbreakDetector class. Note that it is a class method as it begins with positive sign. It obviously means this method checks whether a device is jailbroken or not and returns YES if the device is jailbroken. If you are not getting any of this, you should consider reading [previous](http://highaltitudehacks.com/security) articles.
 
-![1]({{site.baseurl}}/images/posts/ios24/1.png)
+![1]( /images/posts/ios24/1.png)
 
 He can then hook into this application using Cycript.
 
-![2]({{site.baseurl}}/images/posts/ios24/2.png)
+![2]( /images/posts/ios24/2.png)
 
 And then print out all the methods for the JailbreakDetector class. Please note that we are using JailbreakDetector->isa.messages because isJailbroken is a class method. To find the instance methods, just using JailbreakDetector.messages would have worked for us.
 
-![3]({{site.baseurl}}/images/posts/ios24/3.png)
+![3]( /images/posts/ios24/3.png)
 
 And then he can swizzle the method implementation with his own that always returns a NO. If you are not getting this, i suggest that you read the article on [Method Swizzling](http://highaltitudehacks.com/2013/07/25/ios-application-security-part-8-method-swizzling-using-cycript).
 
-![4]({{site.baseurl}}/images/posts/ios24/4.png)
+![4]( /images/posts/ios24/4.png)
 
 As a developer, what we can do is change the method name to something that doesn't look quite appealing to the hacker. For e.g, the className JailbreakDetector could be renamed as ColorAdditions and the method +(BOOL)isJailbroken could be replaced by +(BOOL)didChangeColor with the implementation being the same. Something like this wouldn't attract the attention of the hacker. He can always look at the calls that are being made inside this method using Snoop-it, GDB etc, but a small change like this can surely help in confusing him.

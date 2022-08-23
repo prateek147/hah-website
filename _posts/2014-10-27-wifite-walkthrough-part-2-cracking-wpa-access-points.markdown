@@ -16,15 +16,15 @@ As mentioned in the previous article, there is a bug in Wifite that may or may n
 
 To start wifite for cracking a WPA access point, give it the option _-wpa_ to only target WPA networks. Also, give it a dictionary file as an input for cracking the WPA passphrase with the _-dict_ option. In kali linux, the wordlists are stored at the location _/usr/share/wordlists_. Wifite will now start scanning for WPA access points.
 
-![1]({{site.baseurl}}/images/posts/wifite2/1.png)
+![1]( /images/posts/wifite2/1.png)
 
 Press Ctrl+C to give a target number. In my case, the target number is 2 which is an access point i have configured for testing purposes. The access point uses WPA2-PSK encryption with the key as "password".
 
-![2]({{site.baseurl}}/images/posts/wifite2/2.png)
+![2]( /images/posts/wifite2/2.png)
 
 Wifite will now start listening for the handshake. Once it has found it, it will automatically start cracking the passphrase using the dictionary file that we supplied.
 
-![4]({{site.baseurl}}/images/posts/wifite2/4.png)
+![4]( /images/posts/wifite2/4.png)
 
 And as you can see, Wifite has successfully found the passphrase for the access point.
 
@@ -32,19 +32,19 @@ Sometimes, things may not work as smoothly. In order to capture a WPA handshake 
 
 You can also specify which tool you want to use to crack the passphrase once the four-way handshake has been successfully captured. By default, aircrack-ng is selected. You can also use cowpatty, pyrit or tshark to crack the passphrase.
 
-![5]({{site.baseurl}}/images/posts/wifite2/5.png)
+![5]( /images/posts/wifite2/5.png)
 
 Another cool option in Wifite is to anonymize your MAC address using the _-mac_ option. Even though it is quite trivial using simple commands or _macchanger_ utility to change the MAC address for a specific interface, it is good to have this feature in the tool itself. However, in order to make this work, you first have to take that specific interface for which you want to change the MAC address down to managed mode if it is in monitor mode previously. You can use the command _iwconfig_ to check all the interfaces that are in monitor mode and then take them down using the command _airmon-ng stop interface-name_ command. As we can see from the image below, the mon0 interface is in monitor mode.
 
-![6]({{site.baseurl}}/images/posts/wifite2/6.png)
+![6]( /images/posts/wifite2/6.png)
 
 Hence, lets take it down using the command _airmon-ng stop mon0_
 
-. ![7]({{site.baseurl}}/images/posts/wifite2/7.png)
+. ![7]( /images/posts/wifite2/7.png)
 
 Now we can add the _-mac_ option to anonymize the MAC address. As you can see, Wifite is intelligent enough to change the MAC address to something that is similar the existing MAC address of the interface and not to something ridiculous (for e.g AA:BB:CC:DD:EE:FF) which is a giveaway.
 
-![8]({{site.baseurl}}/images/posts/wifite2/8.png)
+![8]( /images/posts/wifite2/8.png)
 
 And when you stop the capture, Wifite is nice enough to change the MAC address back to the original one.
 

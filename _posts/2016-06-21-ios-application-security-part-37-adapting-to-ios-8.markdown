@@ -22,27 +22,27 @@ Once you jailbreak your device, you can install OpenSSH in your device using Cyd
 
 One of the major changes within the file structure is that the user applications are no longer located at the location _/var/mobile/Applications_. The application bundle is stored in the location _/var/mobile/Containers/Bundle/Application_ (Appname.app) whereas the application data (Documents, Library, tmp folder) is stored in the location _/var/mobile/Containers/Data/Application_. The name of the folder (a unique ID) will also be different for the same application. So while checking an application, it is recommended to look at both the locations.
 
-![Location1]({{site.baseurl}}/images/posts/ios37//location1.png) ![Location2]({{site.baseurl}}/images/posts/ios37//location2.png)
+![Location1]( /images/posts/ios37//location1.png) ![Location2]( /images/posts/ios37//location2.png)
 
 However, the applications that are installed by default on your device with iOS are still located in the location _/Applications/_. For e.g, the App store application can be seen in the below image.
 
-![Appstore]({{site.baseurl}}/images/posts/ios37//appstore.png)
+![Appstore]( /images/posts/ios37//appstore.png)
 
 ### Decrypting applications
 
 You can download the latest version of clutch to decrypt iOS 8 applications from [here](https://github.com/KJCracks/Clutch/releases). You can download the binary for 1.4.7-git2 as of now. Once you download it on your device, just run it once and then run it again and it will show you the list of encrypted applications on your device.
 
-![1]({{site.baseurl}}/images/posts/ios37//1.png)
+![1]( /images/posts/ios37//1.png)
 
 Simply type Clutch followed by the app name to start decrypting it.
 
-![2]({{site.baseurl}}/images/posts/ios37//2.png) ![3]({{site.baseurl}}/images/posts/ios37//3.png)
+![2]( /images/posts/ios37//2.png) ![3]( /images/posts/ios37//3.png)
 
 ### File explorer utilities
 
 Because of the change in the location where applications store data, iExplorer now looks inside the folder _/var/mobile/Containers/Data/Application_. It however, doesn't look into the application bundle. The same goes for iFunbox, which is another good file explorer utility for iOS devices. It is however recommended that you also look inside the application bundle folder also while testing an iOS application.
 
-![Iexplorer]({{site.baseurl}}/images/posts/ios37//iexplorer.png)
+![Iexplorer]( /images/posts/ios37//iexplorer.png)
 
 ### Cycript & class-dump-z
 
@@ -52,7 +52,7 @@ Cycript and class-dump-z both work well on iOS 8 devices. However, please make s
 
 [Keychain dumper](https://github.com/ptoomey3/Keychain-Dumper) works just fine and can still dump all your keychain items in your device.
 
-![Keychain]({{site.baseurl}}/images/posts/ios37//keychain.png)
+![Keychain]( /images/posts/ios37//keychain.png)
 
 ### Swift
 

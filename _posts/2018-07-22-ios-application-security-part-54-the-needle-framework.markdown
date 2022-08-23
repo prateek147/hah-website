@@ -10,51 +10,51 @@ In this article, we will talk about another framework for assessing iOS apps nam
 
 To install Needle, add the source http://mobiletools.mwrinfosecurity.com/cydia/ in Cydia and then search for NeedleAgent and install it.
 
-![1]({{site.baseurl}}/images/posts/ios54/1.PNG) 
+![1]( /images/posts/ios54/1.PNG) 
 
 Open the NeedleAgent app and make sure it is listening.
 
-![2]({{site.baseurl}}/images/posts/ios54/2.PNG)
+![2]( /images/posts/ios54/2.PNG)
 
 On your computer, clone the latest version of Needle and install all the dependencies . A detailed installation guide can be found [here](https://github.com/mwrlabs/needle/wiki/Installation-Guide).
 
-![3c]({{site.baseurl}}/images/posts/ios54/3c.png)
+![3c]( /images/posts/ios54/3c.png)
 
 Make sure the needle agent is running in foreground on the device. Run the _show options_ command to see all the list of global options.
 
-![4c]({{site.baseurl}}/images/posts/ios54/4c.png)
+![4c]( /images/posts/ios54/4c.png)
 
 Make sure to set the correct PASSWORD option to let Needle connect to the device. Once you have configured these settings, run the _shell_ command to get a shell on your device. Another important global option that you can set is the OUTPUT_FOLDER option. You can then use the _exit_ command to exit out of the shell and back into the needle interpreter.
 
-![5c]({{site.baseurl}}/images/posts/ios54/5c.png)
+![5c]( /images/posts/ios54/5c.png)
 
 Running the command _show modules_ will list all the modules that Needle supports.
 
-![6c]({{site.baseurl}}/images/posts/ios54/6c.png)
+![6c]( /images/posts/ios54/6c.png)
 
 You can use any module with the _use modulename_ command, and the _run_ command will execute the module for you. If you want to analyze any specific app, you can see the app bundle id as a global parameter. If this is not set, needle will display a prompt to let you choose whichever app id you want.
 
-![7c]({{site.baseurl}}/images/posts/ios54/7c.png) ![8c]({{site.baseurl}}/images/posts/ios54/8c.png)
+![7c]( /images/posts/ios54/7c.png) ![8c]( /images/posts/ios54/8c.png)
 
 The following module will tell you the URL schemes the app registers to by copying the info.plist file.
 
-![9c]({{site.baseurl}}/images/posts/ios54/9c.png)
+![9c]( /images/posts/ios54/9c.png)
 
 And this one will give the MDM user settings for the device.
 
-![10c]({{site.baseurl}}/images/posts/ios54/10c.png)
+![10c]( /images/posts/ios54/10c.png)
 
 Running the _info_ command after selecting a module will give you the details about that particular module.
 
-![11c]({{site.baseurl}}/images/posts/ios54/11c.png)
+![11c]( /images/posts/ios54/11c.png)
 
 Needle also has many different modules for working with Frida.
 
-![12c]({{site.baseurl}}/images/posts/ios54/12c.png)
+![12c]( /images/posts/ios54/12c.png)
 
 And in some cases the modules might also have certain options that need to be configured.
 
-![13c]({{site.baseurl}}/images/posts/ios54/13c.png)
+![13c]( /images/posts/ios54/13c.png)
 
 Here is the full list of modules. It is important to note that not all of these features work for iOS 10, and thus at the time of writing this article, needle doesn't support iOS 10 completely.
 

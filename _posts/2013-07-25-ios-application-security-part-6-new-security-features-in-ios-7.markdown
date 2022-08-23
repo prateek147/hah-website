@@ -18,7 +18,7 @@ This article will be a small deviation from the other parts in this series. In t
 
 To get iOS 7 beta, you have to be a registered apple developer. Go to http://developer.apple.com , log in with your registered Apple ID, and go to [this](https://developer.apple.com/devcenter/ios/index.action#betadownloads) url. Then click on the iOS 7 SDK tab on the top and click on Downloads. You can then download the latest build of iOS 7 beta.
 
-![Screen Shot 2013 06 25 At 5.35.32 AM]({{site.baseurl}}/images/posts/ios6/Screen Shot 2013-06-25 at 5.35.32 AM.png)
+![Screen Shot 2013 06 25 At 5.35.32 AM]( /images/posts/ios6/Screen Shot 2013-06-25 at 5.35.32 AM.png)
 
 Here are some of the new security features introduced with iOS 7.
 
@@ -28,25 +28,25 @@ Previously, if some user had lost their iPhone, they could use the "Find my Ipho
 
 To Check this feature Go To `Settings`, then `General`, then scroll to the bottom and you will see a `Reset` button.
 
-![Photo 1]({{site.baseurl}}/images/posts/ios6/photo 1.PNG)
+![Photo 1]( /images/posts/ios6/photo 1.PNG)
 
 If you tap on this button and then tap on `Erase All Contents and Settings`, you will see a popup which asks for your Apple Id password.
 
-![Photo 2]({{site.baseurl}}/images/posts/ios6/photo 2.PNG)
+![Photo 2]( /images/posts/ios6/photo 2.PNG)
 
 This is a very handy feature and prevents the thief from resetting your iPhone's settings and data. But we can be sure that's its just a matter of time before someone finds a workaround for it after this is released to the public. You will get the same popup when you to go your iCloud Settings and try to turn off `Find My iPhone`.
 
-![Photo 3]({{site.baseurl}}/images/posts/ios6/photo 3.PNG)
+![Photo 3]( /images/posts/ios6/photo 3.PNG)
 
 As you can see, we get an alert asking for the Apple Id password.
 
-![Photo 4]({{site.baseurl}}/images/posts/ios6/photo 4.PNG)
+![Photo 4]( /images/posts/ios6/photo 4.PNG)
 
 ## Encrypted data transfer with Airdrop
 
 Airdrop lets you share files with anyone around you with just a tap. Airdrop was introduced for iOS with iOS 7\. The good thing about this is that the files are encrypted. By default, this service only lets you be visible to only your contacts. But you can change this setting as well.
 
-![Photo0]({{site.baseurl}}/images/posts/ios6/photo0.PNG)
+![Photo0]( /images/posts/ios6/photo0.PNG)
 
 ## Third-party app data protection.
 
@@ -56,7 +56,7 @@ Data protection is a feature for those devices that support hardware encryption,
 
 Uptil iOS 6, if you go to `Settings -> General -> Passcode` and choose a passcode, you will see at the bottom that there is a text saying `Data Protection is Enabled`. This meant that data protection was enabled for the default Apple apps that come with iOS 6.
 
-![Photo]({{site.baseurl}}/images/posts/ios6/photo.PNG)
+![Photo]( /images/posts/ios6/photo.PNG)
 
 Previously, the developers had to use the Data protection API to make the data in their apps secure. Now, with iOS 7, all the third-party apps have data protection enabled automatically, which means that the information contained within them is secure until the user unlocks the device. As we know, by default, Apple allows for a 4 digit passcode that can easily be bruteforced. Hence it is advisable to use better passcodes for enhanced security.
 

@@ -30,39 +30,39 @@ Note that there is a bug in Wifite that may or may not be there in your particul
 
 Wifite can be found under _Applications -> Kali Linux -> Wireless Attacks -> 802.11 Wireless Tools_. Also, note that if you are running wifite in a different VM than Kali Linux, then you have to make sure that tools like airmon-ng, aireplay-ng, airodump-ng, aircrack-ng are already installed on that system. This is because Wifite is nothing but a wrapper over all these tools. Before we even start using Wifite, it is better to update to the latest version.
 
-![1]({{site.baseurl}}/images/posts/wifite1/1.png)
+![1]( /images/posts/wifite1/1.png)
 
 In my case, i already have the latest version. In this tutorial, we will be targeting a simple Wifi network with WEP encryption. Just using the command _wifite -h_ will give you a list of all the commands.
 
-![2]({{site.baseurl}}/images/posts/wifite1/2.png)
+![2]( /images/posts/wifite1/2.png)
 
 A very tempting option would be _-all_ which tries to attack every network that it finds. We will try it in later articles in this series. However, first lets take a look at all the targets that we have. To do that, use the command _wifite -showb_
 
-![3]({{site.baseurl}}/images/posts/wifite1/3.png)
+![3]( /images/posts/wifite1/3.png)
 
 Once this is done, we can see that wifite has put our network interface card into monitor mode (using airmon-ng) and started to look for clients. After a few more seconds, it will start displaying the list of access points.
 
-![4]({{site.baseurl}}/images/posts/wifite1/4.png)
+![4]( /images/posts/wifite1/4.png)
 
 Note that as it is mentioned in its feature list (automatically de-authenticates clients of hidden networks to reveal SSIDs), this list will also include hidden access points. Hence, wifite can also be used to find hidden access points. In this case we will attack an access point with the BSSID 00:26:75:02:EF:65 that i have set up for testing purposes. The access point has a simple WEP password _1234567890_.
 
-![5]({{site.baseurl}}/images/posts/wifite1/5.png)
+![5]( /images/posts/wifite1/5.png)
 
 To start attacking an access point, just press _Ctrl+C_. Wifite will now ask you to choose a target number from the list. The target number for my test network is 1, so let me enter that. Note that if you press _Ctrl+C_ again, it will quit Wifite.
 
-![6]({{site.baseurl}}/images/posts/wifite1/6.png)
+![6]( /images/posts/wifite1/6.png)
 
 You can now see that Wifite will start attempting to crack the WEP access point using the different known techniques for cracking WEP encryption. After some unsuccessful tries, it has finally begun to start attacking the access points using different techniques for cracking WEP.
 
-![11]({{site.baseurl}}/images/posts/wifite1/11.png)
+![11]( /images/posts/wifite1/11.png)
 
 Once enough IV's are being captured, it will automatically start cracking the password.
 
-![12]({{site.baseurl}}/images/posts/wifite1/12.png)
+![12]( /images/posts/wifite1/12.png)
 
 As we can see, Wifite has successfully figured out the WEP key for the access point. Wifite is an extremely useful tool for cracking wireless networks. As i mentioned previously, you need to have all the tools like airmon-ng, aireplay-ng, airodump-ng, aircrack-ng already installed on your system. To further prove the point, let's dive into the source code of Wifite.
 
-![10]({{site.baseurl}}/images/posts/wifite1/10.png)
+![10]( /images/posts/wifite1/10.png)
 
 As we can see, the python code has mentions of calling aireplay-ng. Hence, it is recommended to run Wifite inside Kali linux.
 

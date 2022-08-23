@@ -25,23 +25,23 @@ Maximilano Soler:_The main problem is that sometimes the restrictions are based 
 
 Here is some sample code used in htaccess files that puts limitations for only GET and POST methods.
 
-![1]({{site.baseurl}}/images/posts/bt5r2/1.png)
+![1]( /images/posts/bt5r2/1.png)
 
 HTExploit can be found under the directory /pentest/web/htexploit.
 
-![2]({{site.baseurl}}/images/posts/bt5r2/2.png)
+![2]( /images/posts/bt5r2/2.png)
 
 And now for a demo of HTExploit, i modified the htaccess settings in one of my websites and was able to successfully run the tool against it. Type the command as shown in the image below to run HTExploit against a targeted website.Once it detect that the target is vulnerable, it will ask you if you want to run a full scan on it.
 
-![4]({{site.baseurl}}/images/posts/bt5r2/4.png)
+![4]( /images/posts/bt5r2/4.png)
 
 After this, wait for the scan to complete.
 
-![5]({{site.baseurl}}/images/posts/bt5r2/5.png)
+![5]( /images/posts/bt5r2/5.png)
 
 Once the scan is run, it will generate a HTML report reporting the files that it was able to download locally. Here is what a sample report looks like.
 
-![5 2]({{site.baseurl}}/images/posts/bt5r2/5_2.png)
+![5 2]( /images/posts/bt5r2/5_2.png)
 
 ## Wifi Honey
 
@@ -49,11 +49,11 @@ Wifi Honey is another great tool that was introduced with Bactrack 5 R3\. Basica
 
 Wifi Honey takes 3 parameters, the ESSID of the network that is being probed, the channel no on which you want the AP to listen, and the interface on which you want to create it.
 
-![6]({{site.baseurl}}/images/posts/bt5r2/6.png)
+![6]( /images/posts/bt5r2/6.png)
 
 Once we enter this, we will see that it creates 4 networks of the same name with different encryption and also starts airodump-ng at the same time to capture the traffic. Now the probing client will connect to this network and the captured traffic by airodump-ng could be used to crack the encryption key.
 
-![7]({{site.baseurl}}/images/posts/bt5r2/7.png)
+![7]( /images/posts/bt5r2/7.png)
 
 ## UrlCrazy
 
@@ -61,11 +61,11 @@ URLCrazy is a tool to determine if a domain name is being abused or not by looki
 
 Here are the different options available in urlcrazy.
 
-![8]({{site.baseurl}}/images/posts/bt5r2/8.png)
+![8]( /images/posts/bt5r2/8.png)
 
 Let's run a urlcrazy query against google.com. As you can see, it found a number of domain names similar to Google.
 
-![9]({{site.baseurl}}/images/posts/bt5r2/9.png) ![10]({{site.baseurl}}/images/posts/bt5r2/10.png)
+![9]( /images/posts/bt5r2/9.png) ![10]( /images/posts/bt5r2/10.png)
 
 In some cases, the url found may not be used for malicious purposes. For e.g google.fr is just the French version of Google and so on. However, some other search results look like they were bought mainly to be used in case someone typed that domain name instead of Google by mistake. Overall, this tool could be highly beneficial to large corporations who are looking to protect themselves from phishing attacks and any other form of corporate espionage.
 

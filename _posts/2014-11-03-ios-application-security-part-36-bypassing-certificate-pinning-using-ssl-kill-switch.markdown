@@ -32,20 +32,20 @@ To inspect the traffic going via Twitter, ssh into your device and download the 
 
 Now install the deb package using the command _dpkg -i <packagename></packagename>_.
 
-![1]({{site.baseurl}}/images/posts/ios36/1.png)
+![1]( /images/posts/ios36/1.png)
 
 Now, respring the device using the command _killall -HUP SpringBoard_.
 
 Once this is done, go to Settings app. There will be a new menu for SSK Kill Switch and a slider to Disable certificate validation. Make sure the slider is set to on.
 
-![2]({{site.baseurl}}/images/posts/ios36/2.png)
+![2]( /images/posts/ios36/2.png)
 
 Now route the traffic in the device to pass through Burp Proxy. Open twitter app and now you can see all the data going through via the twitter app as well.
 
-![3]({{site.baseurl}}/images/posts/ios36/3.png)
+![3]( /images/posts/ios36/3.png)
 
 To verify that SSL Kill Switch is being injected into the application, go to Xcode -> Devices (I am using Xcode 6), look for your device in the left menu and click on the arrow pointing up in the lower left corner to see the device logs. You will see that SSL Kill Switch is being injected into the application.
 
-![4]({{site.baseurl}}/images/posts/ios36/4.png)
+![4]( /images/posts/ios36/4.png)
 
 Another cool utility that does the same job is [trustme](https://github.com/intrepidusgroup/trustme). I recommend you check it out.

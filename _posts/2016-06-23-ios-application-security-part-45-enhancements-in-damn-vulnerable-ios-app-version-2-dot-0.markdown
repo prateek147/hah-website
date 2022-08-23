@@ -16,23 +16,23 @@ In the Insecure Data storage section, we have added challenges for the following
 
 <!--more-->
 
-![1]({{site.baseurl}}/images/posts/ios45/1.png) ![2]({{site.baseurl}}/images/posts/ios45/2.png) ![3]({{site.baseurl}}/images/posts/ios45/3.png)
+![1]( /images/posts/ios45/1.png) ![2]( /images/posts/ios45/2.png) ![3]( /images/posts/ios45/3.png)
 
 We have also added a new section on _Extension vulnerabilities_, which covers vulnerabilities in different application extensions, a feature that was introduced with iOS 8.
 
-![4]({{site.baseurl}}/images/posts/ios45/4.png) ![5]({{site.baseurl}}/images/posts/ios45/5.png)
+![4]( /images/posts/ios45/4.png) ![5]( /images/posts/ios45/5.png)
 
 In the _Runtime Manipulation section_, we have added a challenge where you can write a cycript script to brute force a login screen.
 
-![6]({{site.baseurl}}/images/posts/ios45/6.png)
+![6]( /images/posts/ios45/6.png)
 
 Another new section is _Attacks on third party libraries_, which demonstrates the security gaps that can occur in your application when you use third party libraries in your project.
 
-![7]({{site.baseurl}}/images/posts/ios45/7.png) ![8]({{site.baseurl}}/images/posts/ios45/8.png) ![9]({{site.baseurl}}/images/posts/ios45/9.png) ![10]({{site.baseurl}}/images/posts/ios45/10.png) ![11]({{site.baseurl}}/images/posts/ios45/11.png) ![12]({{site.baseurl}}/images/posts/ios45/12.png)
+![7]( /images/posts/ios45/7.png) ![8]( /images/posts/ios45/8.png) ![9]( /images/posts/ios45/9.png) ![10]( /images/posts/ios45/10.png) ![11]( /images/posts/ios45/11.png) ![12]( /images/posts/ios45/12.png)
 
 In the section on _Side Channel Data leakage_, we have added another vulnerability demonstrating insecure storage of cookies.
 
-![13]({{site.baseurl}}/images/posts/ios45/13.png)
+![13]( /images/posts/ios45/13.png)
 
 The current downloadable IPA file from the website is a fat binary that will work on both 32 bit and 64 bit devices. This app will work on all iOS versions starting from iOS 7.0.
 

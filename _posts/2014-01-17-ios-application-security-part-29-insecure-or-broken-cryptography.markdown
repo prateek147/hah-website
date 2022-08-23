@@ -14,49 +14,49 @@ I would recommend you have a look at [Apple's documentation](https://developer.a
 
 In this article, we will look at an example of how we can spot and break an incorrectly implemented encrytion technique. For this article, we will be testing on the application [InsecureCryptography-Demo](https://github.com/prateek147/InsecureCryptography-Demo) that you can download from my Github profile. Download it and run on the simulator or on the device. Let's look at what this application does. Once you start the application for the first time, it asks you to set up a new password to get started.
 
-![1]({{site.baseurl}}/images/posts/ios29/1.png) 
+![1]( /images/posts/ios29/1.png) 
 
 Once you have set up the password, it will prompt you to log in with same password.
 
-![2]({{site.baseurl}}/images/posts/ios29/2.png)
+![2]( /images/posts/ios29/2.png)
 
 So lets assume i open this application once the password has already been set. Our task is to bypass this login check. Some of the things that are clear are that this password is being stored locally on the device as no network activity was noted. You can use a proxy like Burpsuite to observe the traffic and see that there is no network traffic, so everything is being done locally.
 
 Let's try and open the application in Hopper. Please check article 28 in this series to know more about Hopper. Go to Hopper and go to File->Read Executable to Disassemble.
 
-![3]({{site.baseurl}}/images/posts/ios29/3.png)
+![3]( /images/posts/ios29/3.png)
 
 If you have successfully run the application using Xcode, it will install the application in the iOS simulator. Now our task is to find the location of the application binary on our system so we can provide it to Hopper. If you run an application in Xcode, it will generate an application directory inside the folder _/Users/$username/Library/Application Support/iPhone Simulator/$ios version of simulator/Applications/_. In my case, the location is _/Users/Prateek/Library/Application Support/iPhone Simulator 7.0.3/Applications/_. Once you are in this directory, you have to find your application folder. Using the command ls -al will give you the created date of these folders. The latest one would be our application.
 
-![4]({{site.baseurl}}/images/posts/ios29/4.png)
+![4]( /images/posts/ios29/4.png)
 
 Open this folder in Finder using the command _open $directoryName_ and right click on the .app package and click on _Show Package Contents_
 
-![5]({{site.baseurl}}/images/posts/ios29/5.png)
+![5]( /images/posts/ios29/5.png)
 
 Provide this executable to Hopper to disassemble.
 
-![6]({{site.baseurl}}/images/posts/ios29/6.png)
+![6]( /images/posts/ios29/6.png)
 
 Once Hopper has analyzed the executable and produced the dissassembly, here is what you get.
 
-![7]({{site.baseurl}}/images/posts/ios29/7.png)
+![7]( /images/posts/ios29/7.png)
 
 On the left hand side, you can see stuff like RNEncryptor etc. Looks like this class is being used to encrypt data.
 
-![8]({{site.baseurl}}/images/posts/ios29/8.png)
+![8]( /images/posts/ios29/8.png)
 
 On google searching _RNEncryptor_, we find that it is a open source Github class used for encrypting data. Anyways, our task is to bypass the login. So lets search for the method that gets called to perform the authentication check. Let's go back to the app. If you look at the image below, there is no login button to tap. The login check happens once you tap on the _return_ button in the text field.
 
-![9]({{site.baseurl}}/images/posts/ios29/9.png)
+![9]( /images/posts/ios29/9.png)
 
 And if you are a bit familiar with iOS development you should know that if the current view controller is a delegate of this text field, then the method that will be called is _-(BOOL)textFieldShouldReturn:(UITextField *)textField_. So lets search for this method in the labels section.
 
-![10]({{site.baseurl}}/images/posts/ios29/10.png)
+![10]( /images/posts/ios29/10.png)
 
 Ok, we can see the disassembly. That's pretty cool. But you know what's more cool ? Checking out the pseudo code for this function. Let's click on the _Pseudo Code_ button on the top right to check out the Pseudo code for this function.
 
-![11]({{site.baseurl}}/images/posts/ios29/11.png)
+![11]( /images/posts/ios29/11.png)
 
 Well, this pretty much gives everything away. And this is why i love Hopper so much. Here is the pseudo code generated for this method.
 
@@ -359,7 +359,7 @@ Some things that we can interpret from this Pseudo code.
 
 Well, lets see if we can find the file _secret-data_ in the application sandbox. On searching just a little bit, we see that this file is present in the Documents folder. On opening it, we find that it contains some data. and the content looks encrypted.
 
-![12]({{site.baseurl}}/images/posts/ios29/12.png)
+![12]( /images/posts/ios29/12.png)
 
 Also, on googling a bit on RNEncryptor and RNDecryptor, we see that they are part of an open source library available on Github that can be found [here](https://github.com/RNCryptor/RNCryptor)
 
@@ -391,7 +391,7 @@ As you can clearly note, this method decrypts the data using the hardcoded passw
 
 After running this application, we can easily see the decrypted password.
 
-![13]({{site.baseurl}}/images/posts/ios29/13.png)
+![13]( /images/posts/ios29/13.png)
 
 In this article, we looked at how one can exploit a weakness in the encryption being used to find sensitive information from an application. In this case, the weakness was using a hardcoded key. It is essential for developers to make sure that they enforce proper encryption in their applications to prevent them from being compromised.
 
