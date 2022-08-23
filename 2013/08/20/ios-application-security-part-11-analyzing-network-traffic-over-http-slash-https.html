@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 11 – Analyzing Network Traffic over HTTP/HTTPS | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 11 – Analyzing Network Traffic over HTTP/HTTPS" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous article, we looked at iOS filesystem and forensics. In this article, we will be looking at how we can analyze the network traffic flowing across an iOS device. Analyzing the network traffic for an application could be helpful in many ways. It could help us deduce how the application is managing the session of its users, the endpoints to which the application makes the call, how the application works internally etc. We will also look at how we can analyze network traffic over SSL." />
+<meta property="og:description" content="In the previous article, we looked at iOS filesystem and forensics. In this article, we will be looking at how we can analyze the network traffic flowing across an iOS device. Analyzing the network traffic for an application could be helpful in many ways. It could help us deduce how the application is managing the session of its users, the endpoints to which the application makes the call, how the application works internally etc. We will also look at how we can analyze network traffic over SSL." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-08-20T07:32:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 11 – Analyzing Network Traffic over HTTP/HTTPS" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-08-20T07:32:00+00:00","datePublished":"2013-08-20T07:32:00+00:00","description":"In the previous article, we looked at iOS filesystem and forensics. In this article, we will be looking at how we can analyze the network traffic flowing across an iOS device. Analyzing the network traffic for an application could be helpful in many ways. It could help us deduce how the application is managing the session of its users, the endpoints to which the application makes the call, how the application works internally etc. We will also look at how we can analyze network traffic over SSL.","headline":"iOS Application Security Part 11 – Analyzing Network Traffic over HTTP/HTTPS","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/08/20/ios-application-security-part-11-analyzing-network-traffic-over-http-slash-https.html"},"url":"/2013/08/20/ios-application-security-part-11-analyzing-network-traffic-over-http-slash-https.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 11 – Analyzing Network Traffic over HTTP/HTTPS</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 20 Aug 2013
+    
+  </div>
+  
+  <p>In the previous article, we looked at iOS filesystem and forensics. In this article, we will be looking at how we can analyze the network traffic flowing across an iOS device. Analyzing the network traffic for an application could be helpful in many ways. It could help us deduce how the application is managing the session of its users, the endpoints to which the application makes the call, how the application works internally etc. We will also look at how we can analyze network traffic over SSL.</p>
+
+<!-- more -->
+
+<p>There are both active and passive ways of sniffing traffic on a network. In case you are interested in analyzing the traffic for a particular device over a network remotely, wireshark is the tool to go for. Just open up Wireshark, start sniffing over the network and add a filter (for e.g ip.addr == 192.168.1.2) so that it shows only the traffic sent or received from your iOS device. It is possible that you may lose some packets if you don’t have a good wireless card.</p>
+
+<p>In case you want to analyze the traffic for a device over SSL, there are plenty of ways to do that as well using a combination of Arpspoof and SSLStrip. However, since we are interested in analyzing network traffic for a particular application, we will be following a different approach. So just to clarify, this article is focussed on Analyzing network traffic and not hijacking network traffic. Also, we can analyze the traffic either over Wi-fi or over cellular. Since we are interested in analyzing the traffic for a particular application, it doesn’t really matter which medium we choose.</p>
+
+<h3 id="using-tcpdump">Using TCPDump</h3>
+
+<p>One of the most basic techniques to capture traffic over your device is by using tcpdump. First of all, make sure that tcpdump is installed on your device.</p>
+
+<p><img src="/images/posts/ios11/1.png" alt="1" /></p>
+
+<p>Now, start capturing the data on a particular interface and write the output to a file.</p>
+
+<p><img src="/images/posts/ios11/2.png" alt="2" /></p>
+
+<p>To capture this data over cellular, just change the interface to point to the one related to the IP address provided by your cellular connection.</p>
+
+<p>To analyze this file, you will have to transfer it onto your system and analyze it using Wireshark. However, as you might have already noted, this is a tedious process and there is a much better way to do the entire process using Pipes. More information can be found <a href="http://wiki.wireshark.org/CaptureSetup/Pipes#Remote_Capture">here</a>. In any case, the information from tcpdump gives us too much of low level information, something that we are definitely not interested in as we are interested in analyzing data from an application level. There is a much better alternative to this using Burpsuite and Snoop-it.</p>
+
+<h2 id="using-snoop-it">Using Snoop-it</h2>
+
+<p>So let’s discuss how to analyze the network traffic through Snoop-it. By the way, if you haven’t seen it yet, check out <a href="http://resources.infosecinstitute.com/ios-application-security-part-9-analyzing-security-of-ios-applications-using-snoop-it/">part 9</a> of this tutorial series on Snoop-it. In order to see the api or network calls being made, just open any app in Snoop-it and go to the Network section on the left. For e.g, the image below shows the network calls being made in the application Snapchat.</p>
+
+<p><img src="/images/posts/ios11/3.png" alt="3" /></p>
+
+<p>If we tap on a particular request, we can see the contents of it like the query string, the body etc.</p>
+
+<p><img src="/images/posts/ios11/4.png" alt="4" /></p>
+
+<h2 id="using-burpsuite-over-http">Using Burpsuite over HTTP</h2>
+
+<p>Again, there is a much better way of showing these requests/responses and Burpsuite stands out among all these tools. Download Burpsuite from its <a href="http://portswigger.net/burp/">official</a> website. The free edition should be sufficient for the task that we are supposed to perform in this article. Also, if you haven’t used Burpsuite before, check out <a href="http://resources.infosecinstitute.com/burp-suite-walkthrough/">this</a> article that i have written about Burpsuite. The main task here is to use Burpsuite as a proxy and route all our traffic from it.</p>
+
+<p>Open up Burpsuite, go to <em>Proxy -&gt; Options</em>.</p>
+
+<p><img src="/images/posts/ios11/x.png" alt="X" /></p>
+
+<p>Click on the proxy that is set, click on <em>Edit</em> and select the option <em>All Interfaces</em> inside the option <em>Bind to Address</em></p>
+
+<p><img src="/images/posts/ios11/5.png" alt="5" /></p>
+
+<p>Here we can edit the port the proxy is listening on, and even add a new proxy listener. Burp also has option of presenting certificates to SSL protected websites. By default, Burp creates a self-signed CA certificate upon installation. The current checked option (shown below), i.e generate CA-signed per-host certificates will generate a certificate for the particular host we are connecting to signed by the CA certificate that was created on installation of Burp</p>
+
+<p><img src="/images/posts/ios11/y.png" alt="Y" /></p>
+
+<p>You will be prompted with a warning. Click on <em>Yes</em>. The reason why we selected the option to bind on all interfaces is because we want our iPhone to use our computer as a proxy and hence just selecting the option to bind to the local interface wouldn’t have been enough.</p>
+
+<p><img src="/images/posts/ios11/6.png" alt="6" /></p>
+
+<p>Now, go to <em>Proxy -&gt; Intercept</em> and make sure Intercept is set to off. This is because you may not want to be bothered with forwarding every packet that comes through the proxy.</p>
+
+<p><img src="/images/posts/ios11/7.png" alt="7" /></p>
+
+<p>Now, you will have to tell your device to route traffic through this proxy. On your iOS device, go to the Settings App, click on <em>Wifi</em>, select the network that you are connected to and on its settings, scroll down and there will be an option to set its proxy. Set the proxy as your computers IP address which is currently running Burpsuite and the port as the port on which the proxy is running.</p>
+
+<p><img src="/images/posts/ios11/i.png" alt="I" /></p>
+
+<p>Now that the proxy is set up and we have configured our device to use this proxy, go to any application that doesn’t use SSL (we will discuss SSL later in this article) and try to hang around so that some network calls are made. You will see the requests going though in Burpsuite. Here is the traffic going through for the NASA TV App</p>
+
+<p><img src="/images/posts/ios11/8.png" alt="8" /></p>
+
+<p>The good thing about Burpsuite is that we can see the packet in Raw and Hex format and also see the Params and the headers for every request and response.</p>
+
+<p><img src="/images/posts/ios11/9.png" alt="9" /></p>
+
+<p>Also, we can see the corresponding response for a particular request.</p>
+
+<p><img src="/images/posts/ios11/10.png" alt="10" /></p>
+
+<p>This will help us understand in great detail how an application communicates with the backend, what are the endpoints that get called, and what is the response format.</p>
+
+<h2 id="using-burpsuite-over-https">Using Burpsuite over HTTPS</h2>
+
+<p>However, the technique mentioned above will not work for applications that use SSL to communicate with the backend. Some applications are coded in such a way that only SSL connections are allowed. For e.g if you try to run the Snapchat app through this proxy, it will fail. However, some applications will issue a warning and ask to confirm or cancel the connection. For e.g, the screenshot shown below shows a warning from Safari when run using the proxy.</p>
+
+<p><img src="/images/posts/ios11/IMG_0070.PNG" alt="IMG 0070" /></p>
+
+<p>If you click on Continue, you will be able to see the application traffic. Please note that this warning is accepted only for this host currently. If you browse to another website with HTTPS enabled, you will be shown another warning because Burpsuite generates a fake SSL certificate for every host.</p>
+
+<p><img src="/images/posts/ios11/11.png" alt="11" /></p>
+
+<p>Whenever we connect to a HTTPS website via Burpsuite, Burp generates an SSL certificate for each host, which is signed by its own Certificate Authority (CA) certificate. In order to make sure that these warnings don’t come up all the time, we have to validate Burp’s CA certificate as a trusted root on the device. Hence, the steps would be to first get the root certificate, then install it on the device. Once it is on the device and is a trusted root certificate, it can sign all the certificates and all of them will be treated as valid. Please note that the private key for this certifcate is stored in your computer and hence when the traffic passes through the proxy on this computer, Burp can decrypt the data using its private key. The root CA certificate is created once you install Burp on your system.</p>
+
+<p>To install the root certificate on your system, first configure your browser to use the Burpsuite proxy.</p>
+
+<p><img src="/images/posts/ios11/12.png" alt="12" /></p>
+
+<p>Then browse to a website that uses SSL. You will be shown a warning</p>
+
+<p><img src="/images/posts/ios11/13.png" alt="13" /></p>
+
+<p>Now our job is to export the root certificate which is used to sign all these certificates. For the domain gmail.com, it is not possible to export the root CA certifcate because we cannot add an exception to the gmail domain. Every domain can enforce a policy of this kind. However, facebook allows us to add an exception. Go to facebook.com using Firefox. You will get a warning. Tap on <em>I Understand the Risks</em> and tap on <em>Add an Exception</em></p>
+
+<p><img src="/images/posts/ios11/14.png" alt="14" /></p>
+
+<p>Then, click on <em>View</em></p>
+
+<p><img src="/images/posts/ios11/15.png" alt="15" /></p>
+
+<p>Go to the <em>Details</em> tab and select the topmost certificate in the hierarchy. This is the root CA certificate. Then click on Export and save the file with an extension of <em>.crt</em></p>
+
+<p><img src="/images/posts/ios11/16.png" alt="16" /></p>
+
+<p>These steps can also be found on Burp’s documentation. Here is a screenshot from <a href="http://portswigger.net/burp/help/proxy_options_installingCAcert.html#iphone">this</a> link.</p>
+
+<p><img src="/images/posts/ios11/17.png" alt="17" /></p>
+
+<p>Now, send this file to your device. Using appropriate social engineering skills, an attacker can get this certificate installed on a device as well without the user knowing its actual consequences. Here is the warning that you get when you open up this certificate. Tap on <em>Install</em></p>
+
+<p><img src="/images/posts/ios11/IMG_0071.PNG" alt="IMG 0071" /></p>
+
+<p>Tap on install again. As you can see, the warning is pretty clear over here.</p>
+
+<p><img src="/images/posts/ios11/IMG_0072.PNG" alt="IMG 0072" /></p>
+
+<p>Tap on done once you are finished.</p>
+
+<p><img src="/images/posts/ios11/IMG_0073.PNG" alt="IMG 0073" /></p>
+
+<p>Now, since this root certificate is treated as valid, every certificate signed by this root certificate will be treated as valid and applications will allow data to be transferred. So now, the Snapchat application that previously wasn’t allowing us to transfer data with the fake SSL certificate will now allow the data to be transferred successfully. This traffic will be intercepted by Burpsuite. As you can see from the figure below, in the login call, we can see the username and password being sent as well as other api calls made by the application.</p>
+
+<p><img src="/images/posts/ios11/18.png" alt="18" /> <strong>Conclusion</strong></p>
+
+<p>In this article, we looked at the different ways in which we can figure out the network traffic flowing across an iOS device . Knowing what endpoints get called, what are the requests and response, what are the headers and params etc will help us a lot in figuring out how the application works internally.</p>
+
+<p><strong>References</strong></p>
+
+<ul>
+  <li>Installing Burp’s CA Certificate - IPhone<br />
+<a href="http://portswigger.net/burp/help/proxy_options_installingCAcert.html#iphone">http://portswigger.net/burp/help/proxy_options_installingCAcert.html#iphone</a></li>
+</ul>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

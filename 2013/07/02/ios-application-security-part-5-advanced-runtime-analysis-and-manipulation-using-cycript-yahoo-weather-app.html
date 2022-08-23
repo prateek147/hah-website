@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application security Part 5 – Advanced Runtime analysis and manipulation using Cycript (Yahoo Weather App) | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application security Part 5 – Advanced Runtime analysis and manipulation using Cycript (Yahoo Weather App)" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous article, we learnt how to setup Cycript on your idevice, hook into a running process and obtain information about its properties in runtime. In this article, we will look at some advanced runtime analysis techniques. We will look at how we can obtain information about a particular class (methods, instance variables) and modify them at runtime." />
+<meta property="og:description" content="In the previous article, we learnt how to setup Cycript on your idevice, hook into a running process and obtain information about its properties in runtime. In this article, we will look at some advanced runtime analysis techniques. We will look at how we can obtain information about a particular class (methods, instance variables) and modify them at runtime." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-07-02T17:26:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application security Part 5 – Advanced Runtime analysis and manipulation using Cycript (Yahoo Weather App)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-07-02T17:26:00+00:00","datePublished":"2013-07-02T17:26:00+00:00","description":"In the previous article, we learnt how to setup Cycript on your idevice, hook into a running process and obtain information about its properties in runtime. In this article, we will look at some advanced runtime analysis techniques. We will look at how we can obtain information about a particular class (methods, instance variables) and modify them at runtime.","headline":"iOS Application security Part 5 – Advanced Runtime analysis and manipulation using Cycript (Yahoo Weather App)","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/07/02/ios-application-security-part-5-advanced-runtime-analysis-and-manipulation-using-cycript-yahoo-weather-app.html"},"url":"/2013/07/02/ios-application-security-part-5-advanced-runtime-analysis-and-manipulation-using-cycript-yahoo-weather-app.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application security Part 5 – Advanced Runtime analysis and manipulation using Cycript (Yahoo Weather App)</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/ios/">ios</a>
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 02 Jul 2013
+    
+  </div>
+  
+  <p>In the previous article, we learnt how to setup Cycript on your idevice, hook into a running process and obtain information about its properties in runtime. In this article, we will look at some advanced runtime analysis techniques. We will look at how we can obtain information about a particular class (methods, instance variables) and modify them at runtime.</p>
+
+<!-- more -->
+
+<h2 id="finding-methods-for-a-particular-class">Finding methods for a particular class</h2>
+
+<p>Let’s say we are analyzing the flow of an app during its runtime. It would be really good to know what are the methods being called in a particular view controller or in a particular class. Since Cycript is a blend of Objective-C and Javascript, we can write a function that has both Objective-C and Javscript syntax. We can define functions in the interpreter and use them anytime we want to find out some particular information. A good source for finding such code snippets is available <a href="http://iphonedevwiki.net/index.php/Cycript_Tricks">here</a> and we will be using most of the code snippets from here for this article.</p>
+
+<p>First of all, lets make sure we are hooked into the running process.</p>
+
+<p><img src="/images/posts/ios5/1.png" alt="1" /></p>
+
+<p>Let’s define a method that prints out the methods for a particular class. You can find the code snippet on the Cycript tricks page <a href="http://iphonedevwiki.net/index.php/Cycript_Tricks">here</a>.</p>
+
+<p><img src="/images/posts/ios5/2.png" alt="2" /></p>
+
+<p>Now that we have the method defined, we can input any class here and get the corresponding methods for it. From the previous article, we found out that the delegate class for this app was YWAppDelegate. Hence, let’s try and see all the methods contained in this class.</p>
+
+<p><img src="/images/posts/ios5/3.png" alt="3" /></p>
+
+<p>This gives us all the methods defined in the class YWAppDelegate. Everything after the @selector is the name of the method. Note that this will also give us information about the private methods. Also, this will also include the getters and setters for the properties defined in the class.</p>
+
+<p>Similarly, we can also print out the methods of YahooSlidingViewController.</p>
+
+<p><img src="/images/posts/ios5/4.png" alt="4" /></p>
+
+<p>We know that YahooSlidingViewController manages the sliding meny and works as a facade over the other view controllers. In order to find out the view controller that is actually responsible for displaying weather in the app, we can use the following command.</p>
+
+<p><img src="/images/posts/ios5/5.png" alt="5" /></p>
+
+<p>Hence, the YWMainViewController is the view controller responsible for displaying the weather in the app. So the view shown in the screenshot below is actually the one coming from YWMainViewController.</p>
+
+<p><img src="/images/posts/ios5/IMG_0094.PNG" alt="IMG 0094" /></p>
+
+<p>Let’s print out the methods for YWMainViewController.</p>
+
+<p><img src="/images/posts/ios5/6.png" alt="6" /></p>
+
+<p>As you can see, there is a method named userDidRequestUpdate.</p>
+
+<p><img src="/images/posts/ios5/9y.png" alt="9y" /></p>
+
+<p>From the method name, its obvious that this method gets called whenever the user pulls down on the app to refresh. With Cycript, we can call this method anytime we want. We will have to reference this view controller and then call this method on it. Here is how it’s done.</p>
+
+<p><img src="/images/posts/ios5/9.png" alt="9" /></p>
+
+<p>And if you see in the app, the update method gets called even though we didn’t actually pull down.</p>
+
+<p><img src="/images/posts/ios5/IMG_0097.PNG" alt="IMG 0097" /></p>
+
+<p>As told before in this article, these methods also contain the getters and setters of the properties.</p>
+
+<p>From a security point of view, such power to manipulate the runtime of an application gives us a lot of advantages.We can call any method whenever we want in the app. Imagine a flow in the app where the user first logs in the app by entering the username/password and then once he is logged in, a method named <em>didLogin</em> gets called. In our case, we can just call this method ourselves without having to enter any username/password combination.</p>
+
+<p>It would be a bit helpful if we could print out all the variables used in a particular view controller. So lets define a function that prints out all the instance variables. You can find the code snippets <a href="http://iphonedevwiki.net/index.php/Cycript_Tricks">here</a></p>
+
+<p><img src="/images/posts/ios5/7.png" alt="7" /></p>
+
+<p>Now, lets print out the instance variables for YWMainViewController.</p>
+
+<p><img src="/images/posts/ios5/8.png" alt="8" /></p>
+
+<p>As you can see, there is an instance variable named location view controllers. In the Yahoo weather app, you can swipe left and right to see the weather for different locations. From its name, it looks like the variable locationViewControllers is an array of view controllers which is responsible for holding a list of location view controllers. Using Cycript, we can also print out the value of this instance variable.</p>
+
+<p><img src="/images/posts/ios5/9x.png" alt="9x" /></p>
+
+<p>Now let me swipe right to another location New york.</p>
+
+<p><img src="/images/posts/ios5/IMG_0098.PNG" alt="IMG 0098" /></p>
+
+<p>Let’s print the value of this variable now.</p>
+
+<p><img src="/images/posts/ios5/10.png" alt="10" /></p>
+
+<p>As you can see, this array always has 3 location view controllers inside it and the others are null. It doesn’t contain all the reference of location view controllers so as to manage memory better. So at a particular time, we can have the view controller that we are looking at, and the left and right view controllers being instantiated. When we move to a different location, it automatically adjusts to make the visible view controller instance the one in the center and instantiates the left and right view controllers so the user can swipe left and right and won’t face any delay. This is one example of writing code that doesn’t take up much memory.</p>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>In the previous two articles, we have performed the runtime analysis of the Yahoo weather app. In the next article, we will be looking at some more Cycript tricks and will focus specially on a technique known as method swizzling.</p>
+
+<p><strong>References:</strong></p>
+
+<ul>
+  <li>
+    <p>Cycript<br />
+<a href="http://www.cycript.org/">http://www.cycript.org/</a></p>
+  </li>
+  <li>
+    <p>Cycript tricks<br />
+<a href="http://iphonedevwiki.net/index.php/Cycript_Tricks">http://iphonedevwiki.net/index.php/Cycript_Tricks</a></p>
+  </li>
+</ul>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

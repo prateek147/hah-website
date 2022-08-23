@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 9 – Analyzing Security of iOS Applications using Snoop-it | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 9 – Analyzing Security of iOS Applications using Snoop-it" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In some of the previous articles, we have looked at how we can dump class information of iOS apps using class-dump-z, hook into the runtime using Cycript and perform runtime manipulation and method swizzling, analyze the flow of the app using gdb etc. However, there could be a much better way of doing these things. We shouldn’t be using seperate tools for all these tasks. It would be great if a tool could perform all these tasks and at the same time display the information in a much more presentable way." />
+<meta property="og:description" content="In some of the previous articles, we have looked at how we can dump class information of iOS apps using class-dump-z, hook into the runtime using Cycript and perform runtime manipulation and method swizzling, analyze the flow of the app using gdb etc. However, there could be a much better way of doing these things. We shouldn’t be using seperate tools for all these tasks. It would be great if a tool could perform all these tasks and at the same time display the information in a much more presentable way." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-08-20T07:29:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 9 – Analyzing Security of iOS Applications using Snoop-it" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-08-20T07:29:00+00:00","datePublished":"2013-08-20T07:29:00+00:00","description":"In some of the previous articles, we have looked at how we can dump class information of iOS apps using class-dump-z, hook into the runtime using Cycript and perform runtime manipulation and method swizzling, analyze the flow of the app using gdb etc. However, there could be a much better way of doing these things. We shouldn’t be using seperate tools for all these tasks. It would be great if a tool could perform all these tasks and at the same time display the information in a much more presentable way.","headline":"iOS Application Security Part 9 – Analyzing Security of iOS Applications using Snoop-it","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/08/20/ios-application-security-part-9-analyzing-security-of-ios-applications-using-snoop-it.html"},"url":"/2013/08/20/ios-application-security-part-9-analyzing-security-of-ios-applications-using-snoop-it.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 9 – Analyzing Security of iOS Applications using Snoop-it</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 20 Aug 2013
+    
+  </div>
+  
+  <p>In some of the previous articles, we have looked at how we can dump class information of iOS apps using class-dump-z, hook into the runtime using Cycript and perform runtime manipulation and method swizzling, analyze the flow of the app using gdb etc. However, there could be a much better way of doing these things. We shouldn’t be using seperate tools for all these tasks. It would be great if a tool could perform all these tasks and at the same time display the information in a much more presentable way.</p>
+
+<!-- more -->
+
+<p>Snoop-it is a tool that solves these problems. It allows for runtime analysis and blackbox security assessment of iOS apps by retrofitting existing apps with debugging and runtime tracing capabilities. It also provides a very neat web interface. At the time of writing of this article, Snoop-it is not released yet but is a couple of weeks away from launch. I mailed the authors and they were nice enough to provide me with a beta version for testing. You can check out its official page <a href="https://code.google.com/p/snoop-it/">here</a> or you can follow the author on <a href="http://twitter.com/aykay/">Twitter</a></p>
+
+<p>.</p>
+
+<p>A quick list of all the features provided by Snoop-it could be seen in the screenshot below taken from its official <a href="https://code.google.com/p/snoop-it/">page</a>. <img src="/images/posts/ios9/1.png" alt="1" /></p>
+
+<h2 id="installation">Installation</h2>
+
+<p>To install Snoop-it on your device, you will have to download the deb package file and then upload it on your device using sftp. Once this is done, use the command <em>dpkg -i [packageName]</em> to install Snoop-it on your device. Once this is done, respring or reboot your device.</p>
+
+<p><img src="/images/posts/ios9/2.png" alt="2" /></p>
+
+<p>Once this is done, you will see the Snoop-it app icon on your device. Open it up and you will see this user interface.</p>
+
+<p><img src="/images/posts/ios9/IMG_0109.PNG" alt="IMG 0109" /></p>
+
+<p>Go to Settings and configure the app according to your need. In this case, i have chosen the port number to be 12345 and i have also disabled the authentication. It might be a good idea however to have the authentication enabled if you are testing on a network with lots of users, or a network with a few naughty users.</p>
+
+<p><img src="/images/posts/ios9/IMG_0110.PNG" alt="IMG 0110" /></p>
+
+<p>Now, just open the Snoop-it web interface by browsing to the address provided on the Snoop-it application. In my case, the address is http://10.0.1.79:12345</p>
+
+<p><img src="/images/posts/ios9/3.png" alt="3" /></p>
+
+<p>You will see this web interface. If you read it up, its asking you to <em>select an application that needs to be analyzed from the Snoop-it application, open it up on the device, and then refresh this web interface</em>. So let’s go back to the Snoop-it application and select the applications that we need to analyze. In my case, i am going to select the <em>MethodSwizzlingDemo</em> app, the same app that we used in the <a href="http://resources.infosecinstitute.com/ios-application-security-part-8-method-swizzling-using-cycript/">previous</a> article.</p>
+
+<p><img src="/images/posts/ios9/IMG_0111.PNG" alt="IMG 0111" /></p>
+
+<p>Now, make sure that the app is opened on your device and in foreground and now refresh the Snoop-it web interface.</p>
+
+<p><img src="/images/posts/ios9/4.png" alt="4" /></p>
+
+<p>And now as you can see, you have a beautiful interface now that you can use to perform a full fledged security assessment of the application.</p>
+
+<h2 id="analysis">Analysis</h2>
+
+<p>On the left hand side, under <em>Analysis</em>, go to <em>Objective-C classes</em>. On the right hand side, you will see all the classes and info like properties and method names.</p>
+
+<p><img src="/images/posts/ios9/5.png" alt="5" /></p>
+
+<p>The ones in orange represent the classes that have instances. For e.g if you hover your mouse over the class <em>View Controller</em>, you will see that it has an instance which is live presently.</p>
+
+<p><img src="/images/posts/ios9/6.png" alt="6" /></p>
+
+<p>Similarly, you can see the methods and properties for AppDelegate.</p>
+
+<p><img src="/images/posts/ios9/7.png" alt="7" /></p>
+
+<p>Coming back to view controller, it is possible for us to invoke a method using Snoop-it. Just check any particular method, and click on <em>Setup and Invoke</em> on the top right. As we saw in the <a href="http://resources.infosecinstitute.com/ios-application-security-part-8-method-swizzling-using-cycript/">previous</a> article, with this technique we were able to bypass the authentication check for this application.</p>
+
+<p><img src="/images/posts/ios9/8.png" alt="8" /></p>
+
+<p>Select the instace (there is only one now, but there could be multiple instances if the view controller is being reused across the application), and click on <em>Invoke Method</em>.</p>
+
+<p><img src="/images/posts/ios9/x.png" alt="X" /></p>
+
+<p>This will invoke the method and will bypass the authentication.</p>
+
+<p><img src="/images/posts/ios9/IMG_0112.PNG" alt="IMG 0112" /></p>
+
+<p>Another awesome feature of Snoop-it is that we can switch to any View controller. For e.g, on the extreme left hand side, under <em>Analysis</em>, select <em>View Controller</em>, select the <em>View Controller</em> class on the right hand side and click on <em>Display Controller</em>. You will be switched to that view controller. You can also click on <em>Close/Hide View Controller</em> depending on whether the view controller is over another view controller or not.</p>
+
+<p><img src="/images/posts/ios9/9.png" alt="9" /></p>
+
+<p>You can then tap on <em>Reset display</em> to come back. As you can understand, this feature will really help us relate the view controller to its view in the app. So if i have a view controller in the Classes section, i can use this feature to see its visual representation. I just love this feature of Snoop-it.</p>
+
+<h2 id="runtime-manipulation">Runtime Manipulation</h2>
+
+<p>Snoop-it also allows for many ways of runtime manipulation, including changing your hardware identifier attributes like Mac address, UDID, device model number etc.</p>
+
+<p><img src="/images/posts/ios9/10.png" alt="10" /></p>
+
+<p>You can also spoof your location. This could be particular useful for apps that use GeoEncryption techniques to protect their data.</p>
+
+<p><img src="/images/posts/ios9/11.png" alt="11" /></p>
+
+<p>And, you can trace methods and system calls on the flow. Please note that you will have to click on <em>Refresh</em> on the top to see the method calls being made after every few seconds. Also, FYI since we are testing on a beta release it is possible that the authors may change it so that we don’t have to click on <em>Refresh</em> after every few seconds. This information might be a bit too much for some users, but if you have been developing iOS applications for a couple of years like me, then this information should be pretty much straightforward.</p>
+
+<p><img src="/images/posts/ios9/12.png" alt="12" /></p>
+
+<h2 id="monitoring">Monitoring</h2>
+
+<p>Snoop-it also allows you to look at the various files and directories that are being accessed by the application. To do that, on the navigation menu on the left side, click on <em>Filesystem</em> under <em>Monitoring</em>.This feature can be particular useful when a particular application is writing to a database file and this interface helps you in figuring out that filename. You can also download these files just by double clicking on them and then analyze it on your machine.</p>
+
+<p><img src="/images/posts/ios9/13.png" alt="13" /></p>
+
+<p>You can also see all the access made by the application using sensitive API. This could include looking for info on the Address book, accessing the camera, or just finding the UDID for the device. Here is the sensitive API accessed by the <em>App Store</em> application which comes preinstalled on all iOS devices.</p>
+
+<p><img src="/images/posts/ios9/y.png" alt="Y" /></p>
+
+<p>We can also see all the information stored in the keychain by this application. Also, it is possible to see a list of all HTTP requests sent using NSURLConnection. Both of these features can be accessed under the navigation menu under <em>Monitoring</em>. I leave it up to you to try these features out. Also, we will be discussing how to dump information from keychain in a seperate article.</p>
+
+<p>You will be happy to know that Snoop-it has a public API that we can make use of in order to automate tests or just to build our own graphical user interface. A documentation of the XML-RPC web service API can be found <a href="http://code.google.com/p/snoop-it/wiki/">here</a></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article, we looked at how we can we can use Snoop-it to perform runtime analysis and black box security assessment of iOS Applications and how easy it makes our task. Snoop-it is still a few weeks away from release at the time of writing this article, though you can always mail the author for a beta version like i did. One of the new features that i would like added in Snoop-it is the ability to perform Method Swizzling.I am pretty sure it will be an awesome tool for anyone interested in performing security analysis of iOS Applications and it’s only going to get better :)</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

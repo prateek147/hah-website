@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 26 – Patching iOS Applications using IDA Pro and Hex Fiend | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 26 – Patching iOS Applications using IDA Pro and Hex Fiend" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous applications we have looked at how we can hijack method implementations during runtime using Cycript, and even change the logic of the code rather than changing the complete implementation using GDB. All of these things have been done to serve a purpose, which is to make the application do what we want. However, using Cycript or GDB is a bit of a pain as one has to do repeat the same process everytime after you restart the application. This is where patching the application is useful. Once a change has been made in the application’s binary, its permanent. So you don’t have to repeat the same process over and over again. Once the binary is patched, you can then run it on a jailbroken device with the changed logic." />
+<meta property="og:description" content="In the previous applications we have looked at how we can hijack method implementations during runtime using Cycript, and even change the logic of the code rather than changing the complete implementation using GDB. All of these things have been done to serve a purpose, which is to make the application do what we want. However, using Cycript or GDB is a bit of a pain as one has to do repeat the same process everytime after you restart the application. This is where patching the application is useful. Once a change has been made in the application’s binary, its permanent. So you don’t have to repeat the same process over and over again. Once the binary is patched, you can then run it on a jailbroken device with the changed logic." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-12-17T13:08:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 26 – Patching iOS Applications using IDA Pro and Hex Fiend" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-12-17T13:08:00+00:00","datePublished":"2013-12-17T13:08:00+00:00","description":"In the previous applications we have looked at how we can hijack method implementations during runtime using Cycript, and even change the logic of the code rather than changing the complete implementation using GDB. All of these things have been done to serve a purpose, which is to make the application do what we want. However, using Cycript or GDB is a bit of a pain as one has to do repeat the same process everytime after you restart the application. This is where patching the application is useful. Once a change has been made in the application’s binary, its permanent. So you don’t have to repeat the same process over and over again. Once the binary is patched, you can then run it on a jailbroken device with the changed logic.","headline":"iOS Application Security Part 26 – Patching iOS Applications using IDA Pro and Hex Fiend","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/12/17/ios-application-security-part-26-patching-ios-applications-using-ida-pro-and-hex-fiend.html"},"url":"/2013/12/17/ios-application-security-part-26-patching-ios-applications-using-ida-pro-and-hex-fiend.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 26 – Patching iOS Applications using IDA Pro and Hex Fiend</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 17 Dec 2013
+    
+  </div>
+  
+  <p>In the <a href="http://highaltitudehacks.com/security">previous</a> applications we have looked at how we can hijack method implementations during runtime using Cycript, and even change the logic of the code rather than changing the complete implementation using GDB. All of these things have been done to serve a purpose, which is to make the application do what we want. However, using Cycript or GDB is a bit of a pain as one has to do repeat the same process everytime after you restart the application. This is where patching the application is useful. Once a change has been made in the application’s binary, its permanent. So you don’t have to repeat the same process over and over again. Once the binary is patched, you can then run it on a jailbroken device with the changed logic.</p>
+
+<!-- more -->
+
+<p>In this article, we will be using the same application <a href="https://github.com/prateek147/gdb-demo">GDB-Demo</a> that we had used in <a href="http://resources.infosecinstitute.com/ios-application-security-part-22-runtime-analysis-manipulation-using-gdb/">Part 22</a> of this series. If you remember, we had found a way to change the logic of the method that gets called when Login was tapped and hence bypassed the login authentication check. In this article, we are going to permanently patch this check so we are always authenticated.</p>
+
+<p>The first thing you need to do is install the demo version of IDA Pro from their <a href="https://hex-rays.com/products/ida/index.shtml">website</a>. IDA Pro is a pretty awesome multi-processor disassembler and debugger. Once it is downloaded, open it up and choose the option <em>Go</em> which just opens up IDA without any preselected binary. Please note that when you run an application on the simulator using Xcode, the code is compiled for the i386 architecture, whereas when you run the application on a device using Xcode, it is compiled for the ARM architecture. The demo version of IDA Pro supports both these architectures, however in this tutorial we are going to compile the application on i386 architecture (i.e on a simulator) to save the effort of copying the application binary from the device to our computer.</p>
+
+<p><img src="/images/posts/ios26/1.png" alt="" /></p>
+
+<p>Now open Xcode and run the <a href="https://github.com/prateek147/gdb-demo">GDB-Demo</a> application that you had just downloaded using simulator. ake sure the application builds successfully and that it installs propery on the simulator. This will generate an application directory inside the folder <em>/Users/$username/Library/Application Support/iPhone Simulator/$ios version of simulator/Applications/</em>. In my case, the location is <em>/Users/Prateek/Library/Application Support/iPhone Simulator 6.1/Applications/</em>. Once you are in this directory, you have to find your application folder. Using the command <em>ls -al</em> will give you the last modified date of these folders. The latest one would be our application.</p>
+
+<p><img src="/images/posts/ios26/2.png" alt="" /></p>
+
+<p>Use the command <em>open DirectoryName</em> and this will open the directory in Finder.</p>
+
+<p><img src="/images/posts/ios26/3.png" alt="" /></p>
+
+<p>Go inside the folder GDB-Demo.app (this is the application bundle) by right clicking on it and choosing the option <em>Show Package contents</em>. Inside this folder, you will find the application binary with the name GDB-Demo. This is the binary that we will provide to IDA Pro.</p>
+
+<p><img src="/images/posts/ios26/4.png" alt="" /></p>
+
+<p>Now drag and drop the application binary on the IDA pro icon. Click on Ok and proceed.</p>
+
+<p>You will see the disassembled code like this.</p>
+
+<p><img src="/images/posts/ios26/6.png" alt="" /></p>
+
+<p>Coming back to the application, we know that the application has a login page like the one shown below. We had already modified the logic of this application using GDB in <a href="http://resources.infosecinstitute.com/ios-application-security-part-22-runtime-analysis-manipulation-using-gdb/">Part 22</a>. We also know that the method whose logic was changed was <em>-(IBAction)loginButtonTapped:(id)sender</em></p>
+
+<p><img src="/images/posts/ios26/7.png" alt="" /></p>
+
+<p>In IDA Pro, you can see a functions window on the left. Choose any function from the list of functions and press <em>Ctrl+F</em>. Now search for the function loginButtonTapped. Once you have found it, double click on it. You will be shown the dissassembly for this function on the right side.</p>
+
+<p><img src="/images/posts/ios26/8.png" alt="" /></p>
+
+<p>To view this in sort of a graphical format, double click on the function name in the functions window and press <em>Space</em>. The view will change to something like this. This is a better way of examining the disassembly as it also helps us in understanding the flow of the function. If you want to switch to the previous view, you can press <em>Space</em> again.</p>
+
+<p><img src="/images/posts/ios26/9.png" alt="" /></p>
+
+<p>Scroll down in the function disassembly on the right side. You can see that the flow of the function can lead to different blocks of code depending on specific conditions. It is obvious that somewhere within this function there is a check for whether the username and password are correct or not and authenticate or disallow the user. After scrolling down for a bit, we arrive at this block. This looks very interesting. On the right side, i can see <em>UIAlertView</em> in the code section whereas the left section shows a string named <em>adminPage</em>.</p>
+
+<p><img src="/images/posts/ios26/10.png" alt="" /></p>
+
+<p>I would really like the flow to go to the left hand side, where it says <em>adminPage</em>. The instruction that decides which block of code the execution will jump to is just one instruction before.</p>
+
+<p><img src="/images/posts/ios26/11.png" alt="" /></p>
+
+<p>It says <em>jnz loc_2CBC</em>, where <em>loc_2CBC</em> is a label and jnz stands for <em>Jump if not zero</em> instruction. We can see that the code block on the left contains this label.</p>
+
+<p><img src="/images/posts/ios26/12.png" alt="" /></p>
+
+<p>This means execution will jump to left if the zero flag is not set. If i can modify the instruction <em>jnz</em> to <em>jz</em>, then my purpose would be solved as the logic would be reversed and i will be authenticated. So what do i need to convert this from jnz to jz.</p>
+
+<p>MORE MONEY !</p>
+
+<p>Well, that was a bit of humour. A licensed version of IDA Pro will get the job done for you and you can simply modify this instruction. However, we are going to do this the free way, even though it requires a bit of extra effort and calculation but its worth it and we will also learn a few new things on the way. In the next article, we will also discuss an alternative named Hopper that is not as expensive as IDA but very good in terms of functionality. For that first we need to find the address of the <em>jnz</em> instruction. To do that, double click on this instruction so that it gets yellow…</p>
+
+<p><img src="/images/posts/ios26/13.png" alt="" /></p>
+
+<p>Now press Space..</p>
+
+<p><img src="/images/posts/ios26/14.png" alt="" /></p>
+
+<p>As we can clearly see, the address of this instruction is <em>00002CB1</em>. However, we cannot just go ahead and change the address at this instruction, This is because this address is the absolute address of this instruction and it will be different every time the application is launched. What we need to find out is the offset of this instruction relative to the Mach-O binary. This instruction has to be modified in the code section of the assembly. Hence the offset of this instruction relative to the binary can be calculated as ..</p>
+
+<p><strong>(Offset of code section relative to binary) + (Absolute address of the instruction to be changed - Starting address of the code section)</strong></p>
+
+<p>Right now we just know the Absolute address of the instruction to be changed. We can find the other two things using otool. Browse to the application directory <em>/Users/Prateek/Library/Application Support/iPhone Simulator/6.1/Applications/1804F89F-AD44-4782-BB29-47F5C521D10D/GDB-Demo.app</em> and use the following command as shown in the image below.</p>
+
+<p><img src="/images/posts/ios26/15.png" alt="" /></p>
+
+<p>Look for the text section.</p>
+
+<p><img src="/images/posts/ios26/16.png" alt="" /></p>
+
+<p>As you can see, the starting address is 0x000026f0(Hex) and the offset is 5872(Decimal). Please note that these things may be different in your case.</p>
+
+<p>Hence, using these values and the above equation we can find the offset as ..</p>
+
+<p><strong>5872(Decimal) + (0x00002CB1(Hex)- 0x000026f0(Hex)) = 0x1cb1</strong></p>
+
+<p>Now, as we discussed earlier, we need to replace the jnz instruction with a jz instruction. You can see from <a href="http://www.unixwiz.net/techtips/x86-jumps.html">this</a> link that the opcode for the JNZ instruction is <em>OF 85</em> whereas the opcode for the JZ instruction is <em>OF 84</em>.</p>
+
+<p>Now download the application <em>Hex Fiend</em> and open it up. Drag and drop the application binary to it.</p>
+
+<p><img src="/images/posts/ios26/17.png" alt="" /></p>
+
+<p>Now click on Edit –&gt; Jump to Offset and type the offset as 0x1cb1. This will take you to the line with the jnz instruction.</p>
+
+<p><img src="/images/posts/ios26/18.png" alt="" /></p>
+
+<p>Now look for the opcode OF 85. Change it to 0F 84 as shown below.</p>
+
+<p><img src="/images/posts/ios26/19.png" alt="" /></p>
+
+<p>Now save your changes and exit Hexfiend. As you remember, we had installed the app previously in the simulator. So fire up the iOS simulator, quit the GDB-Demo app if it is running and open it again. Now just tap on Login without entering anything in the username and password. It will direct you to the admin page.</p>
+
+<p><img src="/images/posts/ios26/20.png" alt="" /></p>
+
+<p>Perfect, we just patched a binary using old school techniques. In the next article, we will look at a tool named Hopper and learn how to patch iOS applications using it.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

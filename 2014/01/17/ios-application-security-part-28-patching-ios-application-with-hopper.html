@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 28 - Patching iOS Application with Hopper | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 28 - Patching iOS Application with Hopper" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In Part 26 of this series, we looked at how we can use IDA Pro and Hex Fiend to patch an iOS application and modify its implementation. Patching an application has the specific advantage that once a change has been made, it is permanent. However, if you look back at the article on IDA Pro, you will realize that the process of patching the application was a bit tedious, mainly because we didn’t have a licensed version of IDA Pro which costs a lot. In this article, we will look at a utility named Hopper which we can use as an alternative to IDA Pro. It is less costly than IDA Pro and also provides a sleek interface to work with." />
+<meta property="og:description" content="In Part 26 of this series, we looked at how we can use IDA Pro and Hex Fiend to patch an iOS application and modify its implementation. Patching an application has the specific advantage that once a change has been made, it is permanent. However, if you look back at the article on IDA Pro, you will realize that the process of patching the application was a bit tedious, mainly because we didn’t have a licensed version of IDA Pro which costs a lot. In this article, we will look at a utility named Hopper which we can use as an alternative to IDA Pro. It is less costly than IDA Pro and also provides a sleek interface to work with." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-01-17T21:41:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 28 - Patching iOS Application with Hopper" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2014-01-17T21:41:00+00:00","datePublished":"2014-01-17T21:41:00+00:00","description":"In Part 26 of this series, we looked at how we can use IDA Pro and Hex Fiend to patch an iOS application and modify its implementation. Patching an application has the specific advantage that once a change has been made, it is permanent. However, if you look back at the article on IDA Pro, you will realize that the process of patching the application was a bit tedious, mainly because we didn’t have a licensed version of IDA Pro which costs a lot. In this article, we will look at a utility named Hopper which we can use as an alternative to IDA Pro. It is less costly than IDA Pro and also provides a sleek interface to work with.","headline":"iOS Application Security Part 28 - Patching iOS Application with Hopper","mainEntityOfPage":{"@type":"WebPage","@id":"/2014/01/17/ios-application-security-part-28-patching-ios-application-with-hopper.html"},"url":"/2014/01/17/ios-application-security-part-28-patching-ios-application-with-hopper.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 28 - Patching iOS Application with Hopper</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 17 Jan 2014
+    
+  </div>
+  
+  <p>In <a href="http://highaltitudehacks.com/2013/12/17/ios-application-security-part-26-patching-ios-applications-using-ida-pro-and-hex-fiend">Part 26</a> of this series, we looked at how we can use IDA Pro and Hex Fiend to patch an iOS application and modify its implementation. Patching an application has the specific advantage that once a change has been made, it is permanent. However, if you look back at the article on <a href="http://highaltitudehacks.com/2013/12/17/ios-application-security-part-26-patching-ios-applications-using-ida-pro-and-hex-fiend">IDA Pro</a>, you will realize that the process of patching the application was a bit tedious, mainly because we didn’t have a licensed version of IDA Pro which costs a lot. In this article, we will look at a utility named Hopper which we can use as an alternative to IDA Pro. It is less costly than IDA Pro and also provides a sleek interface to work with.</p>
+
+<!-- more -->
+
+<p>According to Hopperapp.com ..</p>
+
+<p><em>Hopper is a reverse engineering tool for OS X, Linux and Windows, that lets you disassemble, decompile and debug (OS X only) your 32/64bits Intel Mac, Windows and iOS (ARM) executables! Take a look at the feature list below!</em></p>
+
+<p>And…</p>
+
+<p><em>Even if Hopper can disassemble any kind of Intel executable, it does not forget its main platform. Hopper is specialized in retrieving Objective-C information in the files you analyze, like selectors, strings and messages sent.</em></p>
+
+<p>In this article, i am using a paid version of Hopper which cost about $60. I think it is an incredible price given the things we can do with this application. I would recommend you check out the demo version which lets you perform some tasks to get a feel of Hopper. Anyways, once you download the Hopper app, this is the interface we are looking at.</p>
+
+<p><img src="/images/posts/ios28/1.png" alt="1" /></p>
+
+<p>In this article also, we will use the same demo application that we used in <a href="http://highaltitudehacks.com/2013/12/17/ios-application-security-part-26-patching-ios-applications-using-ida-pro-and-hex-fiend">Part 26</a>, the <a href="https://github.com/prateek147/gdb-demo">GDB-Demo</a> application that you can download from my github profile. I highly recommend that you read Part 26 before you proceeed with this article. Just to quickly recap, the GDB-Demo had a login form like this.</p>
+
+<p><img src="/images/posts/ios28/2.png" alt="2" /></p>
+
+<p>It accepts a certain username/password combination in order to allow us to login. Our task is to patch this application in such a way that the application allows us to login even if the username/password combination is not correct. Please note that in this article, we will be debugging and patching the application which is x86 architecture on a laptop , however you can do the same patching with ARM executable as well by copying the binary from the device.</p>
+
+<p>Once you have downloaded the <a href="https://github.com/prateek147/gdb-demo">GDB-Demo</a> application, run it using Xcode. This will install the application in the iOS simulator. Now our task is to find the location of the application binary on our system. If you run an application in Xcode, it will generate an application directory inside the folder <em>/Users/$username/Library/Application Support/iPhone Simulator/$ios version of simulator/Applications/</em>. In my case, the location is <em>/Users/Prateek/Library/Application Support/iPhone Simulator 6.1/Applications/</em>. Once you are in this directory, you have to find your application folder. Using the command <em>ls -al</em> will give you the created date of these folders. The latest one would be our application.</p>
+
+<p><img src="/images/posts/ios28/4.png" alt="4" /></p>
+
+<p>Use the command <em>open DirectoryName</em> and this will open the directory in Finder.</p>
+
+<p><img src="/images/posts/ios28/5.png" alt="5" /></p>
+
+<p>Go inside the folder GDB-Demo.app (this is the application bundle) by right clicking on it and choosing the option <em>Show Package contents</em>. Inside this folder, you will find the application binary with the name GDB-Demo. This is the binary that we will provide to Hopper.</p>
+
+<p><img src="/images/posts/ios28/6.png" alt="6" /></p>
+
+<p>Now open Hopper app and go to File-&gt;Read Executable To Disassemble. Give the location of the GDB-Demo binary. Also make sure to quit Xcode but keep the simulator open.</p>
+
+<p><img src="/images/posts/ios28/2.png" alt="2" /></p>
+
+<p>Hopper will now start dissasembling the application.</p>
+
+<p><img src="/images/posts/ios28/7.png" alt="7" /></p>
+
+<p>On the left hand side, if you select the <em>Strings</em> section, you will see all the constant strings that Hopper was able to dump from the binary. If you have read part 26 on this series, you will note that the password is also present in this list ;-).</p>
+
+<p><img src="/images/posts/ios28/8.png" alt="8" /></p>
+
+<p>If you select the labels section on the left, it will give you all the labels it was able to dump from the application. This includes labels to method implementations, constant strings, classes etc..</p>
+
+<p><img src="/images/posts/ios28/9.png" alt="9" /></p>
+
+<p>We know that the method that is important is loginButtonTapped. So lets search for it in the labels section. Once we find the method, tap on it and it will take you to its disassembly.</p>
+
+<p><img src="/images/posts/ios28/10.png" alt="10" /></p>
+
+<p>One kickass feature of Hopper is that it can provide Pseudo code for a function. To check out the Pseudo code for this function, click on Pseudo Code on the top right.</p>
+
+<p><img src="/images/posts/ios28/11.png" alt="11" /></p>
+
+<p>As you can see, Hopper provides you with a Pseudo code for this function.</p>
+
+<p><img src="/images/posts/ios28/12.png" alt="12" /></p>
+
+<p>This is such an amazing feature. It helps us so much in figuring out what this method is supposed to do. In this case, it just gives away the password. Another awesome feature of this application is Show CFG which helps you find the flow of the application. Just click on <em>Show CFG</em> next to the Pseudo code button.</p>
+
+<p><img src="/images/posts/ios28/13.png" alt="13" /></p>
+
+<p>If we scroll down a bit in this function, we get to the point shown in the image below. We can see that the left flow takes us to a point where we see the text <em>Incorrect Username or Password</em>, whereas the right flow has some text <em>admin page</em>. Obviously, i would like the flow to go to the right side.</p>
+
+<p><img src="/images/posts/ios28/14.png" alt="14" /></p>
+
+<p>Now lets check the condition that decides which way the flow goes. As we can see from the image below, the assembly instruction is <em>jne 0xcbc</em></p>
+
+<p><img src="/images/posts/ios28/15.png" alt="15" /></p>
+
+<p>0x2cbc is a label that corresponds to the right hand side. So if we can modify the instruction in such a way that the flow is always taken towards the right hand side, then our task will be accomplished.</p>
+
+<p><img src="/images/posts/ios28/16.png" alt="16" /></p>
+
+<p>Well, its pretty simple to do this. Just replace <em>jne 0xcbc</em> by <em>jmp 0xcbc</em>. To do this, click on this specific instruction in the dissassembly and click on Modify-&gt;Assemble instruction</p>
+
+<p><img src="/images/posts/ios28/17.png" alt="17" /></p>
+
+<p>Then we write down the instruction that we want and click on Assemble and Go Next. That’s it, this is the only change we want to do.</p>
+
+<p><img src="/images/posts/ios28/18.png" alt="18" /></p>
+
+<p>Now lets save this executable and overwrite the previous one. Go to File -&gt; Produce New Executable and overwrite the original executable.</p>
+
+<p><img src="/images/posts/ios28/19.png" alt="19" /></p>
+
+<p>Now go the simulator application, quit any running instance of GDB-Demo application and restart the application. Tap on Login and you will see that the login has been bypassed.</p>
+
+<p><img src="/images/posts/ios28/20.png" alt="20" /></p>
+
+<p>Congratulations, we just patched an application using Hopper. This was just a small feature of Hopper. Hopper lets us do many more things. I would recommend you check them out and no, i am not associated with Hopper nor do i know the author personally. I just think its a cool app and for $60, its an extremely good deal !</p>
+
+<p>In the next article, we will learn about Insecure or Broken Cryptography.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

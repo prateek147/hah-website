@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 25 – Secure Coding Practices for iOS Development | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 25 – Secure Coding Practices for iOS Development" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this article, we will look at some of the best practices an iOS developer should follow in order to make sure that their application is not easily exploitable by hackers." />
+<meta property="og:description" content="In this article, we will look at some of the best practices an iOS developer should follow in order to make sure that their application is not easily exploitable by hackers." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-12-17T13:07:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 25 – Secure Coding Practices for iOS Development" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-12-17T13:07:00+00:00","datePublished":"2013-12-17T13:07:00+00:00","description":"In this article, we will look at some of the best practices an iOS developer should follow in order to make sure that their application is not easily exploitable by hackers.","headline":"iOS Application Security Part 25 – Secure Coding Practices for iOS Development","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/12/17/ios-application-security-part-25-secure-coding-practices-for-ios-development.html"},"url":"/2013/12/17/ios-application-security-part-25-secure-coding-practices-for-ios-development.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 25 – Secure Coding Practices for iOS Development</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 17 Dec 2013
+    
+  </div>
+  
+  <p>In this article, we will look at some of the best practices an iOS developer should follow in order to make sure that their application is not easily exploitable by hackers.</p>
+
+<h3 id="local-data-storage">Local Data Storage</h3>
+
+<p>It is extremely important for developers to know what kind of data they should be storing locally in their application. Frankly speaking, no data is secure when stored locally in the application. In <a href="http://highaltitudehacks.com/2013/10/26/ios-application-security-part-20-local-data-storage-nsuserdefaults">part 20</a> of this series, we have looked at Local Data Storage in great detail.</p>
+
+<!-- more -->
+
+<ul>
+  <li>Important data like Passwords, Session ID’s etc should never be stored locally on the device. If there is no other option, it should be stored on the keychain. This is because you can be assured that the hacker won’t be able to find out the data in your keychain as long as the user’s device is not jailbroken. Since more than 70% people have upgraded their iOS devices to iOS 7 and since there is no public jailbreak for iOS 7 yet, you can be assured that the hacker won’t be able to get the information stored in your keychain (yet). Some people might say that the process of storing data in the keychain isn’t as simple as saving data in NSUserDefaults. But we can always use third-party wrappers that can make the job extremely simple for us. For e.g, <a href="http://highaltitudehacks.com/2013/09/17/ios-dev-storing-info-in-keychain-with-nsuserdefaults-like-syntax/">here</a> is an article that demonstrates the use of a wrapper named PDKeychainBindings and show how simple it is to save data in the keychain. Here is a snippet of code for saving data in the keychain using this wrapper.</li>
+</ul>
+
+<pre>PDKeychainBindings *bindings = [PDKeychainBindings sharedKeychainBindings];
+[[[Model sharedModel] currentUser] setAuthToken:[bindings objectForKey:@"authToken"]];
+</pre>
+
+<p>However, please note that on a jailbroken device, keychain information is not secure. It is also advisable to use your own encryption methods to encrypt the string that needs to be protected and then save on the keychain. This adds an extra layer of security because even though the attacker can get the encrypted string from the keychain, he will still have to decrypt this encrypted string.</p>
+
+<ul>
+  <li>NSUserDefaults should never be used to store confidential information like passwords, authentication tokens etc. This is because all the information saved by NSUserDefaults is present in an unencrypted format in a plist file that can be found in the location <em>Library -&gt; Preferences -&gt; $AppBundleId.plist</em> inside your application bundle. Any one can use a tool iExplorer to get a peek inside the application bundle and get the plist file even if the device is not jailbroken.</li>
+  <li>Plist files should also be never used to store confidential information like passwords etc because they can also be fetched very easily from inside the application bundle even on a non-jailbroken device. All the content inside a plist file is stored in unencrypted format.</li>
+  <li>Core Data files are also stored as unencrypted database files in your application bundle.The Core Data framework internally uses Sql queries to store its data and hence all the files are stored as .db files. One can easily copy these files to their computer and use a tool like sqlite3 to examine all the content in these database files.</li>
+</ul>
+
+<h3 id="transport-layer-security">Transport Layer Security</h3>
+
+<ul>
+  <li>Do not allow self signed certificates to be used when releasing the application. Most developers allows self signed certificates in debug mode but the same shouldn’t be done when releasing the application.</li>
+  <li>Do not use a parameter unique to the device (MAC address, IP, UDID) to determine things like the Session ID, authentication token etc.</li>
+  <li>Important decisions like Authentication and Authorization should be taken on the backend. Remember that a hacker has the ability to manipulate the runtime of your application.</li>
+  <li>Proper input validation should occur both on the client side as well as the server side. A malicious hacker can always modify the request using Burpsuite. It is important to validate the parameters being sent to the backend to avoid any kind of injection attacks.</li>
+</ul>
+
+<h3 id="use-encryption">Use Encryption</h3>
+
+<ul>
+  <li>Encrypt important files before saving them locally. Again, you don’t have to be an Cryptography guru to encrypt those files. There are a lot of third party libraries that can get the job done for you. I have written an <a href="http://highaltitudehacks.com/2013/09/26/ios-dev-encrypted-images-and-saving-them-in-app-sandbox">article</a> on <em>Encrypting images and saving them in App Sandbox</em> that uses the <a href="https://github.com/rnapier/RNCryptor">RNCryptor</a> library available on Github. The same technique can be used to encrypt any kind of file. Here is a snippet that shows how easy it is to encrypt a file.
+<code class="language-plaintext highlighter-rouge">UIImage *imageToEncrypt = [UIImage imageNamed:@"SomeImage"]; NSString *imagePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/encryptedImage.png"]; NSData *data = UIImagePNGRepresentation(fetchedImage); NSError *error; NSData *encryptedData = [RNEncryptor encryptData:data withSettings:kRNCryptorAES256Settings password:@"ABC123" error:&amp;error]; [encryptedData writeToFile:imagePath atomically:YES];</code></li>
+</ul>
+
+<p>To encrypt SQlite files, you should also consider using <a href="http://sqlcipher.net/">SQLCipher</a>.</p>
+
+<h3 id="add-checks-to-prevent-runtime-analysis">Add checks to prevent Runtime Analysis</h3>
+
+<ul>
+  <li>Remember that with a copy of your application binary, a hacker is in complete control. It is therefore important to make his job as difficult as possible. One of the ways to do that is to block debuggers to attach to the application. We have already learnt how to do that in <a href="http://resources.infosecinstitute.com/ios-application-security-part-23-defending-runtime-analysis-manipulation/">Part 23</a></li>
+</ul>
+
+<p><img src="/images/posts/ios25/3.png" alt="3" /></p>
+
+<p>This will block debuggers from attaching to this application. We have already learnt how we were able to trace calls using <a href="http://highaltitudehacks.com/2013/08/20/ios-application-security-part-9-analyzing-security-of-ios-applications-using-snoop-it">Snoop-it</a>. Here is a screenshot from the same article.</p>
+
+<p><img src="/images/posts/ios25/1.png" alt="1" /></p>
+
+<p>With the line of code added above in main.m file, we wouldn’t be able to do this now. This is because Snoop-it traces calls by attaching a debugger to the application when it starts, and now with the above check, it won’t be able to do that and the application will crash. Please note that this will not prevent the application from tools like Cycript because they do not trace the application.</p>
+
+<h3 id="some-other-minor-things">Some other minor things</h3>
+
+<ul>
+  <li>
+    <p>TextFields that have inputs as passwords should be used with <em>Secure</em> option. This is because iOS usually caches all the things that you enter in textfields, provided it doesn’t have the <em>Secure</em> tag. Also disable <em>AutoCorrection</em> for those text fields. In the image below, you can see that the textfield has <em>AutoCorrection</em> set to NO and the <em>Secure</em> tag is being enabled.
+<img src="/images/posts/ios25/2.png" alt="2" /></p>
+  </li>
+  <li>
+    <p>Clear the Pasteboard once the application enters background. You can do this by adding the following line in the method <em>- (void)applicationDidEnterBackground:(UIApplication *)application</em> in AppDelegate. Ify you are using a custom Pasteboard, replace <em>[UIPasteboard generalPasteboard]</em> with your custom pasteboard.</p>
+  </li>
+</ul>
+
+<pre>	- (void)applicationDidEnterBackground:(UIApplication *)application
+	{
+	    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+	    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+	    [UIPasteboard generalPasteboard].items = nil;
+	}
+
+</pre>
+
+<ul>
+  <li>
+    <p>Add a prompt or validate input before doing anything critical using URL schemes. We know that any application can register for a URL scheme. For e.g, the Skype app can register for the URL scheme skype:// and any application can call this url with a particular parameter. This allows for a little bit of communication between applications. Previously, there was a vulnerability in Skype where any user can make a call to anyone by using the following url.</p>
+
+    <pre>	skype://123123123?call
+</pre>
+
+    <p>Since the skype app didn’t prompt the user before making the call, the calls were directly sent. It would have been better to prompt the user befor actually making the call. The input to the URL scheme should also be validated. You can add validation in the method <em>- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url</em> in AppDelegate</p>
+  </li>
+</ul>
+
+<pre>	- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+	    //Validate input from the url
+	    return YES;
+	}
+</pre>
+
+<ul>
+  <li>Some applications use UIWebViews that can be used to display content from a URL. There have been <a href="https://www.google.co.in/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;ved=0CEcQFjAB&amp;url=https%3A%2F%2Fsuperevr.com%2Fblog%2F2011%2Fxss-in-skype-for-ios%2F&amp;ei=nfCOUpLNHsq8rAfUwoGQCg&amp;usg=AFQjCNGLyriyo0tNWE9nfO4vdxWHb7KoFw&amp;sig2=gNsCv0PGojvQGfW6YojWVQ&amp;bvm=bv.57084495,d.bmk">vulnerabilities</a> discovered previously in UIWebviews in popular applications.UIWebviews also support javascript and currently there is no public API available to disable javascript in a UIWebview. Therefore if any user controlled input is used to populate content in a UIWebview, it can be manipulated during runtime to execute javascript code on the UIWebview. Even if the input is not user controlled, the attacker can manipulate the content being added to the UIWebview druring runtime and hence execute any javascript code he wants. Since there is not much a developer can do about it due to the restrictions imposed by Apple, a developer should make sure that the content he loads into the UIWebview is not malicious by a) Making sure the data is loaded over HTTPs b) Making sure the content in the UIWebview does not depend on user input and c) validate the contents of the URL by using the function <em>dataWithContentsOfURL</em> present in the NSData class.</li>
+</ul>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

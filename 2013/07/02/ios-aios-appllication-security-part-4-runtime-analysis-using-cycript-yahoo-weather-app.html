@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Appllication Security Part 4 – Runtime Analysis Using Cycript (Yahoo Weather App) | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Appllication Security Part 4 – Runtime Analysis Using Cycript (Yahoo Weather App)" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous article, we learnt about the runtime capabilities of an iOS App written in Objective-C which uses the Cocoa framework. In this article, we will look at how we can use a very essential tool named Cycript to analyze and modify the runtime of an iOS application. In this article, we will be performing our analysis on the Yahoo Weather iOS app." />
+<meta property="og:description" content="In the previous article, we learnt about the runtime capabilities of an iOS App written in Objective-C which uses the Cocoa framework. In this article, we will look at how we can use a very essential tool named Cycript to analyze and modify the runtime of an iOS application. In this article, we will be performing our analysis on the Yahoo Weather iOS app." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-07-02T17:20:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Appllication Security Part 4 – Runtime Analysis Using Cycript (Yahoo Weather App)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-07-02T17:20:00+00:00","datePublished":"2013-07-02T17:20:00+00:00","description":"In the previous article, we learnt about the runtime capabilities of an iOS App written in Objective-C which uses the Cocoa framework. In this article, we will look at how we can use a very essential tool named Cycript to analyze and modify the runtime of an iOS application. In this article, we will be performing our analysis on the Yahoo Weather iOS app.","headline":"iOS Appllication Security Part 4 – Runtime Analysis Using Cycript (Yahoo Weather App)","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/07/02/ios-aios-appllication-security-part-4-runtime-analysis-using-cycript-yahoo-weather-app.html"},"url":"/2013/07/02/ios-aios-appllication-security-part-4-runtime-analysis-using-cycript-yahoo-weather-app.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Appllication Security Part 4 – Runtime Analysis Using Cycript (Yahoo Weather App)</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 02 Jul 2013
+    
+  </div>
+  
+  <p>In the previous article, we learnt about the runtime capabilities of an iOS App written in Objective-C which uses the Cocoa framework. In this article, we will look at how we can use a very essential tool named Cycript to analyze and modify the runtime of an iOS application. In this article, we will be performing our analysis on the Yahoo Weather iOS app.</p>
+
+<h2 id="cycript">Cycript</h2>
+
+<p>Cycript is a javascript interpreter which also understands Objective-C syntax, meaning we can write either Objective-C or javascript or even both in a particular command. It can also hook into a running process and help us to modify a lot of the things in the application during runtime. As far as its application to iOS application is concerned, here are some of the advantages of using Cycript.</p>
+
+<!-- more -->
+
+<ol>
+  <li>We can hook into a running process and find the names of all classes being used, i.e the view controllers, the internal and third party libraries being used and even the name of the Application delegate.</li>
+  <li>For a particular class, i.e View Controller, App delegate or any other class, we can also find the names of all the methods being used.</li>
+  <li>We can also find the names of all the instance variable and their values at any particular time during the runtime of an application.</li>
+  <li>We can modify the values of the instance variable during runtime.</li>
+  <li>We can perform Method Swizzling, i.e replace the code of a particular method with some other implementation.</li>
+  <li>We can call any method in the application during runtime without it being in the actual code of the application .</li>
+</ol>
+
+<h2 id="installing-cycript">Installing Cycript</h2>
+
+<p>To install Cycript on your device, you must download the latest version from their official download <a href="http://www.cycript.org/debs/">page</a>. Make sure to download the latest version.</p>
+
+<p><img src="/images/posts/ios4/1.png" alt="1" />Once they have been downloaded on your system, upload them to your device using sftp.<img src="/images/posts/ios4/2.png" alt="2" /></p>
+
+<p>Then use the dpkg command to install cycript on your device.</p>
+
+<p><img src="/images/posts/ios4/3.png" alt="3" /></p>
+
+<p>Then use the cycript command to check and see if everything is working.</p>
+
+<p><img src="/images/posts/ios4/4.png" alt="4" /></p>
+
+<h2 id="runtime-modification-with-cycript">Runtime modification with Cycript</h2>
+
+<p>In this article, we will be performing all our tests on the <em>Yahoo Weather</em> app. It’s a very neat app with an elegant UI that provides information about the weather of different places.</p>
+
+<p>Once the <em>Yahoo Weather</em> has been installed, run it and make sure the app is the foreground. This is because once the app is in the background , it is in the paused state and you can’t do much with it. Once the app is run, you can directly hook into the running process by finding the PID of the weather app and then using the _cycript -p _command to hook into the process.</p>
+
+<p><img src="/images/posts/ios4/5x.png" alt="5x" /></p>
+
+<p>If the hooking is successful, you will be provided with a Cycript interpreter. Now we are all set.</p>
+
+<p>You can get the instance of the application by using the Objective-C syntax <em>[UIApplication sharedApplication]</em>.</p>
+
+<p><img src="/images/posts/ios4/5.png" alt="5" /></p>
+
+<p>You can also define variables using the Cycript interpreter as shown in the figure below. In this case, i am defining a variable <em>a</em> for <em>[UIApplication sharedApplication]</em>. Note that the L.H.S of this command is Javascript whereas the R.H.S is Objective-C syntax. This is the beauty of Cycript.</p>
+
+<p><img src="/images/posts/ios4/6.png" alt="6" /></p>
+
+<p>Cycript, by default has this variable which makes it easy to refer to the application instance.</p>
+
+<p><img src="/images/posts/ios4/7.png" alt="7" /></p>
+
+<p>To find the delegate class of this application, we can use the command <em>[UIApplication sharedApplication].delegate</em>. But since we already defined a variable <em>a</em> as the application instance, we can use the following command as shown in the figure below. <img src="/images/posts/ios4/8.png" alt="8" /></p>
+
+<p>Hence, we now now that the delegate class name is <em>YWAppDelegate</em>. So the delegate files are defined as YWAppDelegate.h and YWAppDelegate.m.</p>
+
+<p>Now, let’s try and call some methods in the app while it is running. A quick look at the application gives this kind of a picture.</p>
+
+<p><img src="/images/posts/ios4/IMG_0091.PNG" alt="IMG 0091" /></p>
+
+<p>As you can see, the status bar of the app is hidden. We can call a method in the application to unhide the status bar. Also, please make sure always that the app is in the foreground while you are performing runtime analysis on the application.</p>
+
+<p><img src="/images/posts/ios4/9.png" alt="9" /></p>
+
+<p>And here is how the app looks now</p>
+
+<p><img src="/images/posts/ios4/IMG_0092.PNG" alt="IMG 0092" /></p>
+
+<p>As you can see, the status bar is now visible. Let’s try and see if we can modify the badge count of this particular application. A badge count is the number shown on the top-right of an application icon image. It usually refers to the amount of push notification received for the application. In mail apps, it can also refer to the amount of unread mails. In Yahoo Weather app, there is no concept of push notifications and hence there is no count shown on the top-right of its app icon. The thing is that the application badge number can be set locally in the app through a simple function call as well as remotely through a push notification from the server. Let’s try and see if we can set the badge count for the app. Here is the Objective-C method that we can need to call. In this case i am setting the badge count to 999</p>
+
+<p><img src="/images/posts/ios4/9x.png" alt="9x" /></p>
+
+<p>And now if we go back to the home screen, we see the badge count in the app.</p>
+
+<p><img src="/images/posts/ios4/IMG_0093.PNG" alt="IMG 0093" /></p>
+
+<p>Perfect !!</p>
+
+<p>Let’s now investigate more and see what more we can find out about the app. In order to find out the current view controller of the app, we must first find out the keyWindow property. A keyWindow is the window which is currently accepting user interaction (touch events) from the user. If you want to find out all the windows in an app, here is how you do it. Note that a window is of the class type UIWindow.</p>
+
+<p><img src="/images/posts/ios4/10.png" alt="10" /></p>
+
+<p>Now, in order to find out the keyWindow at a particular time in the app, here is how you do it.</p>
+
+<p><img src="/images/posts/ios4/11.png" alt="11" /></p>
+
+<p>Now, the root view controller for this window is found out by using the rootViewController property of the keyWindow. The root view controller property for this window is responsible for displaying the content in the window.</p>
+
+<p><img src="/images/posts/ios4/14.png" alt="14" /></p>
+
+<p>As you can see, the name of the rootViewController class is YahooSlidingViewController. From the name, it is pretty clear that this class is the slider used in the app as shown in the figure below.</p>
+
+<p><img src="/images/posts/ios4/IMG_0095.PNG" alt="IMG 0095" /></p>
+
+<p>Hence, this class basically acts as a facade over all the other view controllers. This means that whenever a menu item is chosen in the menu as shown in the figure above, the YahooSlidingViewController is the class responsible for displaying the appropriate view controller.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article, we looked at how we can install Cycript into a jailbroken device, hook into a running process and find out the information about the properties of the application. We also looked at how we can call functions ourselves which are executed inside the sandbox of the application. In the next article, we will look at how we can find out all the methods of a given class and modify its implementation. We will also look at how we can modify the values of instance variables of a particular class.</p>
+
+<p><strong>References:</strong></p>
+
+<ul>
+  <li>
+    <p>Cycript<br />
+<a href="http://www.cycript.org/">http://www.cycript.org/</a></p>
+  </li>
+  <li>
+    <p>Cycript tricks<br />
+<a href="http://iphonedevwiki.net/index.php/Cycript_Tricks">http://iphonedevwiki.net/index.php/Cycript_Tricks</a></p>
+  </li>
+</ul>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

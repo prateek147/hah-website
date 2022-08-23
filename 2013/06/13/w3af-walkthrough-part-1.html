@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>W3af walkthrough Part 1 | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="W3af walkthrough Part 1" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="w3af (Web Application audit and attack framework) is a framework for auditing and exploitation of web applications. In this series of articles we will be looking at almost all the features that w3af has to offer and discuss how to use them for Web application Penetration testing. In the first part of this series we will be working with w3af console and getting ourselves familiar with the commands. We will also be looking at the different types of plugins that w3af has to offer and discuss how to use them for optimal performance." />
+<meta property="og:description" content="w3af (Web Application audit and attack framework) is a framework for auditing and exploitation of web applications. In this series of articles we will be looking at almost all the features that w3af has to offer and discuss how to use them for Web application Penetration testing. In the first part of this series we will be working with w3af console and getting ourselves familiar with the commands. We will also be looking at the different types of plugins that w3af has to offer and discuss how to use them for optimal performance." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-13T08:49:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="W3af walkthrough Part 1" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-13T08:49:00+00:00","datePublished":"2013-06-13T08:49:00+00:00","description":"w3af (Web Application audit and attack framework) is a framework for auditing and exploitation of web applications. In this series of articles we will be looking at almost all the features that w3af has to offer and discuss how to use them for Web application Penetration testing. In the first part of this series we will be working with w3af console and getting ourselves familiar with the commands. We will also be looking at the different types of plugins that w3af has to offer and discuss how to use them for optimal performance.","headline":"W3af walkthrough Part 1","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/13/w3af-walkthrough-part-1.html"},"url":"/2013/06/13/w3af-walkthrough-part-1.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">W3af walkthrough Part 1</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/w3af/">w3af</a>
+      
+      <a class="tag" href="/tag/web-application-security/">web-application-security</a>
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 13 Jun 2013
+    
+  </div>
+  
+  <p>w3af (Web Application audit and attack framework) is a framework for auditing and exploitation of web applications. In this series of articles we will be looking at almost all the features that w3af has to offer and discuss how to use them for Web application Penetration testing. In the first part of this series we will be working with w3af console and getting ourselves familiar with the commands. We will also be looking at the different types of plugins that w3af has to offer and discuss how to use them for optimal performance.</p>
+
+<!--more-->
+
+<p>Some of the major features of w3af are:</p>
+
+<ol>
+  <li>It has plugins that communicate with each other. For eg. the discovery plugin in w3af looks for different url’s to test for vulnerabilities and passes it on to the audit plugin which then uses these URL’s to search for vulnerabilities.</li>
+  <li>It removes some of the headaches involved in Manual web application testing through its Fuzzy and Manual request generator feature. It can also be configured to run as a MITM proxy. The requests intercepted can be sent to the request generator and then manual web application testing can be performed using variable parameters.</li>
+  <li>It also has features to exploit the vulnerabilities that it finds.</li>
+</ol>
+
+<p>It is important to understand that no automated web application scanner is perfect and false positives will always occur. With w3af the first and the foremost step is to make sure that we have the latest version. This is very important because w3af developers (Andres Riancho and the w3af team) are constantly fixing bugs and hence it is very important to make sure that we have the most bug free version. To open up w3af console, type in the command as shown in the figure below.</p>
+
+<p><img src="/images/posts/w3af1/1.png" alt="1" /></p>
+
+<p>w3af may ask you to update the version. It is advisable to keep updated with the latest version. Ok, so now that we are in the console, type in <em>help</em> to look at the list of available commands.</p>
+
+<p><img src="/images/posts/w3af1/2.png" alt="2" /></p>
+
+<p>We can see the list of available options available to us. Type the <em>keys</em> command to look at the various shortcuts keys available to us. I recommend you get familiar with them.</p>
+
+<p><img src="/images/posts/w3af1/3.png" alt="3" /></p>
+
+<p>Let’s have a look at the plugins which are available in w3af. Type <em>plugins</em>. You can see the console output change to <em>w3af/plugins</em>. Type <em>back</em> to go back or type <em>help</em> to display the list of available plugins.</p>
+
+<p>To know information about a specific plugins, just type <em>help pluginName</em>. For e.g if i want to know about the discovery plugin, i would type <em>help discovery</em>.</p>
+
+<p><img src="/images/posts/w3af1/5.png" alt="5" /></p>
+
+<p>We can see that there are about 9 types of different plugins.</p>
+
+<p><strong>1)Discovery</strong>- The discovery plugin helps in finding more Url’s, forms etc to be used for vulnerability scanning. This information is then passed over to the audit plugin. There are a number of different discovery plugins like webSpider, spiderMan, hmap etc. All these plugins have a different function. A user can enable one or more plugins at the same time.</p>
+
+<p>To see the discovery plugins, just type <em>discovery</em>.</p>
+
+<p><img src="/images/posts/w3af1/4.png" alt="4" /></p>
+
+<p>To find specific information about a particular plugin, just type <em>pluginType desc pluginname</em>. For e.g if i want to know more information about the spiderMan <a href="index.html" title="index">index</a>plugin i would write the command <em>discovery desc spiderMan</em>.</p>
+
+<p><img src="/images/posts/w3af1/6.png" alt="6" /></p>
+
+<p>One of the important things to note here is that the spiderMan plugin has 2 configurable parameters. To set the configurable parameters, type in the following commands as shown in the figure below. As you can see from the figure below, i have set the listenPort to 55555.</p>
+
+<p><img src="/images/posts/w3af1/7.png" alt="7" /></p>
+
+<p>Here are some other commands that could be used.</p>
+
+<p>1) discovery pluginType1, pluginType2 - Selects two plugins.</p>
+
+<p>2) discovery all- Enables all the plugins (not advisable as it may take a long time to finish).</p>
+
+<p>3) discovery !all - Removes all the enabled plugins.</p>
+
+<p>4) list discovery enabled - Lists all the plugins currently enabled.</p>
+
+<p>Here is a screenshot below showing some of these commands in action.</p>
+
+<p><img src="/images/posts/w3af1/8.png" alt="8" /></p>
+
+<p>Let’s now run one of the discovery plugins. I will be using the hmap plugin in discovery to know the version of the server running on a remote host. As you can see from the figure below, i have enabled the hmap plugin.</p>
+
+<p><img src="/images/posts/w3af1/9.png" alt="9" /></p>
+
+<p>Once this is done, it is now time to give the location of the target server. Type <em>back</em> to navigate back. Then type the following commands as shown in the figure below to set the target. As we can see, the target is set by the <em>set target target-address</em> command.</p>
+
+<p><img src="/images/posts/w3af1/10.png" alt="10" /></p>
+
+<p>Once this is done, type <em>back</em> to navigate back and the type <em>start</em> to start the plugin. As we can see, w3af has figured out the version of Apache and php running on my server. We will discuss more features of the discovery plugin later.</p>
+
+<p><img src="/images/posts/w3af1/11.png" alt="11" /></p>
+
+<p><strong>2)Audit</strong>-Audit plugins are used to detect vulnerabilities in the URL’s or forms provided by the discovery plugins. This is where the interaction between plugins in w3af comes to use. The audit plugin has options for testing different types of vulnerabilities like xss, sqli, csrf etc. It does this by injecting different strings in its request and then looking for a specific value (corresponding to the input string) in the response. False positives may occur during this process. If i want to know how the sqli plugin works, i could type in the commands as shown in the figure below.</p>
+
+<p><img src="/images/posts/w3af1/12.png" alt="12" /></p>
+
+<p>Again, i can set the different configuration parameters while selecting a particular plugin. For e.g in the figure below i am increasing the number of checks while performing a XSS audit.</p>
+
+<p><img src="/images/posts/w3af1/13.png" alt="13" /></p>
+
+<p><strong>3)Grep</strong> - The grep plugin is used to find interesting information in the requests and responses going through like email accounts, forms with file upload capabilities, hashes, credit card numbers, email addresses etc. You can set the type of information you want to look for by setting the appropriate plugin. Since the grep plugin only analyzes the request and response, it is important to have some kind of discovery plugin enabled for it to work. Otherwise grep plugins are of no use. As you can see in the figure below i have set grep to use the getMails plugin.</p>
+
+<p><img src="/images/posts/w3af1/14.png" alt="14" /></p>
+
+<p><strong>4)Brute force</strong> - Brute force plugins can be used to brute force login forms as well as http-auth logins. Once the discovery plugin finds any form with form based input or an http-auth input it will automatically launch the brute force attack against it if the corresponding brute force plugin is enabled. Some of the important things to know about the brute force are the configuration parameters.</p>
+
+<p><img src="/images/posts/w3af1/15.png" alt="15" /></p>
+
+<p>It is advisable that you use your own configuration file for the list of usernames and passwords. Also be sure to take a look at some other options. As you can see in the figure below, i have set the option passEqUser to false simply because i don’t think users wouldn’t have their passwords as the same as their username.</p>
+
+<p><img src="/images/posts/w3af1/16.png" alt="16" /></p>
+
+<p>One of the other good configurable parameter is the useMails option. This options uses the email addresses that w3af finds (maybe through the grep plugin) to be one of the inputs for the username field. For e.g if one of the usernames is example@infosecinstitute.com, then the username tried would be example. This is another example of how the interaction between the different plugins could make the job much more effective.</p>
+
+<p><strong>5)Output</strong> - The output plugin helps us decide the format in which we want the output. w3af supports many formats like console, emailReport, html, xml, text etc. Again you can set various parameters here like the filename, verbosity etc. In the figure below, i have set <em>verbose</em> to True as i want a very detailed report about the application that i am testing.</p>
+
+<p><img src="/images/posts/w3af1/17.png" alt="17" /></p>
+
+<p><strong>6)Mangle</strong> - The mangle plugin is used to mangle with request and responses on the fly. It has only one plugin named sed (Stream editor) which is used to modify requests and responses using different regular expressions. The expressions should have a specific format. The usage is quite evident from the description.</p>
+
+<p><img src="/images/posts/w3af1/18.png" alt="18" /></p>
+
+<p>As you can see from the figure below, i have set the plugin to look for the string Yahoo and replace it with Google in the request header.</p>
+
+<p><img src="/images/posts/w3af1/19.png" alt="19" /></p>
+
+<p><strong>7)Evasion</strong>- The evasion plugins uses various techniques to bypass WAF (Web application firewalls). For e.g one of the options rndHexEncode randomly encodes the url in hex format to avoid detection while the plugin fullWidthEncode does a full width encode of the Url to bypass Http content scanning systems using the vulnerability described <a href="http://www.kb.cert.org/vuls/id/739224">here</a>.</p>
+
+<p><img src="/images/posts/w3af1/20.png" alt="20" /></p>
+
+<p><strong>8)Auth</strong> - Last but not the least, auth plugin is one of the most important plugins in w3af. It has only one type called generic. This is because while crawling on a target web application, if w3af hits a login form, then it needs to submit the credentials automatically in order to continue looking for information. By using this plugin, we can specify a predefined username/password that w3af should enter when it hits a login form. We need to specify all the parameters for generic in order for it to work successfully.</p>
+
+<p>In the figure below i am setting options for w3af to successfully log in to DVWA (Damn vulnerable web application) which is located on the address http://10.0.1.24/dvwa</p>
+
+<p><img src="/images/posts/w3af1/21.png" alt="21" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article we discussed about the plugins available in w3af and learnt how to work with the w3af console. In the upcoming articles in this series, we are going to discuss the following topics.</p>
+
+<ol>
+  <li>Using different profiles</li>
+  <li>Exploiting a vulnerability found by the audit plugin</li>
+  <li>Using the Manual Request and Fuzzy request feature</li>
+  <li>Using the Mitm proxy and the encoder/decoder features</li>
+  <li>w3af scripting</li>
+  <li>Optimizing w3af scans</li>
+</ol>
+
+<p>Please drop a comment if you liked the article or if there is something about w3af that you want to see in the upcoming articles.</p>
+
+<h2 id="references">References:</h2>
+
+<ul>
+  <li>w3af User Guide<br />
+<a href="http://w3af.sourceforge.net/documentation/user/w3afUsersGuide.pdf">http://w3af.sourceforge.net/documentation/user/w3afUsersGuide.pdf</a></li>
+</ul>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 52 - Inspecting iOS apps with Objection | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 52 - Inspecting iOS apps with Objection" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous few articles, we have looked at how we can use Frida to perform dynamic instrumentation of applications. In this article, we will look at a tool based using Frida’s capabilities, known as objection, which can be very useful in testing iOS applications on non-jailbroken devices. The only thing that is required is an unencrypted IPA (insert Frida Gadget using insert_dylb) or the source code. Since in the previous article we already looked at how we can add a Frida dylib into the source code and do instrumentation, we will carry forward from there in this article. We will be using Damn Vulnerable iOS App for this article." />
+<meta property="og:description" content="In the previous few articles, we have looked at how we can use Frida to perform dynamic instrumentation of applications. In this article, we will look at a tool based using Frida’s capabilities, known as objection, which can be very useful in testing iOS applications on non-jailbroken devices. The only thing that is required is an unencrypted IPA (insert Frida Gadget using insert_dylb) or the source code. Since in the previous article we already looked at how we can add a Frida dylib into the source code and do instrumentation, we will carry forward from there in this article. We will be using Damn Vulnerable iOS App for this article." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-07-28T10:48:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 52 - Inspecting iOS apps with Objection" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2018-07-28T10:48:00+00:00","datePublished":"2018-07-28T10:48:00+00:00","description":"In the previous few articles, we have looked at how we can use Frida to perform dynamic instrumentation of applications. In this article, we will look at a tool based using Frida’s capabilities, known as objection, which can be very useful in testing iOS applications on non-jailbroken devices. The only thing that is required is an unencrypted IPA (insert Frida Gadget using insert_dylb) or the source code. Since in the previous article we already looked at how we can add a Frida dylib into the source code and do instrumentation, we will carry forward from there in this article. We will be using Damn Vulnerable iOS App for this article.","headline":"iOS Application Security Part 52 - Inspecting iOS apps with Objection","mainEntityOfPage":{"@type":"WebPage","@id":"/2018/07/28/ios-application-security-part-52-inspecting-ios-apps-with-objection.html"},"url":"/2018/07/28/ios-application-security-part-52-inspecting-ios-apps-with-objection.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 52 - Inspecting iOS apps with Objection</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 28 Jul 2018
+    
+  </div>
+  
+  <p>In the previous few articles, we have looked at how we can use Frida to perform dynamic instrumentation of applications. In this article, we will look at a tool based using Frida’s capabilities, known as <a hred="https://github.com/sensepost/objection">objection</a>, which can be very useful in testing iOS applications on non-jailbroken devices. The only thing that is required is an unencrypted IPA (insert Frida Gadget using <a href="https://github.com/Tyilo/insert_dylib">insert_dylb</a>) or the source code. Since in the previous article we already looked at how we can add a Frida dylib into the source code and do instrumentation, we will carry forward from there in this article. We will be using <a href="http://damnvulnerableiosapp.com">Damn Vulnerable iOS App</a> for this article.</p>
+
+<!--more-->
+
+<p>Here are the various features of Objection as mentioned on their Github <a href="https://github.com/sensepost/objection">page</a>.</p>
+
+<p><img src="/images/posts/ios52/1.png" alt="1" /></p>
+
+<p>The first thing is to install Objection on the computer which can be installed very easily with <em>pip3 install objection</em>. In some cases, you might be better off setting up a virtual environemnt for python3. It is recommended to go through the installation instructions mentioned on their Github page.</p>
+
+<p><img src="/images/posts/ios52/2.png" alt="2" /></p>
+
+<p>Once done, run the command <em>objection</em> to see if it was successfully installed.</p>
+
+<p><img src="/images/posts/ios52/3.png" alt="3" /></p>
+
+<p>Make sure you have an application that has FridaGadget.dylib injected into it. Start the application on the device and it will pause as its waiting for a frida client to attach to it. Now from your computer, run the <em>objecion device_type</em> command to do a quick test.</p>
+
+<p><img src="/images/posts/ios52/4.png" alt="4" /></p>
+
+<p>Now run the command <em>objection explore -q</em> to attach to the application. Keep in mind that this is not early instrumentation since you are attaching to the application after is is being launched. For early instrumentation you can just use Frida with the spawn command.</p>
+
+<p><img src="/images/posts/ios52/5.png" alt="5" /></p>
+
+<p>You can just press TAB on your computer to see all the list of available commands. One of the most useful features of objection is the autocompletion feature so we don’t have to remember all these commands.</p>
+
+<p><img src="/images/posts/ios52/14.png" alt="14" /></p>
+
+<p>For any extra tasks not performed by objection, you can just load the corresponding fridascript with the import command.</p>
+
+<p><img src="/images/posts/ios52/15.png" alt="15" /></p>
+
+<p>Ok, now we can use objection to do various tasks. It is important to note that whatever is happening here is happening within the context of the application with all the sandbox restrictions still being employed in place. Also, all the ios specific commands start with <em>ios</em>. Also, any command you want to run on your computer from within the objection interpreter must have ! prepended to it.</p>
+
+<p>Use <em>pwd print</em> to print out the current working directory.</p>
+
+<p><img src="/images/posts/ios52/6.png" alt="6" /></p>
+
+<p>A simple <em>ls</em> command will dump the contents from the current working directory within the application context.</p>
+
+<p><img src="/images/posts/ios52/7.png" alt="7" /></p>
+
+<p>Let’s run <em>env</em> and this will give us all the folders related to the application. We are mostly interested in the application data here which is mostly present in the Documents folder.</p>
+
+<p><img src="/images/posts/ios52/8.png" alt="8" /></p>
+
+<p>Now let’s head over to the Documents directory and run the ls command there.</p>
+
+<p><img src="/images/posts/ios52/9.png" alt="9" /></p>
+
+<p>The data stored in the info.plist file can be dumped with <em>ios plist cat filename</em> command.</p>
+
+<p><img src="/images/posts/ios52/10.png" alt="10" /></p>
+
+<p>Optionally, another way of achieving the same would be to download the file to your computer with the <em>file download filename</em> command and then use the OS command cat (prepended with an !) to list the contents of the file.</p>
+
+<p><img src="/images/posts/ios52/11.png" alt="11" /></p>
+
+<p>You can see all the data stored using the NSUserDefaults or UserDefaults (in new SDKs) using the <em>ios nsuserdefaults get</em> command.</p>
+
+<p><img src="/images/posts/ios52/12.png" alt="12" /></p>
+
+<p>And you can use the <em>ios keychain dump</em> to dump the keychain.</p>
+
+<p><img src="/images/posts/ios52/13.png" alt="13" /></p>
+
+<p>In the next article, we will continue looking at some of the other useful functionalities of Objection.</p>
+
+<p><strong>References</strong></p>
+
+<ol>
+  <li>https://github.com/sensepost/objection</li>
+</ol>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

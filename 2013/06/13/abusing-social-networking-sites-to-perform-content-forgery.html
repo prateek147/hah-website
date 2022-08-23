@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Abusing Social Networking Sites to Perform Content Forgery | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Abusing Social Networking Sites to Perform Content Forgery" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Web Application vulnerabilities in social networking sites is very common these days. In this article we will be discussing a vulnerability found in Social networking sites because of which it is possible to spoof the content shown to the user. Basically whenever someone wants to share, post or send a link on Facebook or some other social networking site, a request goes through from their servers to the link which the user wants to share. This happens because Facebook (or that particular social networking site) wants to display a quick snapshot of what appears in the link to the user. However, these requests by social networking sites are easily identifiable because of the user-agent field in the headers of the incoming requests to the server or through their source IP address that resolves to a particular domain name. Hence it is possible for a malicious person to differentiate between the requests coming from the social networking sites and those coming from the users. The attacker can then display a simple image when the request is coming from Facebook so that on Facebook the snapshot appears to be that of a simple image. However when the user clicks on the link on Facebook, the attacker can know that the request is from the user by checking the user-agent field and redirect him to a malicious website." />
+<meta property="og:description" content="Web Application vulnerabilities in social networking sites is very common these days. In this article we will be discussing a vulnerability found in Social networking sites because of which it is possible to spoof the content shown to the user. Basically whenever someone wants to share, post or send a link on Facebook or some other social networking site, a request goes through from their servers to the link which the user wants to share. This happens because Facebook (or that particular social networking site) wants to display a quick snapshot of what appears in the link to the user. However, these requests by social networking sites are easily identifiable because of the user-agent field in the headers of the incoming requests to the server or through their source IP address that resolves to a particular domain name. Hence it is possible for a malicious person to differentiate between the requests coming from the social networking sites and those coming from the users. The attacker can then display a simple image when the request is coming from Facebook so that on Facebook the snapshot appears to be that of a simple image. However when the user clicks on the link on Facebook, the attacker can know that the request is from the user by checking the user-agent field and redirect him to a malicious website." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-13T22:38:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Abusing Social Networking Sites to Perform Content Forgery" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-13T22:38:00+00:00","datePublished":"2013-06-13T22:38:00+00:00","description":"Web Application vulnerabilities in social networking sites is very common these days. In this article we will be discussing a vulnerability found in Social networking sites because of which it is possible to spoof the content shown to the user. Basically whenever someone wants to share, post or send a link on Facebook or some other social networking site, a request goes through from their servers to the link which the user wants to share. This happens because Facebook (or that particular social networking site) wants to display a quick snapshot of what appears in the link to the user. However, these requests by social networking sites are easily identifiable because of the user-agent field in the headers of the incoming requests to the server or through their source IP address that resolves to a particular domain name. Hence it is possible for a malicious person to differentiate between the requests coming from the social networking sites and those coming from the users. The attacker can then display a simple image when the request is coming from Facebook so that on Facebook the snapshot appears to be that of a simple image. However when the user clicks on the link on Facebook, the attacker can know that the request is from the user by checking the user-agent field and redirect him to a malicious website.","headline":"Abusing Social Networking Sites to Perform Content Forgery","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/13/abusing-social-networking-sites-to-perform-content-forgery.html"},"url":"/2013/06/13/abusing-social-networking-sites-to-perform-content-forgery.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Abusing Social Networking Sites to Perform Content Forgery</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/web-application-security/">web-application-security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 13 Jun 2013
+    
+  </div>
+  
+  <p>Web Application vulnerabilities in social networking sites is very common these days. In this article we will be discussing a vulnerability found in Social networking sites because of which it is possible to spoof the content shown to the user. Basically whenever someone wants to share, post or send a link on Facebook or some other social networking site, a request goes through from their servers to the link which the user wants to share. This happens because Facebook (or that particular social networking site) wants to display a quick snapshot of what appears in the link to the user. However, these requests by social networking sites are easily identifiable because of the user-agent field in the headers of the incoming requests to the server or through their source IP address that resolves to a particular domain name. Hence it is possible for a malicious person to differentiate between the requests coming from the social networking sites and those coming from the users. The attacker can then display a simple image when the request is coming from Facebook so that on Facebook the snapshot appears to be that of a simple image. However when the user clicks on the link on Facebook, the attacker can know that the request is from the user by checking the user-agent field and redirect him to a malicious website.</p>
+
+<!--more-->
+
+<h2 id="that-easily-identifiable-request">That Easily Identifiable Request</h2>
+
+<p>Let’s say i want to share a link http://google.com on my Timeline. Whenever i type the link, Facebook automatically identifies it as a url and sends a request to http://google.com. This is because it wants to display a quick snapshot of what actually appears to be in the link. As we can see from the image below, Facebook has displayed a quick snapshot of how http://google.com appears like today.</p>
+
+<p><img src="/images/posts/content-forgery/1.png" alt="1" /></p>
+
+<p>These requests to the google.com server are easily identifiable because the user-agent of the incoming request is an indication of the social networking site being used or the IP address of the incoming request resolves to a particular domain name. For e.g Facebook uses a custom user-agent with the name “facebookexternalhit” and have their IP addresses resolve to tfbnw.net whereas Google+ uses a custom user-agent with the name “Feedfetcher-Google”.</p>
+
+<p>By using some custom php code like “$_SERVER[‘HTTP_USER_AGENT’]” to get the user-agent value and “gethostbyaddr($_SERVER[‘REMOTE_ADDR’])” to resolve the IP address we can easily identify whether the request is coming from a social networking site like Google+ or Facebook or just a regular user.</p>
+
+<h2 id="implementation">Implementation</h2>
+
+<p>One of the most important things in order to implement this is to have a domain and an access to a publicly reachable server. We will have a .jpg on our server which will have the php code to identify the user-agent or IP address and display the response accordingly. However in order for the php code to be run in the jpg file, the jpg file must be interpreted as a php file by the server. The following two lines when added in the .htaccess file will serve our purpose. The code has been taken from http://www.blackhatacademy.org/security101/Facebook</p>
+
+<p><code class="language-plaintext highlighter-rouge">php AddType x-httpd-php .jpg AddHandler application/x-httpd-php .jpg</code></p>
+
+<p>The first line assures that any .jpg file will be interpreted as a php file whereas the second line assures that any file with the externsion .jpg will be treated as a php program.</p>
+
+<p>Once this is done, we need to have the php code in our .jpg file on the server. The following lines of code demonstrate the exploit code for Facebook, Google+ and Websense. The code has been taken from <a href="http://www.blackhatacademy.org/security101/Facebook">http://www.blackhatacademy.org/security101/Facebook</a> with the comments and the code a bit modified.</p>
+
+<p><code class="language-plaintext highlighter-rouge">php</code></p>
+
+<p>The code is pretty simple to understand. We check the user-agent, and the IP address of the incoming request. If the user-agent is identified as that of either Facebook, Google Plus or Websense then we know that this could be a request to take a snapshot of the url. Hence we display an image present on our server. Note that we also need to modify the Content-Type of the response to make it appear as an image. Hence on the social networking site, say Facebook, the snapshot of the url appears to be an image. However when the user clicks on the url, this time the user-agent is not of Facebook, Google+ or Websense rather it is the user-agent of the user itself. The php code identifies this as a regular user and redirects him to his malicious website (in this case evilsite.com).</p>
+
+<p>Similarly the POC code for Reddit is demonstrated below. This code has been taken from <a href="http://www.chokepoint.net/?id=5">http://www.chokepoint.net/?id=5</a></p>
+
+<p><code class="language-plaintext highlighter-rouge">php</code></p>
+
+<p>Their is also a POC facebook application available at <a href="http://www.chokepoint.net/?id=5">http://www.chokepoint.net/?id=5</a>. It allows us to input an image and a redirect URL. As you can see below, i have given the input image as the image of the Google Logo whereas the redirect url is http://youtube.com.</p>
+
+<p><img src="/images/posts/content-forgery/2.png" alt="2" /></p>
+
+<p>Once this is done, click on Submit. You will see a like button, a send button as well as a Reddit this! button appear. You can now send this request to yourself to check this vulnerability.</p>
+
+<p><img src="/images/posts/content-forgery/4.png" alt="4" /></p>
+
+<p>Here is how the sent message looks like. As you can see, the snapshot contains the image of the google URL.</p>
+
+<p><img src="/images/posts/content-forgery/3.png" alt="3" /></p>
+
+<p>However, when we click on the url, we will be redirected to youtube.com. Try this yourself to see !</p>
+
+<h2 id="protection-against-content-forgery">Protection Against Content Forgery</h2>
+
+<p>One of the ways to prevent from Content Forgery is to spoof the user-agent field to look like it is coming from a normal user. Another method could be to spoof the user-agent field as the user-agent of the user itself (i.e the user who is sharing or posting the link).</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article we looked at a vulnerability which is caused due to the fact that the request made by Social Networking sites are easilty identifiable. These requests can hence be filtered out from the actual requests by the users. We looked at how this allows us to spoof the content which is actually appearing on the site. This could be used to redirect the users to malicious web pages through these Social networking sites simply because the original snapshot of the url looks pretty simple and unharming.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>
+    <p>Facebook-Security 101<br />
+<a href="http://www.blackhatacademy.org/security101/Facebook">http://www.blackhatacademy.org/security101/Facebook</a></p>
+  </li>
+  <li>
+    <p>Facebook and Reddit Content Forgery<br />
+<a href="http://www.chokepoint.net/?id=5">http://www.chokepoint.net/?id=5</a></p>
+  </li>
+  <li>
+    <p>XSCF<br />
+<a href="http://www.blackhatacademy.org/security101/XSCF">http://www.blackhatacademy.org/security101/XSCF</a></p>
+  </li>
+</ol>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

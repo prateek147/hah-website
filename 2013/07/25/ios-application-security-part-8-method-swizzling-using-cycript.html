@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 8 - Method Swizzling using Cycript | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 8 - Method Swizzling using Cycript" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous article, we looked at how we can install custom apps on our device without a developer certificate. In this article, we will look at how we can perform method Swizzling using Cycript on a sample application." />
+<meta property="og:description" content="In the previous article, we looked at how we can install custom apps on our device without a developer certificate. In this article, we will look at how we can perform method Swizzling using Cycript on a sample application." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-07-25T15:16:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 8 - Method Swizzling using Cycript" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-07-25T15:16:00+00:00","datePublished":"2013-07-25T15:16:00+00:00","description":"In the previous article, we looked at how we can install custom apps on our device without a developer certificate. In this article, we will look at how we can perform method Swizzling using Cycript on a sample application.","headline":"iOS Application Security Part 8 - Method Swizzling using Cycript","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/07/25/ios-application-security-part-8-method-swizzling-using-cycript.html"},"url":"/2013/07/25/ios-application-security-part-8-method-swizzling-using-cycript.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 8 -  Method Swizzling using Cycript</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 25 Jul 2013
+    
+  </div>
+  
+  <p>In the previous article, we looked at how we can install custom apps on our device without a developer certificate. In this article, we will look at how we can perform method Swizzling using Cycript on a sample application.</p>
+
+<p>The first thing is to download the sample Xcode project. You can download the Xcode project from <a href="https://dl.dropboxusercontent.com/u/34557464/MethodSwizzlingDemo.zip">here</a>. Or you can also just download the binary file on your device from <a href="https://dl.dropboxusercontent.com/u/34557464/MethodSwizzlingDemo.ipa">here</a>. If you have installed the Xcode project, you will have to build the Xcode project using a self signed certificate.The previous article talks about this in great detail. If you have downloaded the binary, you can directly run it on a jailbroken device without any issues but to get a look at the source code, it is recommended to download the Xcode project.</p>
+
+<!-- more -->
+
+<p>Also please make sure to sign the Xcode project with your own certificate.</p>
+
+<p><img src="/images/posts/ios8/Self-signedcert.png" alt="Self Signedcert" /></p>
+
+<p>Once you have the app running on your device, ssh into your device and hook into the running process using Cycript.</p>
+
+<p>You can hook into any running process with this command <code class="language-plaintext highlighter-rouge">cycript -p [APP_ID]</code></p>
+
+<p><img src="/images/posts/ios8/1.png" alt="1" /></p>
+
+<p>As you can see on the device, this application has a login form. Please note that for this article, we will only be bypassing login on tap of the <code class="language-plaintext highlighter-rouge">Login Method 1</code> button.</p>
+
+<p><img src="/images/posts/ios8/IMG_0102.PNG" alt="IMG 0102" /></p>
+
+<p>The username and password are <code class="language-plaintext highlighter-rouge">admin:password</code>. It will take us to the admin page.</p>
+
+<p><img src="/images/posts/ios8/IMG_0103.PNG" alt="IMG 0103" /></p>
+
+<p>If we enter an incorrect username/password combination, we will be prompted with an alert.</p>
+
+<p><img src="/images/posts/ios8/IMG_0104.PNG" alt="IMG 0104" /></p>
+
+<p>Our goal hence is to bypass this login view.</p>
+
+<p>So first, lets find the root view controller of this application. Use this command in cycript <code class="language-plaintext highlighter-rouge">UIApp.keyWindow.rootViewController</code></p>
+
+<p><img src="/images/posts/ios8/2.png" alt="2" /></p>
+
+<p>Ok, since the login page is the first view that we get to see in the application, we can be sure that the view controller class responsible for displaying this view is a part of the navigation controller that we found with the previous command. We can find the current view by finding the <code class="language-plaintext highlighter-rouge">visibleViewController</code> property of the navigation controller</p>
+
+<p><img src="/images/posts/ios8/3.png" alt="3" /></p>
+
+<p>Perfect. Now let’s write a function to print out all the methods for this view controller. This method is taken from the Cycript tricks <a href="http://iphonedevwiki.net/index.php/Cycript_Tricks">page</a>. I recommend you to have a look at this page for many useful code snippets.</p>
+
+<p>Here is the function i am using.</p>
+
+<pre>	function printMethods(className) {
+	  var count = new new Type("I");
+	  var methods = class_copyMethodList(objc_getClass(className), count);
+	  var methodsArray = [];
+	  for(var i = 0; i &lt; *count; i++) {
+	    var method = methods[i];
+	    methodsArray.push({selector:method_getName(method), implementation:method_getImplementation(method)});
+	  }
+	  free(methods);
+	  free(count);
+	  return methodsArray;
+	}
+</pre>
+
+<p><img src="/images/posts/ios8/4.png" alt="4" /></p>
+
+<p>Now lets print out the methods for the current view controller. Please note that the parameter this method takes is the className, which in this case is <code class="language-plaintext highlighter-rouge">ViewController</code></p>
+
+<p><img src="/images/posts/ios8/5.png" alt="5" /></p>
+
+<p>Another way to know about the method names is by using the isa.messages property. According to Apple’s <a href="http://developer.apple.com/library/ios/#DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtHowMessagingWorks.html#//apple_ref/doc/uid/TP40008048-CH104-SW1">documentation</a> isa is basically a pointer to the class structure.</p>
+
+<p>Here is a line taken from the same page.</p>
+
+<p><code class="language-plaintext highlighter-rouge">When a new object is created, memory for it is allocated, and its instance variables are initialized. First among the object’s variables is a pointer to its class structure. This pointer, called isa, gives the object access to its class and, through the class, to all the classes it inherits from.</code></p>
+
+<p>This image from Apple’s <a href="http://developer.apple.com/library/ios/#DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtHowMessagingWorks.html#//apple_ref/doc/uid/TP40008048-CH104-SW1">documentation</a> will make things more clear.</p>
+
+<p><img src="/images/posts/ios8/6.png" alt="6" /></p>
+
+<p>So what is the <code class="language-plaintext highlighter-rouge">messages</code> property ? Well, first we must know what is a dispatch table. A dispatch table is a table containing entries that associate method selectors with the class-specific addresses of the methods they identify. Let’s have a look at this image taken from Apple’s <a href="http://developer.apple.com/library/ios/#DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtHowMessagingWorks.html#//apple_ref/doc/uid/TP40008048-CH104-SW1">documentation</a>.</p>
+
+<p><img src="/images/posts/ios8/7.png" alt="7" /></p>
+
+<p>So now, it is easy to guess that the <code class="language-plaintext highlighter-rouge">messages</code> property is the complete list of messages that could be sent to an instance of the class or the class itself. This will be a huge list because the isa pointer will pick messages from all the superclasses also, leading up to NSObject. A very important line to be noted in the image above is this. <code class="language-plaintext highlighter-rouge">This is the way that method implementations are chosen at runtime—or, in the jargon of object-oriented programming, that methods are dynamically bound to messages.</code></p>
+
+<p>Since the methods are dynamically bound to messages at runtime, it is possible for us to change a method implementation for a particular message.</p>
+
+<p>In this case, let’s print out the messages for the App Delegate class.</p>
+
+<p><img src="/images/posts/ios8/8.png" alt="8" /></p>
+
+<p>Just using the messages property will also work.</p>
+
+<p><img src="/images/posts/ios8/9.png" alt="9" /></p>
+
+<p>In this case, the view controller that we are concerned with is the one used to display the login page, which we found out earlier to be named as <code class="language-plaintext highlighter-rouge">ViewController</code>. So let’s display all the messages for this VC.</p>
+
+<p><img src="/images/posts/ios8/10.png" alt="10" /></p>
+
+<p>On the top of the output, you could see some of the methods for this VC.</p>
+
+<p><img src="/images/posts/ios8/11.png" alt="11" /></p>
+
+<p>The method <code class="language-plaintext highlighter-rouge">validateLogin</code> looks interesting. Let’s have a look at this method from the class-dump-z output. In case you are not familiar with class-dump-z, please have a look at the <a href="http://resources.infosecinstitute.com/ios-application-security-part-2-getting-class-information-of-ios-apps/">2nd part</a> of this series.</p>
+
+<p>Here is the information that we get for the <code class="language-plaintext highlighter-rouge">ViewController</code> class from its class-dump-z output.</p>
+
+<p><img src="/images/posts/ios8/12.png" alt="12" /></p>
+
+<p>As we can see,the method validateLogin returns a BOOL value. Well, it can be assumed that this method checks whether the username and password are correct and returns a YES or NO accordingly. With Cycript, we can change the implementation for a particular message. So let’s change the implementation to something that always returns TRUE.</p>
+
+<p><img src="/images/posts/ios8/13.png" alt="13" /></p>
+
+<p>So the R.H.S contains a javascript function that always returns true. Let’s now tap on <code class="language-plaintext highlighter-rouge">Login Method 1</code> in the app.</p>
+
+<p><img src="/images/posts/ios8/IMG_0103.PNG" alt="IMG 0103" /></p>
+
+<p>As you can see, the authentication was successful and the app let us through. We have just performed method swizzling using Cycript to bypass a login form.</p>
+
+<h2 id="some-other-cool-things">Some other cool things</h2>
+
+<p>Now that we have seen how method swizzling works, it would be interesting to know some other way to bypass this authentication. From the class-dump-z output, we can figure out that once validateLogin returns TRUE, the method <code class="language-plaintext highlighter-rouge">pushLoginPage</code> gets called. Some other names for such methods could have been <code class="language-plaintext highlighter-rouge">pushUserPage</code>, or <code class="language-plaintext highlighter-rouge">pushLoginSuccessfulPage</code> etc. Well, we don’t need the validation to be true. We can always call this method ourselves.</p>
+
+<p><img src="/images/posts/ios8/14.png" alt="14" /></p>
+
+<p>Since this is an instance method, we got to the instance using <code class="language-plaintext highlighter-rouge">UIApp.keyWindow.rootViewController.visibleViewController</code> and then called the method .Please note that this may lead to crashes or inconsistent data as the properties of the pushed View Controller may depend on the login information entered.If you are up for another challenge, try bypassing the login form after tapping on <code class="language-plaintext highlighter-rouge">Login Method 2</code>. We will discuss how to bypass this in later articles.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article we looked at some Method Swizzling techniques using Cycript. In later articles we will discuss more automation techniques and better tools that we can use to achieve this goal. We will also look at how we can use gdb for performing runtime analysis and otool for gathering other kinds of information.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

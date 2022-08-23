@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 35 – Auditing iOS Applications With iDB | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 35 – Auditing iOS Applications With iDB" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this article, we will look at another cool utility named iDB for pentesting iOS applications." />
+<meta property="og:description" content="In this article, we will look at another cool utility named iDB for pentesting iOS applications." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-10-18T14:14:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 35 – Auditing iOS Applications With iDB" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2014-10-18T14:14:00+00:00","datePublished":"2014-10-18T14:14:00+00:00","description":"In this article, we will look at another cool utility named iDB for pentesting iOS applications.","headline":"iOS Application Security Part 35 – Auditing iOS Applications With iDB","mainEntityOfPage":{"@type":"WebPage","@id":"/2014/10/18/ios-application-security-part-35-auditing-ios-applications-with-idb.html"},"url":"/2014/10/18/ios-application-security-part-35-auditing-ios-applications-with-idb.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 35 – Auditing iOS Applications With iDB</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 18 Oct 2014
+    
+  </div>
+  
+  <p>In this article, we will look at another cool utility named iDB for pentesting iOS applications.</p>
+
+<p>Before that, i would like to apologize for coming up late with this article. A lot of you have been requesting articles on different topics and i promise that i will write on them soon :). So since we are best friends again, let’s dive into this tool.</p>
+
+<p>iDB is open source and you can download it from its <a href="https://github.com/dmayer/idb">Github</a> page. You can then follow the tutorial <a href="https://github.com/dmayer/idb/wiki/Getting-started">here</a> to know how to install it. Installation might take some time as there might be some dependencies you will have to install, so have some patience. Also, please note that it works with ruby versions 1.9 and 2.1 so make sure you set that version of ruby. You can use <em>rvm list</em> to list the versions of ruby installed on your system and then use <em>rvm use</em> followed by the version of ruby that you want to use.</p>
+
+<!-- more -->
+
+<p>Once you are done installing iDB, browser to its root directory and open it using the command <em>ruby gidb.rb</em>.</p>
+
+<p><img src="/images/posts/ios35/1.png" alt="1" /></p>
+
+<p>This will launch iDB.</p>
+
+<p><img src="/images/posts/ios35/2.png" alt="2" /></p>
+
+<p>Before you start using iDB, you must set up the connection settings. Go to Ruby -&gt; Preferences.</p>
+
+<p><img src="/images/posts/ios35/3.png" alt="3" /></p>
+
+<p>Now under the <em>Device Config</em> tab, select either SSH directly or SSH over USB which uses usbmuxd internally. I prefer the latter one. Provide your username and password and the port number over which SSH is running.</p>
+
+<p><img src="/images/posts/ios35/4.png" alt="4" /></p>
+
+<p>Under the port forwarding section, you can set options for port forwarding if you want. This is generally done by the syntax <em>remote:8080 -&gt; localhost:8080</em> which is quite self explanatory. Here, we are not going to set any port forwarding as we really don’t need it for this tutorial, but we must set the option <em>Port for Manual SSH</em> which will be used by usbmuxd. What this will do is forward all the connections sent to port 2222 on localhost to the device on port 22 over USB.</p>
+
+<p><img src="/images/posts/ios35/5.png" alt="5" /></p>
+
+<p>So basically, you can now just SSH to localhost on port 2222 and it will connect you to your device.</p>
+
+<p><img src="/images/posts/ios35/6.png" alt="6" /></p>
+
+<p>Now make sure your device is connected to your system over USB. Go to Devices and select the option <em>USB Device</em> to connect to your device.</p>
+
+<p><img src="/images/posts/ios35/7.png" alt="7" /> <strong>One of the unique functionalities of iDB is that it allows you to connect to iOS simulators as well. I have tried it and it works quite well. This is specially helpful for iOS developers who use Xcode and want to audit their apps quite frequently. I would like you to check that feature out as well.</strong></p>
+
+<p>As soon as iDB connects to your device, it will do a quick analysis and tell you what apps that it needs are already installed on your device and which one needs to be installed. You can just click on install next to the tool to install it. Make sure you install each of the required dependencies. In some cases you might feel that the application is already installed. Well, iDB checks for files in specific locations, for e.g /usr/bin, so it might not be able to detect it always. Its better just to reinstall the tool in case iDB is not able to detect it.</p>
+
+<p><img src="/images/posts/ios35/8.png" alt="8" /></p>
+
+<p>Once you have installed all the apps, click on <em>Select App</em> on the top left and select the application that you want to audit. In this case, i am going to select <a href="http://damnvulnerableiosapp.com">Damn Vulnerable iOS application</a> <img src="/images/posts/ios35/9.png" alt="9" /></p>
+
+<p>Next, click on <em>Launch App</em> to launch your app on the device.</p>
+
+<p><img src="/images/posts/ios35/10.png" alt="10" /></p>
+
+<p>On the left hand side, you can click on <em>Analyze Binary</em> to see whether certain security features like Encryption, PIE etc have been enabled in the app or not. Since i have installed this app manually on a jailbroken device, there is no encryption.</p>
+
+<p><img src="/images/posts/ios35/11.png" alt="11" /></p>
+
+<p>So let’s go through each feature one by one. On the <em>Storage</em> tab, you can see all the files DVIA is writing to or has already written to along with their data protection levels. In case it doesn’t show up, click Refresh.</p>
+
+<p><img src="/images/posts/ios35/12.png" alt="12" /></p>
+
+<p>The <em>URL Handlers</em> tab tells you which URL schemes the app registers to. You can then call any url starting with that url scheme to see how the app reacts to it.</p>
+
+<p><img src="/images/posts/ios35/13.png" alt="13" /></p>
+
+<p>The binary tab will show you all the Shared libraries the app is using, class information using <em>Weak Class Dump</em> and all the strings it could find in the binary.</p>
+
+<p><img src="/images/posts/ios35/14.png" alt="14" /></p>
+
+<p>The filesystem tab can be used to see all the files in the application sandbox folder along with their permisions. If you want to see the contents of any file, just double click on it.</p>
+
+<p><img src="/images/posts/ios35/15.png" alt="15" /> <img src="/images/posts/ios35/16.png" alt="16" /></p>
+
+<p>The Tools section will allow you to see the cached screenshot that is stored on the device whenever the application goes to the background.</p>
+
+<p><img src="/images/posts/ios35/17.png" alt="17" /></p>
+
+<p>And you can also install the Burp CA certificate that is used for analyzing SSL connections directly on your device or simulator. For device, it will simply open the url http://burp (Make sure proxy is set on your device). This is again quite a useful feature and saves you a lot of time. You can also edit the hosts file on your system in case you want to redirect the request for a particular ip or hostname to some other location.</p>
+
+<p>The Log tab shows you the device logs. It can be used to test scenarios when the application is logging sensitive information to the console.</p>
+
+<p><img src="/images/posts/ios35/18.png" alt="18" /></p>
+
+<p>The keychain tab will dump all the keychain information stored using this application using the keychain dumper utility.</p>
+
+<p><img src="/images/posts/ios35/19.png" alt="19" /></p>
+
+<p>The pasteboard tab will analyze the pasteboard buffer to see if there is some sensitive information stored in the buffer. As you can see, here it finds a string named <em>secret123</em> stored in the pasteboard buffer.</p>
+
+<p><img src="/images/posts/ios35/20.png" alt="20" /></p>
+
+<p>Overall, iDB is a great tool for iOS pentesting and helps us save a lot of time by doing most of the tasks with just one click. There are other features as well such as integration with Cycript and Snoop-it, but they are still in the development phase. I would recommend that you clone the repository from github if you want to check those features out.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

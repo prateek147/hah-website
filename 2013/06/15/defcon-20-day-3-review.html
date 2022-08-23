@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Defcon 20 Day 3 Review | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Defcon 20 Day 3 Review" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Defcon day 3 started with one of the most awaited talks of Defcon 20. It was the talk “Defeating PPTP VPNs and WPA2 Enterprise with MS-CHAPv2” by Moxie Marlinspike, David Hulton and Marsh Ray. Moxie marlinspike has been one of the most popular speakers at Defcon for the past few years and as expected, the hall was full of people." />
+<meta property="og:description" content="Defcon day 3 started with one of the most awaited talks of Defcon 20. It was the talk “Defeating PPTP VPNs and WPA2 Enterprise with MS-CHAPv2” by Moxie Marlinspike, David Hulton and Marsh Ray. Moxie marlinspike has been one of the most popular speakers at Defcon for the past few years and as expected, the hall was full of people." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-15T02:53:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Defcon 20 Day 3 Review" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-15T02:53:00+00:00","datePublished":"2013-06-15T02:53:00+00:00","description":"Defcon day 3 started with one of the most awaited talks of Defcon 20. It was the talk “Defeating PPTP VPNs and WPA2 Enterprise with MS-CHAPv2” by Moxie Marlinspike, David Hulton and Marsh Ray. Moxie marlinspike has been one of the most popular speakers at Defcon for the past few years and as expected, the hall was full of people.","headline":"Defcon 20 Day 3 Review","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/15/defcon-20-day-3-review.html"},"url":"/2013/06/15/defcon-20-day-3-review.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Defcon 20 Day 3 Review</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/defcon/">defcon</a>
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 15 Jun 2013
+    
+  </div>
+  
+  <p>Defcon day 3 started with one of the most awaited talks of Defcon 20. It was the talk “Defeating PPTP VPNs and WPA2 Enterprise with MS-CHAPv2” by Moxie Marlinspike, David Hulton and Marsh Ray. Moxie marlinspike has been one of the most popular speakers at Defcon for the past few years and as expected, the hall was full of people.</p>
+
+<p><img src="/images/posts/defcon3/IMG_1216.JPG" alt="IMG 1216" /></p>
+
+<!--more-->
+
+<h2 id="defeating-pptp-vpns-and-wpa2-enterprise-with-ms-chapv2">Defeating PPTP VPNs and WPA2 Enterprise with MS-CHAPv2</h2>
+
+<p>This talk was mainly about pointing out the vulnerabilities in the MS-CHAP v2 protocol. The speaker talks about how the previous research has shown that the security of the protocol is based on the password of the user. PPTP and WPA 2 Enterprise (which is used by the Defcon wi-fi network) both depend on MS-CHAP v2 protocol. He then explains how many of the VPN providers support PPTP, giving a specific example about Ipredator which only supports PPTP. He then gives a quick explaination about the MS-CHAP v2 handshake. He then explains how all the parameters in the handshake except the md4 hash of the password can be found as it is either know or sent in plaintext. Using some advanced mathematical logic, he then explains how the complexity of the password is that of a single DES encrypt, which is 2 to the power of 56. So the only thing to do now is to bruteforce the challenged response. Moxie then passes on the conversation to David hulton who explains how by using a GPA in a machine with a number of cores, it is possible to decrypt the challenged response in less than 24 hours. He then passes on the conversation to Moxie who explains about a new tool called “Chapcrack” that they will be releasing which is capable of parsing packets, get all the information about MS-CHAP v2 handshake, username etc. He then explains how the ability to crack hashes faster is not available to the general public. Finally, he announces the additional feature to crack MS-CHAP v2 responses in his website Cloud Cracker. The user can enter his email address on the website and get the result within 1 day.</p>
+
+<p><img src="/images/posts/defcon3/IMG_1217.JPG" alt="IMG 1217" /></p>
+
+<h2 id="owning-bad-guys-with-javascript-botnets">Owning bad guys with Javascript Botnets</h2>
+
+<p>This was also a very good and informative talk by Chema Alonso. The speaker starts by telling how people think that creating a botnet is considered a very tedious task. He then talks about a new idea for creating botnet that he has been working on. He talks about the idea of a JS in the middle attack. This would allow the attacker to modify form fields, get access to cookie etc. But how will it be possible to inject JS code in the middle. He then talks about using a proxy server which will allow the users to direct their traffic through it. He then tells about how the information about the proxy server is posted by other people on the internet. Once the IP address of the proxy server is spread over the internet, people will connect to it without thinking much. Once the people connect through, all the javascript files are infected with the malicious Javascript code. The speaker then tells that how in just one day he was able to get control of 5000 bots. The speaker then finally concludes by giving examples of the information that he found in some of the bots and gives a quick look into the control panel of this botnet.</p>
+
+<p><img src="/images/posts/defcon3/IMG_1221.JPG" alt="IMG 1221" /></p>
+
+<p>A pic from the panel discussion “Meet the Fed Panel Two”</p>
+
+<p><img src="/images/posts/defcon3/IMG_1225.JPG" alt="IMG 1225" /></p>
+
+<p>A pic from “Q &amp; A with the Men (and Women) in Black”</p>
+
+<p><img src="/images/posts/defcon3/IMG_1226.JPG" alt="IMG 1226" /></p>
+
+<p>A pic from “Bigger Monster,Weaker Chains: The NSA and the Constitution”</p>
+
+<p><img src="/images/posts/defcon3/IMG_1227.JPG" alt="IMG 1227" /></p>
+
+<p>If you are at Defcon, you may not want to miss on the Defcon nightlife. There are a lot of parties held everyday, some of them are private and need invitations, while some of them are open to all the Defcon attendees. I went to the Infected mushroom party on Saturday night. Here is a pic from the party.</p>
+
+<p><img src="/images/posts/defcon3/IMG_1245.JPG" alt="IMG 1245" /></p>
+
+<p>And here is a video from the Infected Mushroom party.</p>
+
+<h3 id="embed-code-for-video-goes-here">EMBED CODE FOR VIDEO GOES HERE</h3>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

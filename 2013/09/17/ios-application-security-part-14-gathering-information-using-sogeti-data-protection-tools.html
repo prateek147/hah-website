@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 14 – Gathering information using Sogeti Data Protection tools | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 14 – Gathering information using Sogeti Data Protection tools" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous article, we looked at how we can boot a device using a custom ramdisk using Sogeti Data protection tools. In this article, we will look at how we can use some of their tools to gather information from the device like fetching the keychain information, dumping the entire filesystem or even bruteforcing the passcode." />
+<meta property="og:description" content="In the previous article, we looked at how we can boot a device using a custom ramdisk using Sogeti Data protection tools. In this article, we will look at how we can use some of their tools to gather information from the device like fetching the keychain information, dumping the entire filesystem or even bruteforcing the passcode." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-09-17T13:10:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 14 – Gathering information using Sogeti Data Protection tools" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-09-17T13:10:00+00:00","datePublished":"2013-09-17T13:10:00+00:00","description":"In the previous article, we looked at how we can boot a device using a custom ramdisk using Sogeti Data protection tools. In this article, we will look at how we can use some of their tools to gather information from the device like fetching the keychain information, dumping the entire filesystem or even bruteforcing the passcode.","headline":"iOS Application Security Part 14 – Gathering information using Sogeti Data Protection tools","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/09/17/ios-application-security-part-14-gathering-information-using-sogeti-data-protection-tools.html"},"url":"/2013/09/17/ios-application-security-part-14-gathering-information-using-sogeti-data-protection-tools.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 14 – Gathering information using Sogeti Data Protection tools</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 17 Sep 2013
+    
+  </div>
+  
+  <p>In the previous article, we looked at how we can boot a device using a custom ramdisk using Sogeti Data protection tools. In this article, we will look at how we can use some of their tools to gather information from the device like fetching the keychain information, dumping the entire filesystem or even bruteforcing the passcode.</p>
+
+<p>Until the previous article, we had successfully set up a connection to the device using usbmux, ssh’ed into the device and had mounted the partitions. Here is what these partitions contain.</p>
+
+<!-- more -->
+
+<p><img src="/images/posts/ios14/1.png" alt="1" /></p>
+
+<p>Now we are free to navigate inside these partitions and do whatever we want. As we can see, iphone data protection tools has put some scripts that we can use.</p>
+
+<p><img src="/images/posts/ios14/2.png" alt="2" /></p>
+
+<p>Let’s use the bruteforce script. Currently the ipod is protected with a passcode “1234”. This also means that the keychain is protected with this passcode (as discussed in previous articles) and hence if we want to dump the keychain, then we have to find the passcode. So let’s run this script. As you can see, it starts bruteforcing the passcode.</p>
+
+<p><img src="/images/posts/ios14/3.png" alt="3" /></p>
+
+<p>After some time, we can see that is was successfully able to figure out the passcode.</p>
+
+<p><img src="/images/posts/ios14/4.png" alt="4" /></p>
+
+<p>We can also see that it writes these results to a plist file. This plist file is required by other python scripts, for e.g while dumping the keychain, the passcode is needed as the keychain information is protected with a passcode. There is another python script for bruteforcing the passcode stored inside the python_scripts directory inside the data protection tools repository.</p>
+
+<p><img src="/images/posts/ios14/5.png" alt="5" /></p>
+
+<p>Once it has figured out the passcode, it will create a folder with name as the UDID of your device and will store a plist file inside it containing information about the passcode and the keys that were derived. You can then use this plist file in other places where it is needed, for e.g while decrypting the keychain.</p>
+
+<p><img src="/images/posts/ios14/6.png" alt="6" /></p>
+
+<p>Here is the information contained in that plist file.</p>
+
+<p><img src="/images/posts/ios14/7.png" alt="7" /></p>
+
+<p>Please note that using an alphanumeric passcode will make it much more difficult for a successful bruteforce attack to be carried out and it will also protect the information in the keychain. However, most people are not aware of this and prefer to use a simple 4 digit numeric passcode.</p>
+
+<p>Anyways, coming back to the device there is another script <em>device_infos</em> that dumps information about the device which contains information like the Serial number, the Mac address etc.</p>
+
+<p><img src="/images/posts/ios14/8.png" alt="8" /></p>
+
+<p>One of the most important python scripts is the ios_examiner python script. However, while running it, i got an error related to unicode strings and i was able to modify the python script using the help of <a href="https://code.google.com/p/iphone-dataprotection/issues/detail?id=70#c2">this</a> link.</p>
+
+<p>Now run the ios_examiner python script without any commands. You will be shown an interpreter now where you can type commands.</p>
+
+<p><img src="/images/posts/ios14/9.png" alt="9" /></p>
+
+<p>You can see the full set of commands just by typing <em>help</em>.</p>
+
+<p><img src="/images/posts/ios14/10.png" alt="10" /></p>
+
+<p>Just typing keychain will dump the keychain.</p>
+
+<p><img src="/images/posts/ios14/x.png" alt="X" /></p>
+
+<p>However, you will notice that it says <em>Keybag state: locked</em> and there are some items that don’t display (shown as ?). These are the items that have higher protection attributes (for e.g AfterFirstUnlock) and they require the device passcode in order to be decrypted. But then we had already figured out the passcode right ? Well yes, but we used a different python script and the plist file containing passcode information was stored somewhere else. The most simple way to go forward is to just use the bruteforce script from the interpreter, give it the passcode, allow it to save the plist file in the current location and now you can use the keychain script again.</p>
+
+<p><img src="/images/posts/ios14/11.png" alt="11" /></p>
+
+<p>Using the command <em>protected_files</em> will give you the files that are protected with protection attributes != NSProtectionNone.</p>
+
+<p><img src="/images/posts/ios14/12.png" alt="12" /></p>
+
+<p>You can also dump the current partition which will create a .dmg file that you can use to later mount the partition and explore it.</p>
+
+<p><img src="/images/posts/ios14/13.png" alt="13" /></p>
+
+<p>There is another shell script that will dump the partition for you. It saves the created .dmg file inside a folder with name as the UDID of the device.</p>
+
+<p><img src="/images/posts/ios14/14.png" alt="14" /></p>
+
+<p>Once the .dmg file is fully generated, you can just click on it to mount it. Now you can explore the filesystem whenever you want.</p>
+
+<p><img src="/images/posts/ios14/15.png" alt="15" /></p>
+
+<p>Now you can just reboot the device by issuing the reboot command and it will return the device back to its previous state. Make sure that the device is disconnected from you computer while doing so.</p>
+
+<p><img src="/images/posts/ios14/16.png" alt="16" /> <strong>Conclusion</strong></p>
+
+<p>In this article, we looked at how we can use Sogeti data protection tools to gather various kinds of information from the device like keychain, protected files etc. We can also take a dump of the entire filesystem and analyze it later. This technique can be perfomed on any A4 device using a bootrom exploit (without jailbreaking it) and the device can then be rebooted to take it back to its normal state thereby preventing any normal user from knowing if anything happenned at all.</p>
+
+<p><strong>References</strong></p>
+
+<ul>
+  <li>Iphone-dataprotection - iOS Forensics tools<br />
+<a href="https://code.google.com/p/iphone-dataprotection/">https://code.google.com/p/iphone-dataprotection/</a></li>
+</ul>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

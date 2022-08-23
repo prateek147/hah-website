@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 15 – Static Analysis of iOS Applications using iNalyzer | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 15 – Static Analysis of iOS Applications using iNalyzer" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous article, we looked at how we can use Sogeti Data protection tools to boot an iDevice using a custom ramdisk with the help of a bootrom exploit. In this article, we will look at a tool named iNalyzer than we can use for black box assessment of iOS applications. iNalyzer allows us to view the class information, perform runtime analysis and many other things. Basically it automates the efforts of decrypting the application, dumping class information and presents it in a much more presentable way. We can also hook into a running process just like Cycript and invoke methods during runtime. iNalyzer is developed and maintained by AppSec Labs and its offical page can be found here. iNalyzer is also made available open source and its github page can be found here." />
+<meta property="og:description" content="In the previous article, we looked at how we can use Sogeti Data protection tools to boot an iDevice using a custom ramdisk with the help of a bootrom exploit. In this article, we will look at a tool named iNalyzer than we can use for black box assessment of iOS applications. iNalyzer allows us to view the class information, perform runtime analysis and many other things. Basically it automates the efforts of decrypting the application, dumping class information and presents it in a much more presentable way. We can also hook into a running process just like Cycript and invoke methods during runtime. iNalyzer is developed and maintained by AppSec Labs and its offical page can be found here. iNalyzer is also made available open source and its github page can be found here." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-09-17T13:11:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 15 – Static Analysis of iOS Applications using iNalyzer" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-09-17T13:11:00+00:00","datePublished":"2013-09-17T13:11:00+00:00","description":"In the previous article, we looked at how we can use Sogeti Data protection tools to boot an iDevice using a custom ramdisk with the help of a bootrom exploit. In this article, we will look at a tool named iNalyzer than we can use for black box assessment of iOS applications. iNalyzer allows us to view the class information, perform runtime analysis and many other things. Basically it automates the efforts of decrypting the application, dumping class information and presents it in a much more presentable way. We can also hook into a running process just like Cycript and invoke methods during runtime. iNalyzer is developed and maintained by AppSec Labs and its offical page can be found here. iNalyzer is also made available open source and its github page can be found here.","headline":"iOS Application Security Part 15 – Static Analysis of iOS Applications using iNalyzer","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/09/17/ios-application-security-part-15-static-analysis-of-ios-applications-using-inalyzer.html"},"url":"/2013/09/17/ios-application-security-part-15-static-analysis-of-ios-applications-using-inalyzer.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 15 – Static Analysis of iOS Applications using iNalyzer</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 17 Sep 2013
+    
+  </div>
+  
+  <p>In the previous article, we looked at how we can use Sogeti Data protection tools to boot an iDevice using a custom ramdisk with the help of a bootrom exploit. In this article, we will look at a tool named iNalyzer than we can use for black box assessment of iOS applications. iNalyzer allows us to view the class information, perform runtime analysis and many other things. Basically it automates the efforts of decrypting the application, dumping class information and presents it in a much more presentable way. We can also hook into a running process just like Cycript and invoke methods during runtime. iNalyzer is developed and maintained by <a href="https://appsec-labs.com">AppSec Labs</a> and its offical page can be found <a href="https://appsec-labs.com/iNalyzer">here</a>. iNalyzer is also made available open source and its github page can be found <a href="https://github.com/appsec-labs/iNalyzer">here</a>.</p>
+
+<!-- more -->
+
+<p>iNalyzer require some dependencies to be installed before use. Please make sure to install <a href="http://www.graphviz.org/download..php">Graphviz</a> and <a href="http://www.stack.nl/~dimitri/doxygen/download.html#srcbin">Doxygen</a> as iNalyzer won’t function without these. Also, please note that while performing my tests on a Mac OS X Mountain Lion 10.8.4, i had problems with the latest version of Graphviz and it used to hang every time. Hence i downloaded an older version of Graphviz (v 2.30.1) and it worked fine for me. You can find older versions of Graphviz for Mac OS <a href="http://www.graphviz.org/pub/graphviz/stable/macos/">here</a>.</p>
+
+<p>The first step is to install iNalyzer on your jailbroken iDevice. To do that, go to Cydia –&gt; Manage and make sure the source http://appsec-labs.com/cydia/ is added as shown in the image below.</p>
+
+<p><img src="/images/posts/ios15/1.PNG" alt="1" /></p>
+
+<p>Then go to Search and search for <em>iNalyzer</em>. Depending on the iOS version that you are running, you should download the corresponding version of iNalyzer.</p>
+
+<p><img src="/images/posts/ios15/2.PNG" alt="2" /></p>
+
+<p>As you can see, i have already installed iNalyzer.</p>
+
+<p><img src="/images/posts/ios15/3.PNG" alt="3" /></p>
+
+<p>Now ssh into the device and navigate inside the iNalyzer application directory. iNalyzer is installed in the <em>/Applications</em> directory because it needs to run as a root user. If you don’t understand this concept, please make sure to read the previous articles in this series.</p>
+
+<p><img src="/images/posts/ios15/4.png" alt="4" /></p>
+
+<p>Run ./iNalyzer to start iNalyzer.</p>
+
+<p><img src="/images/posts/ios15/5.png" alt="5" /></p>
+
+<p>Now if you go to your homescreen and look at the iNalyzer app icon, you will see a badge icon number on top of it. This indicates that the app can be remotely accessed via a web interface and the port number is the badge icon number represented here. If you run ./iNalyzer again, it will stop iNalyzer. Hence, make sure to remember that running ./iNalyzer starts and closes the application alternatively.</p>
+
+<p><img src="/images/posts/ios15/6.png" alt="6" /></p>
+
+<p>Now find the ip address of your iDevice and open the url ip:port from your browser. In my case the port number is 5544 and the ip address of the device is 10.0.1.23 . Hence the url is http://10.0.1.23:5544/ . Once you go there, you will be presented with an interface as shown in the figure below. You can then select an application and iNalyzer will prepare a zip file and download it on your system for analysis.</p>
+
+<p><img src="/images/posts/ios15/7.png" alt="7" /></p>
+
+<p>However, i had some problems while performing this. Hence, we will also be looking at an alternative solution to do the same step. To do that, first of all make sure iNalyzer is running. Then navigate inside the iNalyzer directory and run <em>iNalyzer5</em> without any arguments.</p>
+
+<p><img src="/images/posts/ios15/8.png" alt="8" /></p>
+
+<p>You will see all the list of apps available for analysis. In this case, let’s select the Defcon App for analysis.</p>
+
+<p><img src="/images/posts/ios15/9.png" alt="9" /></p>
+
+<p>You will see that iNalyzer begins its work. It decrypts the app, finds out the class information and other things. As you can see from the figure below, once iNalyzer has finished its job, it will create an ipa file and store it at the location as highlighted in the image below.</p>
+
+<p><img src="/images/posts/ios15/10.png" alt="10" /></p>
+
+<p>So now we need to get this ipa file and download it on our system. We can do that via sftp.</p>
+
+<p><img src="/images/posts/ios15/11.png" alt="11" /></p>
+
+<p>Once we have the ipa file, change its extension to zip. Then unzip the file.</p>
+
+<p><img src="/images/posts/ios15/12.png" alt="12" /></p>
+
+<p>Now with a terminal, navigate inside the folder Payload–&gt;Doxygen.</p>
+
+<p><img src="/images/posts/ios15/13.png" alt="13" /></p>
+
+<p>You will see a shell script named doxMe.sh. If you look inside it, you will notice that it automates the task of running Doxygen for us. Doxygen also runs Graphviz for generating graphs and the results are stored inside a folder with the name <em>html</em>. Basically, iNalyzer has already stored all the class information for us inside a folder named <em>Reversing Files</em> and it uses Doxygen and Graphviz to display the information in a much more presentable format.This shell script also opens up the <em>index.html</em> file inside the created <em>html</em> folder.</p>
+
+<p><img src="/images/posts/ios15/14.png" alt="14" /></p>
+
+<p>So lets run this shell script and let iNalyzer do all the things for us.</p>
+
+<p><img src="/images/posts/ios15/15.png" alt="15" /> <img src="/images/posts/ios15/16.png" alt="16" /></p>
+
+<p>Once this is done, iNalyzer will automatically open up the index.html file stored inside the html folder that was created. Here is what it looks like. In this case, i am using chrome. However, the developer of this tool personally recommended me to use firefox browser for runtime analysis as the other browsers may be buggy. As you can see from the image below, the first page gives a strings analysis of the entire app. It divides the strings into SQL and URL strings.</p>
+
+<p><img src="/images/posts/ios15/17.png" alt="17" /></p>
+
+<p>You can also have a look at all the view controller classes used in the app.</p>
+
+<p><img src="/images/posts/ios15/18.png" alt="18" /></p>
+
+<p>Tapping on any of the view controllers will show you its methods and properties.</p>
+
+<p><img src="/images/posts/ios15/19.png" alt="19" /></p>
+
+<p>You can also look at the contents of the Info.plist file.</p>
+
+<p><img src="/images/posts/ios15/20.png" alt="20" /></p>
+
+<p>If you go under the Classes Tab and under <em>Class Index</em> you will see a list of all the classes being used in the app. Some of them are Apple’s own classes while some are created by the developer of this app.</p>
+
+<p><img src="/images/posts/ios15/21.png" alt="21" /></p>
+
+<p>If you go under the <em>Class Hierarchy</em> tab, you will see the class information and relationships being represented in a graphical format. This gives us a fair amount of knowledge on how this application works. These graphs are generated by the Graphviz tool.</p>
+
+<p><img src="/images/posts/ios15/22.png" alt="22" /></p>
+
+<p>If you go to the files tab, you can have a look at all the interface files that iNalyzer generated.</p>
+
+<p><img src="/images/posts/ios15/23.png" alt="23" /> <strong>Conclusion</strong></p>
+
+<p>In this article, we looked at static analysis of iOS applications using iNalyzer and how easy it makes our job. In the next article, we will look at how we can use iNalyzer further for runtime analysis of iOS applications.</p>
+
+<p><strong>References</strong></p>
+
+<ul>
+  <li>iNalyzer<br />
+<a href="https://appsec-labs.com/iNalyzer">https://appsec-labs.com/iNalyzer</a></li>
+</ul>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

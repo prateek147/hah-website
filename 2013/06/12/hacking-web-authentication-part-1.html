@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hacking Web Authentication – Part 1 | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Hacking Web Authentication – Part 1" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Authentication is the process of validating something as authentic. When a client makes a request to a web server for accessing a resource, sometimes the web server has to verify the user’s identity. For that the user will have to supply some credentials and the web server validates it. All subsequent decisions are then taken on the basis of the credentials supplied by the client. This process is called Authentication. Once the user is authenticated, the web server sets up the appropriate permissions for the user on it’s resources. Whenever the user tries to access a resource, the server will check if the user has appropriate permissions to access the resource or not. This process is called Authorization.In this article we will look at some of the common types of authentication used these days, discuss the vulnerabilities in them, and then move on to some attacks against these authentication types." />
+<meta property="og:description" content="Authentication is the process of validating something as authentic. When a client makes a request to a web server for accessing a resource, sometimes the web server has to verify the user’s identity. For that the user will have to supply some credentials and the web server validates it. All subsequent decisions are then taken on the basis of the credentials supplied by the client. This process is called Authentication. Once the user is authenticated, the web server sets up the appropriate permissions for the user on it’s resources. Whenever the user tries to access a resource, the server will check if the user has appropriate permissions to access the resource or not. This process is called Authorization.In this article we will look at some of the common types of authentication used these days, discuss the vulnerabilities in them, and then move on to some attacks against these authentication types." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-12T04:57:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Hacking Web Authentication – Part 1" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-12T04:57:00+00:00","datePublished":"2013-06-12T04:57:00+00:00","description":"Authentication is the process of validating something as authentic. When a client makes a request to a web server for accessing a resource, sometimes the web server has to verify the user’s identity. For that the user will have to supply some credentials and the web server validates it. All subsequent decisions are then taken on the basis of the credentials supplied by the client. This process is called Authentication. Once the user is authenticated, the web server sets up the appropriate permissions for the user on it’s resources. Whenever the user tries to access a resource, the server will check if the user has appropriate permissions to access the resource or not. This process is called Authorization.In this article we will look at some of the common types of authentication used these days, discuss the vulnerabilities in them, and then move on to some attacks against these authentication types.","headline":"Hacking Web Authentication – Part 1","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/12/hacking-web-authentication-part-1.html"},"url":"/2013/06/12/hacking-web-authentication-part-1.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Hacking Web Authentication – Part 1</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+      <a class="tag" href="/tag/authentication/">authentication</a>
+      
+      <a class="tag" href="/tag/burpsuite/">burpsuite</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 12 Jun 2013
+    
+  </div>
+  
+  <p>Authentication is the process of validating something as authentic. When a client makes a request to a web server for accessing a resource, sometimes the web server has to verify the user’s identity. For that the user will have to supply some credentials and the web server validates it. All subsequent decisions are then taken on the basis of the credentials supplied by the client. This process is called Authentication. Once the user is authenticated, the web server sets up the appropriate permissions for the user on it’s resources. Whenever the user tries to access a resource, the server will check if the user has appropriate permissions to access the resource or not. This process is called Authorization.In this article we will look at some of the common types of authentication used these days, discuss the vulnerabilities in them, and then move on to some attacks against these authentication types.</p>
+
+<!--more-->
+
+<p>Please note that we will be using Burpsuite in this article for analyzing the requests sent through. Burpsuite is available by default in Backtrack. In order to intercept the requests and manipulate them, we must configure our browser to use Burp’s proxy, which is 127.0.0.1:8080 by default. We will also be using Wireshark a bit.</p>
+
+<p><img src="/images/posts/webauth1//1.png" alt="1" /></p>
+
+<p>Once this is done, open up Burpsuite, go to Proxy–&gt;Intercept and make sure Intercept is on.</p>
+
+<p><img src="/images/posts/webauth1//2.png" alt="2" /> ˜</p>
+
+<p>Now go to the options tab and check to see if the proxy is listening on port 8080. Also make sure “Generate CA-signed per-host certificates” option is checked. Each time the user connects to a SSL protected website, Burpsuite will generate a server certificate for that host, signed by a unique CA certificate which is generated in Burpsuite during it’s installation. The purpose of this is to reduce the SSL errors that occur because of the proxy in between.</p>
+
+<p><img src="/images/posts/webauth1//3.png" alt="3" /></p>
+
+<p>Now that we have set up Burpsuite and the configurations in our browser properly, we can intercept requests. Please note that whenever you send a request, it will be intercepted by Burpsuite and you will have to forward it manually. Hence it is advisable to keep “intercept is on” option checked only when you really want to see the contents of the packets going through.</p>
+
+<h2 id="types-of-authentication">Types of Authentication</h2>
+
+<h3 id="1http-basic-authentication">1)HTTP-Basic Authentication</h3>
+
+<p>HTTP-Basic authentication uses a combination of a username and password to authenticate the user. The process starts when a user sends a GET request for a resource without providing any authentication credentials. The request is intercepted by Burpsuite and looks something like this.</p>
+
+<p><img src="/images/posts/webauth1//4.png" alt="4" /></p>
+
+<p>The server responds back with a “Authorization Required” message in it’s header.We can see the packet in Wireshark. As we can see from the header that the authentication is of the type “Basic”. The browser is quick to recognize this and displays a popup to the user requesting for a Username and a Password. Note that the popup is displayed by the browser and not the web application.</p>
+
+<p><img src="/images/posts/webauth1//5.png" alt="5" /></p>
+
+<p>Once we type in the username and password and intercept the request the request again using Burpsuite, we get something like this.The last line says “Authorization: Basic aW5mb3NlYzppbmZvc2VjaW5zdGl0dXRl”. This is basically the extra thing being passed in the header now. The text after Basic holds the key. These are basically the credentials in encoded form.The username and password are concatenated with a colon (:) in between and the whole thing is then encoded using the Base64 algorithm. For example, if the username is “infosec” and the password is “infosecinstitute” then the whole thing “infosec:infosecinstitute” is encoded using the Base 64 algorithm.The server then gets the header value, decodes it to get the credentials and grants access to the user if the credentials are correct. The point to note here is that it is very trivial to decode the encoded string to obtain the credentials, hence it is widely vulnerable to eavesdropping attacks.</p>
+
+<p><img src="/images/posts/webauth1//6.png" alt="6" /></p>
+
+<p>Wireshark is able to recognize this and automatically decodes the string to reveal the credentials as shown in the figure below.</p>
+
+<p><img src="/images/posts/webauth1//7.png" alt="7" /></p>
+
+<p>As we can see from the Credentials sections, the username and password are “infosec” and “infosecinstitute” respectively. One of the problems with HTTP-Basic Authentication is that the data is being passed over in plaintext. This risk can be removed by using SSL, which will send the data in encrypted format, and hence the value in the Authorization header will not be visible. However it will be still be vulnerable to many client side attacks, including MITM. It is also vulnerable to Brute force attacks which we will see in the coming sections.</p>
+
+<h3 id="2http-digest-authentication">2)HTTP-Digest Authentication</h3>
+
+<p>Digest Authentication was designed as an improvement over Basic Authentication. One of the major improvements with it is that the data is not passed over in cleartext but in encrypted format. The user first makes a request to the Page without any credentials. The server replies back with a WWW-Authenticate header indicating that credentials are required to access the resource. The server also sends back a random value which is usually called a “nonce”. The browser then uses a cryptographic function to create a message digest of the username, password, nonce, the HTTP methods, and the URL of the page. The cryptographic function used in this case is a one way function, meaning that the message digest can be created in one direction but cannot be reversed back to reveal the values that created it.By default, Digest authentication uses MD5 cryptographic hashing algorithm.</p>
+
+<p>Digest Access authentication is less vulnerable to Eavesdropping attacks than Basic authentication, but is still vulnerable to replay attacks, i.e if a client can replay the message digest created by the encryption, the server will allow access to the client. However to thwart this kind of attack, server nonce sometimes also contains timestamps. Once the server gets back the nonce, it checks its attributes and if the time duration is exceeded, it may reject the request from the client. One of the other good things about Digest access authentication is that the attacker will have to know all the other 4 values (username, nonce, url, http method) in order to carry out a Dictionary or a Brute force attack. This process is more computationally expensive than simple brute force attacks and also has a larger keyspace which makes brute force attack less likely to succeed.</p>
+
+<h3 id="3form-based-authentication">3)Form Based Authentication</h3>
+
+<p>Form Based Authentication uses a form (usually in html) with input tags to allow users to enter their username and password. Once the user submits the information, it is passed over through either GET or POST methods via HTTP or HTTPs to the server. On the server side if the credentials are found to be correct, then the user is authenticated and some random token value or session id is given to the user for subsequent requests. One of the good features about Form Based authentication is that their is no standardized way of encoding or encrypting the username/password, and hence it is highly customizable which makes it immune to the common attacks which were successful against HTML Basic and Digest Authentication mechanisms. Form Based authentication is by far the most popular authentication method used in Web applications. Some of the issues with Form based authentication is that credentials are passed over in plaintext unless steps such as employment of TLS (Transport Layer Security) are not taken.</p>
+
+<p>Let’s see an example of Form based authentication. We will be using DVWA (Damn vulnerable web application) for our exercise as we will be using the same for carrying out a brute force attack against Form based authentication. DVWA can be downloaded from <a href="http://dvwa.co.uk/">here</a>.</p>
+
+<p>Once you have downloaded and installed it, login with the default credentials {admin/password} and click on the Brute Force tab on left side and click on View Source to view the source. Please note that the Security level is set to high in my case. As we can see the form accepts the username and password, validates it to remove any sort of special characters which could be used to perform SQL injection, and then sends it over to a sql query where the credentials are checked against the database to see if they are correct or not.</p>
+
+<p><img src="/images/posts/webauth1//8.png" alt="8" /></p>
+
+<p>let’s input any username/password and intercept the result using Burpsuite. Here is what it should look like in your case.</p>
+
+<p><img src="/images/posts/webauth1//9.png" alt="9" /></p>
+
+<h2 id="attacking-web-authentication">Attacking Web Authentication</h2>
+
+<p>In this section we will be carrying out a bruteforce attack against form based authentication for Security level “High” in Dvwa. Please note that brute force attacks may not work in all cases. In some cases websites will start rejecting your requests after some specified number of unsuccessful tries. Also some websites may use CAPTCHA to validate if a human is indeed making the request or not.</p>
+
+<p>To carry out a brute force attack, we will be using the intruder feature in Burpsuite. Some of the things required for this attack are a list of common usernames and passwords. Go to the form and submit a request using any username/password for now, then intercept the request. Once you have the request, right click on it and click on “send to intruder”</p>
+
+<p><img src="/images/posts/webauth1//10.png" alt="10" /></p>
+
+<p>This will send the request information to the intruder. Go to the intruder tab. Now we will have to configure burpsuite to launch the brute force attack.Under the target tab, we can see that it has already set the target by looking at the request.</p>
+
+<p><img src="/images/posts/webauth1//11.png" alt="11" /></p>
+
+<p>Go to the positions tab now, here we can see the request which we had previously sent to intruder. Some of the things are highlighted in the request. This is basically a guess by Burpsuite to figure out what all things will be changing with each request in a Brute force attack. Since in this case only username and password will be changing with each request, we need to configure Burp accordingly.</p>
+
+<p><img src="/images/posts/webauth1//12.png" alt="12" /></p>
+
+<p>Click on the clear button on the right hand side. This will remove all the highlighted text, now we need to configure Burp to only set the username and password as the parameters for this attack. Highlight the username from this request (in this case “infosec”) and click on Add. Similarly highlight the password from this request and click on Add. This will add the username and password as the first and second parameters. Once you are done, your output should look something like this.</p>
+
+<p><img src="/images/posts/webauth1//13.png" alt="13" /></p>
+
+<p>The next thing we need to do is set the Attack type for this attack, which is found at the top of the request we just modified. By default it is set to Sniper. However in our case we will be using the Attack type “Cluster Bomb”. For more details on which attack is suitable for which scenario, please read Burp’s documentation. Basically the idea of cluster bomb is to use Multiple payload sets (1 for username and 1 for the password), the attack will start by trying all the values in Payload 1 with first value in Payload 2, then by trying all the values in Payload 1 with second value in Payload 2 and so on. As we can see from the image below, our attack type is set to “Cluster Bomb”.</p>
+
+<p><img src="/images/posts/webauth1//14.png" alt="14" /></p>
+
+<p>Go to the payload tab, make sure payload set 1 is selected, click on load and load the file containing a list of usernames. In my case i am using a very small file just for demonstrations purposes. Once you load the file all the usernames will be displayed as shown in the image below.</p>
+
+<p><img src="/images/posts/webauth1//15.png" alt="15" /></p>
+
+<p>Similarly select payload set 2, click on load and load the file containing a list of passwords.</p>
+
+<p><img src="/images/posts/webauth1//16.png" alt="16" /></p>
+
+<p>Go to the options tab now and make sure “store requests” and “store response” options are set under results. Have a look at all the options and see if you need or don’t need any of these options.</p>
+
+<p><img src="/images/posts/webauth1//17.png" alt="17" /></p>
+
+<p>All right we are now set to launch our attack. Click on intruder on the top left and click on “start attack”. We will see a windows pop up with all the requests being made. So how do we know which request is successful. Usually a successful request will have a different response than an unsuccessful request or will have a different status response. In this case we see that the request with the username “admin” and the password “password” has a response of different length than the other responses.</p>
+
+<p><img src="/images/posts/webauth1//18.png" alt="18" /></p>
+
+<p>Let’s click on the request with a different length response. If we click on the response section, we see the text “Welcome to the password protected area admin” in the response. This confirms that the username/password used in this request is the correct one.</p>
+
+<p><img src="/images/posts/webauth1//19.png" alt="19" /></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article we discussed some of the common authentication methods used, the vulnerabilities in these authentication methods and then looked at different ways to attack them. However this is just a part of the story. In the recent years, many other authentication mechanisms have been developed, including use of “One Time passwords”, “Digital Certificates” and use of external authentication service providers like Open ID. Several other attacks which have not been discussed in this article are Session Stealing, Cookie stealing, Cross Site Request Forgery and SQL Injection. We will be discussing all these in the next article.</p>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

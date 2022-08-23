@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Backtrack 5 R3 Walkthrough part 4 | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Backtrack 5 R3 Walkthrough part 4" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="DHCPig" />
+<meta property="og:description" content="DHCPig" />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-15T03:33:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Backtrack 5 R3 Walkthrough part 4" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-15T03:33:00+00:00","datePublished":"2013-06-15T03:33:00+00:00","description":"DHCPig","headline":"Backtrack 5 R3 Walkthrough part 4","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/15/backtrack-5-r3-walkthrough-part-4.html"},"url":"/2013/06/15/backtrack-5-r3-walkthrough-part-4.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Backtrack 5 R3 Walkthrough part 4</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+      <a class="tag" href="/tag/backtrack/">backtrack</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 15 Jun 2013
+    
+  </div>
+  
+  <h2 id="dhcpig">DHCPig</h2>
+
+<p>DHCPig is a very nice and handy little tool used to carry out an advanced DHCP exhaustion attack. It does this by grabbing all the IP addresses in its subnet by sending different DHCP requests for those IP addresses. It also finds out its neighbour’s IP addresses in its vicinity and releases their IP addresses by sending DHCP releases to the server. It then waits for a specific timeout on its sent packets, and if the timeout is reached, it means all the IP addresses in the network are now used up.However, some neighbours may still have IP addresses on the network that will have IP addresses conflicting with the IP addresses taken up the attacking machine. In this case, DHCpig can also knock all the windows systems offline by sending gratuitous ARP requests from all the IP address in the network. A gratuitous ARP request is used to check for duplicate IP addresses. If there is another device on the network using the same IP address (our attacking machine), the windows machine will receive an ARP reply from the attacker’s machine. This way, the Window’s machine will know that it has an IP address conflict with another system on the network. As a result, it will try to obtain another IP address but since all the IP addresses are now exhausted, it wont be able to get a new IP address.</p>
+
+<!--more-->
+
+<p>Running DHCPig is as simple as giving just the interface as the argument. Type the command as shown in the figure below to run DHCPig. In the figure below, DHCpig tries to gather all the IP addresses in the network.</p>
+
+<p><img src="/images/posts/bt5r4/1.png" alt="1" /></p>
+
+<p>At the same time, it also sending DHCPRELEASE for the neighbors that it found on the network.</p>
+
+<p><img src="/images/posts/bt5r4/2.png" alt="2" /></p>
+
+<p>Once this process is done, it will wait for a timeout for allocation of an IP address and if the timeout occurs, it will try to knock all the systems (windows based) offline by sending gratuitous ARP requests from their IP addresses. Note that this technique won’t work on a linux based system mainly because linux systems will hold on to their IP addresses even if they detect a conflict in the IP address.</p>
+
+<p><img src="/images/posts/bt5r4/3.png" alt="3" /></p>
+
+<p>If you want to know more about DHCpig, check out its <a href="https://github.com/kamorin/DHCPig">github page</a>.</p>
+
+<h2 id="mitmproxy">MitmProxy</h2>
+
+<p>MitmProxy is an SSL capable HTTP proxy. It provides a console interface that allows the functionality of inspecting and manipulating traffic on the fly by acting as a man in the middle. Mitmdump is the command line version of mitmproxy. We can also save traffic flowing through the proxy for later analysis, and we can also replay the captured traffic whenever we want. We can also write python scripts to manipulate the traffic on the fly. MitmProxy can be found under the following directory in Backtrack 5 R3.</p>
+
+<p><img src="/images/posts/bt5r4/4.png" alt="4" /></p>
+
+<p>To run MitmProxy, just type ./mitmproxy and it will start the program. By default, mitmproxy listens on port 8080. Hence all the traffic passing through port 8080 would be seen by mitmproxy. Before we configure our browser to use port 8080 as a proxy, lets type “?” and see the different options that are available to us.</p>
+
+<p><img src="/images/posts/bt5r4/5.png" alt="5" /></p>
+
+<p>Now, configure your browser to use port 8080 on localhost as a proxy. Using our browser, lets now browse to a particular website. You will see that all the requests are being seen by mitmproxy. Notice the 2 arrows “»”. It shows you to select different request/reponse and perform actions on them. You can switch between different request/response using the j and k keys. Intercepted responses will be shown in an orange text. Currently there are no intercepted responses mainly because we haven’t configured mitmproxy to intercept any kind of response. Also, you can see the event log by holding down the “e” key.</p>
+
+<p><img src="/images/posts/bt5r4/6.png" alt="6" /></p>
+
+<p>We can also select a particular flow and look at the details of it. To select any particular flow just take the pointer (the double arrows) next to it and press enter.</p>
+
+<p><img src="/images/posts/bt5r4/7.png" alt="7" /></p>
+
+<p>Here you will see all the details of this request. You can also see the response by switching to the response tab. To switch to the response tab, just press Tab.</p>
+
+<p><img src="/images/posts/bt5r4/8.png" alt="8" /></p>
+
+<p>At any time, you can just press q to go back. Let’s now take a look at how mitmproxy can be used to intercept traffic and modify it. Mitmproxy interception works by taking certain intereption patterns which are python style regular expressions. A complete list of filter expressions can be found on http://mitmproxy.org/doc/filters.html.</p>
+
+<p>Let’s set up a simple filter here. To set up an interception filter, just press “i”.</p>
+
+<p><img src="/images/posts/bt5r4/9.png" alt="9" /></p>
+
+<p>In this case i am going to set up a filter which looks for the string “ping” in the body and intercepts the request/response if found.</p>
+
+<p><img src="/images/posts/bt5r4/10.png" alt="10" /></p>
+
+<p>Now lets browse over to ping.com from our browser. You will notice that the response gets intercepted. Intercepted request/reponse are marked with orange text.</p>
+
+<p><img src="/images/posts/bt5r4/11.png" alt="11" /></p>
+
+<p>If you want, you can edit the response before it is displayed in the browser. Just take your pointer over to it and press enter. Then press Tab to switch to the intercepted response. To edit the response, just press the “e” key and it will ask you which part of the response (code, message, header, raw body) you can edit. In this case, lets select header.</p>
+
+<p><img src="/images/posts/bt5r4/12.png" alt="12" /></p>
+
+<p>Once you select header, you will be taken to an editor where you can edit the headers. In this case, i can just set the Cache-Control header value to “no-cache”.</p>
+
+<p><img src="/images/posts/bt5r4/13.png" alt="13" /></p>
+
+<p>Now we need to forward the response, just keep pressing q until you go to the main page where you will see all the flows, then select the flow that was just intercepted.</p>
+
+<p><img src="/images/posts/bt5r4/14.png" alt="14" /></p>
+
+<p>Now press a to forward this response. You will see that the page will now load up in the browser and the subsequent requests/responses will now show up.</p>
+
+<p><img src="/images/posts/bt5r4/15.png" alt="15" /></p>
+
+<p>You can also save all the traffic from mitmproxy to an output file. Just use the -w command to specify the output file name and mitmproxy will write all the traffic that it sees onto the output file. In this case, i save all the traffic to a file named capturedTraffic.</p>
+
+<p><img src="/images/posts/bt5r4/17.png" alt="17" /></p>
+
+<p>Now i can replay all this traffic again whenever i want. Just use the following command to replay the traffic again. This feature could be very useful in automating certain tasks such as connecting to a network or downloading something from a particular url etc. The -n option asks mitmdump to start mitmdump without binding to a particular port.</p>
+
+<p><img src="/images/posts/bt5r4/18.png" alt="18" /></p>
+
+<p>You can also use python scripts to modify the traffic programatically. The examples folder in mitmproxy contains a set of sample scripts that can help you do the task. ALl these scripts use the mitmproxy API to help perform the task. To know more about the mitmproxy API, go to http://mitmproxy.org/doc/scripts.html</p>
+
+<p>To use the script, just use the -s option and give the location of the script. In this case we will be using a simple script called upsidedowninternet.py that will check for PNG’s in the response and make them upside down.</p>
+
+<p><img src="/images/posts/bt5r4/19.png" alt="19" /></p>
+
+<p>And the result is images upside down. :). In later articles, we will learn about how we can use Mitmproxy to intercept SSL requests.</p>
+
+<p><img src="/images/posts/bt5r4/20.png" alt="20" /></p>
+
+<h2 id="references">References:</h2>
+
+<ul>
+  <li>
+    <p>DHCPig<br />
+<a href="https://github.com/kamorin/DHCPig">https://github.com/kamorin/DHCPig</a></p>
+  </li>
+  <li>
+    <p>MitmProxy official website<br />
+<a href="http://mitmproxy.org">http://mitmproxy.org</a></p>
+  </li>
+</ul>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Backtrack 5 R3 Walkthrough part 2 | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Backtrack 5 R3 Walkthrough part 2" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This article is in continuation to part 1 of the Backtrack Walkthrough Series. In the previous articles we discussed some of the most important new tools that were added in the most recent revision of Backtrack 5 like Dnmap, Fern-Wifi-Cracker etc. In this article we will look at some of the other main tools added in Backtrack 5 R3." />
+<meta property="og:description" content="This article is in continuation to part 1 of the Backtrack Walkthrough Series. In the previous articles we discussed some of the most important new tools that were added in the most recent revision of Backtrack 5 like Dnmap, Fern-Wifi-Cracker etc. In this article we will look at some of the other main tools added in Backtrack 5 R3." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-15T03:07:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Backtrack 5 R3 Walkthrough part 2" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-15T03:07:00+00:00","datePublished":"2013-06-15T03:07:00+00:00","description":"This article is in continuation to part 1 of the Backtrack Walkthrough Series. In the previous articles we discussed some of the most important new tools that were added in the most recent revision of Backtrack 5 like Dnmap, Fern-Wifi-Cracker etc. In this article we will look at some of the other main tools added in Backtrack 5 R3.","headline":"Backtrack 5 R3 Walkthrough part 2","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/15/backtrack-5-r3-walkthrough-part-2.html"},"url":"/2013/06/15/backtrack-5-r3-walkthrough-part-2.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Backtrack 5 R3 Walkthrough part 2</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+      <a class="tag" href="/tag/backtrack/">backtrack</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 15 Jun 2013
+    
+  </div>
+  
+  <p>This article is in continuation to <a href="http://resources.infosecinstitute.com/backtrack-5-part-1/">part 1</a> of the Backtrack Walkthrough Series. In the previous articles we discussed some of the most important new tools that were added in the most recent revision of Backtrack 5 like Dnmap, Fern-Wifi-Cracker etc. In this article we will look at some of the other main tools added in Backtrack 5 R3.</p>
+
+<!--more-->
+
+<h2 id="htexploit">HTExploit</h2>
+
+<p>HTExploit was released at Blackhat 2012 by Matias KATZ and Maximiliano SOLER. HTExploit (HiperText access Exploit) is a tool that is used to bypass authentication mechanisms which is deployed on websites using .htaccess files. The tool is written in Python. Once the restriction is bypassed, it will be possible to figure out the contents of a directory and even download those files. The tool works in a recursive manner,i.e once it downloads the first chunk of files, it looks for links inside those files and downloads those files as well. This process keeps on going until it has downloaded the entire content of the directory. It then generates an html report informing us about all the files that it has downloaded.</p>
+
+<p>The tool has 2 modules that can be executed.</p>
+
+<ol>
+  <li>Detect- This module only informs the user if the target is vulnerable to the exploit or not.</li>
+  <li>Full - This module runs the attack on the directory using a dictionary that contains a list of the common file names. If those file names are found and if the directory is vulnerable, it is possible to download that file from the server.</li>
+</ol>
+
+<p>In a recent chat session with Maximiliano Soler, one of the 2 people behind this tool, he informed us about how the actual vulnerability is exploited.</p>
+
+<p>Maximilano Soler:<em>The main problem is that sometimes the restrictions are based in the directive by using “Limit GET POST”.So the problem is that they only put these well known methods for authentication checking. But what happens when we create a different method? for eg. “POTATO”.Apache will proceed with the request and pass this “unknown” method to PHP. PHP says…ok, I will use this method like “GET”. Voila! If you have the exact name of the file, you will be able to download it. This is not a bruteforce attack as we are able to figure out the contents of your directory without knowing your password. There are some ways in which you can protect yourself. Remove the methods from “Limit”. Use Limit with GET and POST, but also with LimitExcept. Alternatively, you can use a module from Apache Mod_AllowMethods. If you are a developer you could also validate the typical variables: $PHP_AUTH_USER, $_SERVER[“REQUEST_METHOD”]. If something else is found that GET or POST, then disallow it.</em></p>
+
+<p>Here is some sample code used in htaccess files that puts limitations for only GET and POST methods.</p>
+
+<p><img src="/images/posts/bt5r2/1.png" alt="1" /></p>
+
+<p>HTExploit can be found under the directory /pentest/web/htexploit.</p>
+
+<p><img src="/images/posts/bt5r2/2.png" alt="2" /></p>
+
+<p>And now for a demo of HTExploit, i modified the htaccess settings in one of my websites and was able to successfully run the tool against it. Type the command as shown in the image below to run HTExploit against a targeted website.Once it detect that the target is vulnerable, it will ask you if you want to run a full scan on it.</p>
+
+<p><img src="/images/posts/bt5r2/4.png" alt="4" /></p>
+
+<p>After this, wait for the scan to complete.</p>
+
+<p><img src="/images/posts/bt5r2/5.png" alt="5" /></p>
+
+<p>Once the scan is run, it will generate a HTML report reporting the files that it was able to download locally. Here is what a sample report looks like.</p>
+
+<p><img src="/images/posts/bt5r2/5_2.png" alt="5 2" /></p>
+
+<h2 id="wifi-honey">Wifi Honey</h2>
+
+<p>Wifi Honey is another great tool that was introduced with Bactrack 5 R3. Basically, in most of the cases it is possible to crack the WEP or WPA encryption key of a network with just a client which is probing for that network. In case of WEP, it is possible by Caffe Latte attack whereas in WPA, it is possible to capture the first 2 packets of the WPA handshake by using just the probing client and that gives us sufficient information in order to crack the WPA key for that network. Using airodump-ng, it is very easy to figure out which network (ESSID) the client is probing for. However, what is not clear by figuring out the ESSID of the probed network is the encryption that network is using. Only by knowing the kind of encryption will we be able to figure out how to crack the encryption. A general technique used to figure this out is by creating four different access points with encryption such as None, WEP, WPA, and WPA 2 using airbase-ng. The probing client will then connect to one of these networks and hence the kind of encryption being used is figured out. At the same time, airodump-ng could also be used to capture the traffic and hence later used to crack WPA. What Wifi Honey does is automate this whole process of creating fake Access points. It create 5 virtual interfaces, 4 of them for creating 4 AP’s with same ESSID but different encryption and another 5th interface for airodump-ng to monitor the traffic on. Hence, at the time the probing client connects to our fake Access point, airodump-ng is being used to capture the traffic.</p>
+
+<p>Wifi Honey takes 3 parameters, the ESSID of the network that is being probed, the channel no on which you want the AP to listen, and the interface on which you want to create it.</p>
+
+<p><img src="/images/posts/bt5r2/6.png" alt="6" /></p>
+
+<p>Once we enter this, we will see that it creates 4 networks of the same name with different encryption and also starts airodump-ng at the same time to capture the traffic. Now the probing client will connect to this network and the captured traffic by airodump-ng could be used to crack the encryption key.</p>
+
+<p><img src="/images/posts/bt5r2/7.png" alt="7" /></p>
+
+<h2 id="urlcrazy">UrlCrazy</h2>
+
+<p>URLCrazy is a tool to determine if a domain name is being abused or not by looking at different examples of domain names caused by typos in the original domain name. For e.g a phishing attack can be carried out very easily by changing just one character in a domain name and then redirecting the user to that domain name, mainly because the user will not be able to recognize the change. What Urlcrazy does is use typos in your domain names to generate new domain names and figure out if those domain names exist or not. If they exist, it fetches out info like A and MX records for that particular domain name.</p>
+
+<p>Here are the different options available in urlcrazy.</p>
+
+<p><img src="/images/posts/bt5r2/8.png" alt="8" /></p>
+
+<p>Let’s run a urlcrazy query against google.com. As you can see, it found a number of domain names similar to Google.</p>
+
+<p><img src="/images/posts/bt5r2/9.png" alt="9" /> <img src="/images/posts/bt5r2/10.png" alt="10" /></p>
+
+<p>In some cases, the url found may not be used for malicious purposes. For e.g google.fr is just the French version of Google and so on. However, some other search results look like they were bought mainly to be used in case someone typed that domain name instead of Google by mistake. Overall, this tool could be highly beneficial to large corporations who are looking to protect themselves from phishing attacks and any other form of corporate espionage.</p>
+
+<h2 id="references">References:</h2>
+
+<ul>
+  <li>
+    <p>HTExploit<br />
+<a href="http://www.mkit.com.ar/labs/htexploit/">http://www.mkit.com.ar/labs/htexploit/</a></p>
+  </li>
+  <li>
+    <p>Wifi Honey - DigiNinja<br />
+<a href="http://www.digininja.org/projects/wifi_honey.php">http://www.digininja.org/projects/wifi_honey.php</a></p>
+  </li>
+  <li>
+    <p>URLCrazy<br />
+<a href="http://www.morningstarsecurity.com/research/urlcrazy">http://www.morningstarsecurity.com/research/urlcrazy</a></p>
+  </li>
+</ul>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

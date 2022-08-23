@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>w3af walkthrough and tutorial part 4 - w3af tools | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="w3af walkthrough and tutorial part 4 - w3af tools" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In the previous articles in this series, we looked at all the plugins available in w3af and looked at their applications in different scenarios. In this article, we will look at some of the other tools present in w3af which allow us to send Manual Requests, perform Fuzzing, Encode and Decode requests and responses, use a Proxy to intercept and modify requests and responses, and allow us to perform a comparison between different HTTP requests and responses. We will also look at how we can write our own w3af scripts to automate the task of Web Application Penetration Testing. We will then look at the various profiles present in w3af." />
+<meta property="og:description" content="In the previous articles in this series, we looked at all the plugins available in w3af and looked at their applications in different scenarios. In this article, we will look at some of the other tools present in w3af which allow us to send Manual Requests, perform Fuzzing, Encode and Decode requests and responses, use a Proxy to intercept and modify requests and responses, and allow us to perform a comparison between different HTTP requests and responses. We will also look at how we can write our own w3af scripts to automate the task of Web Application Penetration Testing. We will then look at the various profiles present in w3af." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-13T20:35:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="w3af walkthrough and tutorial part 4 - w3af tools" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-13T20:35:00+00:00","datePublished":"2013-06-13T20:35:00+00:00","description":"In the previous articles in this series, we looked at all the plugins available in w3af and looked at their applications in different scenarios. In this article, we will look at some of the other tools present in w3af which allow us to send Manual Requests, perform Fuzzing, Encode and Decode requests and responses, use a Proxy to intercept and modify requests and responses, and allow us to perform a comparison between different HTTP requests and responses. We will also look at how we can write our own w3af scripts to automate the task of Web Application Penetration Testing. We will then look at the various profiles present in w3af.","headline":"w3af walkthrough and tutorial part 4 - w3af tools","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/13/w3af-walkthrough-and-tutorial-part-4-w3af-tools.html"},"url":"/2013/06/13/w3af-walkthrough-and-tutorial-part-4-w3af-tools.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">w3af walkthrough and tutorial part 4 - w3af tools</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/w3af/">w3af</a>
+      
+      <a class="tag" href="/tag/web-application-security/">web-application-security</a>
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 13 Jun 2013
+    
+  </div>
+  
+  <p>In the previous articles in this series, we looked at all the plugins available in w3af and looked at their applications in different scenarios. In this article, we will look at some of the other tools present in w3af which allow us to send Manual Requests, perform Fuzzing, Encode and Decode requests and responses, use a Proxy to intercept and modify requests and responses, and allow us to perform a comparison between different HTTP requests and responses. We will also look at how we can write our own w3af scripts to automate the task of Web Application Penetration Testing. We will then look at the various profiles present in w3af.</p>
+
+<!--more-->
+
+<p><strong>1)Manual Request -</strong>The Manual Request feature in w3af allows us to send specially crafted requests and then analyze the response. This technique could be used in various cases which includes testing for SQL Injection, Cross Site Scripting etc. The tools present in w3af can be found by clicking on the <em>Tools</em> menu as shown in the figure below. Click on <em>Manual Request</em> to open up the Manual Request editor tool.</p>
+
+<p><img src="/images/posts/w3af4/1.png" alt="1" /></p>
+
+<p>Once this is done, you can write your own manual request and send it to analyze the response. As you can see from the figure below, i am making a simple GET request to http://google.com . Also, you might want to change the <em>User-Agent</em> field as this gives away the fact that the request is coming from w3af.</p>
+
+<p><img src="/images/posts/w3af4/2.png" alt="2" /></p>
+
+<p>Click on <em>Send Request</em> to send the request. Once this is done, the response will be displayed. You can then simply analyze the response or send it to other w3af tools.</p>
+
+<p><img src="/images/posts/w3af4/3.png" alt="3" /></p>
+
+<p>It is also possible to send requests to the Manual Request Editor from the results of scans by clicking on its corresponding button below the request/response as shown in the figure below. Same applies to all the other tools like Encoder/Decoder, Fuzzy Request editor, Export Requests etc.</p>
+
+<p><img src="/images/posts/w3af4/X.png" alt="X" /></p>
+
+<p><strong>2)Fuzzy Request -</strong> The Fuzzy Request feature present in w3af allows us to send different requests with varying data and analyze the responses. <img src="/images/posts/w3af4/4.png" alt="4" /></p>
+
+<p>The fuzzy request editor is shown in the figure above. The varying text is added between the dollar sign ($). It is clear from the figure above that the varying data is determined by the syntax “$xrange(10)$” which includes numbers from 0 to 9. In case two such text generators are present, then the requests will be combined. For e.g if one of the generator generates 5 values whereas the other generator generates 6 values, then the total number of requests that will be sent will be 30. Some of the common syntax used to generate variable text is shown in the figure below from w3af GUI.</p>
+
+<p><img src="/images/posts/w3af4/5.png" alt="5" /></p>
+
+<p>Once we have written the generators, we can simply click on <em>Analyze</em> to analyze the requests that will be generated during the fuzzing test. This is useful because it allows you to actually see these requests before sending them.</p>
+
+<p><img src="/images/posts/w3af4/6.png" alt="6" /></p>
+
+<p>Click on the play button in the bottom left to send the requests. Once the requests have been sent, you can analyze the responses by clicking on the Response tab.</p>
+
+<p><img src="/images/posts/w3af4/7.png" alt="7" /></p>
+
+<p>Once the responses are received, you can seperate these responses into different clusters. There are different clustering methods present in w3af which have different ways of determining the distance between these HTTP responses. Using these responses, different clusters are created and the responses with the minimum difference between them are added to the same cluster. This is a quick way to determine which response stands out as different from the other responses which is an important step in Fuzzing.</p>
+
+<p>The figure below shows the cluster created by using the method <em>Levenshtein distance of the HTTP bodies</em>. w3af also allows you to write a customized clustering method to perform the task. It is also possible to send requests to the Fuzzy Request generator from the results of scans.</p>
+
+<p><img src="/images/posts/w3af4/8.png" alt="8" /></p>
+
+<p><strong>3)Encode/Decode -</strong> The Encode/Decode tool in w3af is used to encode or decode strings, urls etc. You can choose from a variety of encoding and decoding options. The figure below shows a base64 encoded string being decoded by the w3af decode tool.</p>
+
+<p><img src="/images/posts/w3af4/9.png" alt="9" /></p>
+
+<p><strong>4)Export Requests -</strong> The Export Requests tools allows us to generate code in different languages which when run will regenerate the request. In the figure below, i am generating some code in Python, which when run will regenerate the original request. The Export Requests tool allow you to generate code in HTML, Ajax, Python and Ruby.</p>
+
+<p><img src="/images/posts/w3af4/10.png" alt="10" /></p>
+
+<p><strong>5)Compare -</strong> The Compare tool is used to perform comparison between 2 requests/responses. As shown in the figure below, i have sent the comparer tool 2 responses for 2 different requests. The difference between these responses is highlighted by the comparer tool.</p>
+
+<p><img src="/images/posts/w3af4/11.png" alt="11" /></p>
+
+<p><strong>6)Proxy -</strong> w3af also comes with an intercepting proxy that allow us to intercept requests, and modify them on the fly. To use this proxy, we have to configure our browser to use this proxy. In case of real world web application testing, it is important that we intercept only those requests that we want. The figure below shows the configuration for the proxy. We can see that it is running on port 8080. We have also configured the proxy to not trap requests for certain images, css, swf files etc.</p>
+
+<p><img src="/images/posts/w3af4/12.png" alt="12" /></p>
+
+<p>Let’s configure our browse to route traffic through this proxy.</p>
+
+<p><img src="/images/posts/w3af4/13.png" alt="13" /></p>
+
+<p>Once this is done, start browsing through your browser. You will see the requests and the responses appearing in the History tab as shown in the figure below. Right now the requests and responses are being passed through the proxy without interception.</p>
+
+<p><img src="/images/posts/w3af4/14.png" alt="14" /></p>
+
+<p>As discussed before in this article, you can send the requests/responses to the other tools like Manual Request editor, Fuzzy Request editor etc present in w3af. Click on the arrow pointing downwards on the top left to start intercepting the requests. If you browse through the proxy now, you will notice that the requests are being intercepted by the proxy as shown in the figure below.</p>
+
+<p><img src="/images/posts/w3af4/15.png" alt="15" /></p>
+
+<p>You can simply Drop the request so that it doesn’t reach its destination, forward it as it was or modify the request and then forward it. For e.g in the intercepted request shown in the figure below, we can see that the search query was <em>w3af</em>. We can easily change it to whatever search query we want it to be. Some of the other uses of w3af proxy could be finding out the parameter names through which the authentication credentials are sent in a login submission.</p>
+
+<p><img src="/images/posts/w3af4/16.png" alt="16" /></p>
+
+<h2 id="w3af-scripting">w3af scripting</h2>
+
+<p>Many times we have to perform scans on different websites with the same set of plugins and the same configurations. However, for every new scan (or every new profile), we have to select the plugins, configure the options each time. This process could be time consuming. w3af scripting makes this very easy for us. We can write our own w3af scripts to automate the task of selecting the plugins, and performing the scan on different websites. w3af scripts end with the extension “.w3af” . We write a set of w3af console commands in the file. Once the script is run, each w3af console command will get executed in each line in the same order as they were written in the file. This is just the same way we would be using the w3af console. If we want to perform the scan on a different website with the same set of plugins, we can just change the target in the script. One other thing about running w3af scripts is that you can add your own commands once the script has run and made its changes. For e.g if i want to perform a scan with the same set of plugins and options on different websites i can just write a script which sets the plugins and the configurations without setting the target. Once the script has run, we can enter the target ourselves and then run the scan.</p>
+
+<p>Let’s start by writing a simple script to demonstrate the use of w3af scripts. In the figure below, i am writing a script that sets some plugins for a vulnerability scan. As it is clear from the figure below, i am using the webSpider discovery plugin, the xss and sqli audit plugins and the getMails grep plugin.</p>
+
+<p><img src="/images/posts/w3af4/17.png" alt="17" /></p>
+
+<p>Once this is done, we save the file as simple-config.w3af. To run the script we just have to use the command <em>”./w3af_console -s simple-config.w3af”</em>.</p>
+
+<p><img src="/images/posts/w3af4/18.png" alt="18" /></p>
+
+<p>We can see the output in the figure below. Once this is done, we can simply set the target ourselves and start the scan. Hence, having prewritten w3af scripts for different kinds of scans can save us a lot of time.</p>
+
+<p><img src="/images/posts/w3af4/19.png" alt="19" /></p>
+
+<p>The following figure below shows another example of a w3af script which when run enables some plugins and starts the scan against the specified target.</p>
+
+<p><img src="/images/posts/w3af4/20.png" alt="20" /></p>
+
+<h2 id="w3af-profiles">w3af profiles</h2>
+
+<p>A w3af profile can be defined as a profile with preconfigured plugins made for a specific scenario keeping the resources and time availability in mind. We can also create our own w3af profile. However, w3af offers some of its own set of profiles which we can use in our scan as shown in the figure below.</p>
+
+<p><img src="/images/posts/w3af4/21.png" alt="21" /></p>
+
+<p>Let’s discuss all these profiles in brief.</p>
+
+<p><strong>1)OWASP_TOP10</strong>- This profile searches the target web application for the ten most common security vulnerabilities defined by OWASP.</p>
+
+<p><strong>2)audit_high_risk</strong>- This profile searches the target web application for high risk vulnerabilities like OS commanding etc which can later be used to fully compromise the web application.</p>
+
+<p><strong>3)bruteforce</strong>- This profile can be used to perfom a bruteforce attack on the web application.</p>
+
+<p><strong>4)fast_scan</strong>- This profile is used to perform a fast scan of the target web application. It uses only the webSpider plugin for discovery as enabling a large number of discovery plugins can take a long time.</p>
+
+<p><strong>5)full_audit</strong>- This profile performs a full audit of the web application. It has almost all the audit, bruteforce and grep plugins enabled. Like the fast_scan profile, this also uses the webSpider plugin for discovery.</p>
+
+<p><strong>6)full_audit_manual_disc</strong> - This profile is very similar to the full_audit profile, except that it also uses the SpiderMan plugin to perform manual discovery on the target web application. The SpiderMan and the webSpider plugins communicate with each other to find as much information as possible about the web application.</p>
+
+<p><strong>7)sitemap</strong>- This profiles uses different discovery plugins like robotsReader, yahooSiteExplorer etc to create a sitemap of the target application.</p>
+
+<p><strong>8)web_infrastructure</strong>- This profiles uses some of the discovery plugins like fingerprint_os, hmap, serverHeader etc to fingerprint the web application.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this article we looked at the various tools like Proxy, Manual Request editor etc that w3af has to offer to help us perform web application vulnerability assessment and penetration testing. We then looked at how we can write our own w3af scripts to help automate the task of web application testing. Finally, we then looked at all the different preconfigured profiles that w3af has to offer and discussed their applications in different scenarios.</p>
+
+<p>This article is the final article in the <em>“w3af walkthrough and tutorial”</em> series. Please drop a comment if you liked this series or if you have any questions regarding this series.</p>
+
+<h2 id="references">References:</h2>
+
+<ul>
+  <li>
+    <p>w3af User Guide<br />
+<a href="http://w3af.sourceforge.net/documentation/user/w3afUsersGuide.pdf">http://w3af.sourceforge.net/documentation/user/w3afUsersGuide.pdf</a></p>
+  </li>
+  <li>
+    <p>w3af-Plugins and descriptions<br />
+<a href="http://w3af.sourceforge.net/plugin-descriptions.php">http://w3af.sourceforge.net/plugin-descriptions.php</a></p>
+  </li>
+</ul>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

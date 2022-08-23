@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Android Application hacking with Insecure Bank Part 1 | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Android Application hacking with Insecure Bank Part 1" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this article series, we will learn at various concepts of Android application security while exploiting a vulnerable app InsecureBankv2. We will be looking at all the concepts from a noob’s perspective and hence i would recommend this blog series to beginners as well." />
+<meta property="og:description" content="In this article series, we will learn at various concepts of Android application security while exploiting a vulnerable app InsecureBankv2. We will be looking at all the concepts from a noob’s perspective and hence i would recommend this blog series to beginners as well." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-11-24T00:52:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Android Application hacking with Insecure Bank Part 1" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2014-11-24T00:52:00+00:00","datePublished":"2014-11-24T00:52:00+00:00","description":"In this article series, we will learn at various concepts of Android application security while exploiting a vulnerable app InsecureBankv2. We will be looking at all the concepts from a noob’s perspective and hence i would recommend this blog series to beginners as well.","headline":"Android Application hacking with Insecure Bank Part 1","mainEntityOfPage":{"@type":"WebPage","@id":"/2014/11/24/android-application-hacking-with-insecure-bank-part-1.html"},"url":"/2014/11/24/android-application-hacking-with-insecure-bank-part-1.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">Android Application hacking with Insecure Bank Part 1</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+      <a class="tag" href="/tag/android/">android</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 24 Nov 2014
+    
+  </div>
+  
+  <p>In this article series, we will learn at various concepts of Android application security while exploiting a vulnerable app InsecureBankv2. We will be looking at all the concepts from a noob’s perspective and hence i would recommend this blog series to beginners as well.</p>
+
+<p>However, the first thing to do is set up a proper mobile pentesting platform for android application testing.</p>
+
+<p>The first thing to do is download the Eclipse ADT bundle. You can then follow the instructions <a href="https://developer.android.com/sdk/installing/index.html?pkg=adt">here</a> to install the ADT bundle. Once this is done, make sure you install the necessary sdk packages and libraries by following the instructions <a href="https://developer.android.com/sdk/installing/adding-packages.html">here</a>.</p>
+
+<!-- more -->
+
+<p>Inside the adt bundle folder and inside the sdk folder, there will be two folders, one with the name <em>tools</em> and the other with the name <em>platform-tools</em>. It’s important to add the location of your SDK platform tools and tools folder to the PATH environment variable. This is because you will be using most of the command line tools included in these directories and its good to have them added in the path environment variable. The command to add any path as an environment variable is <em>export PATH=/path/to/dir:$PATH</em>.</p>
+
+<p><img src="/images/posts/ib1/1.png" alt="1" /></p>
+
+<p>Do this for both the tools and the platform-tools folder. Once this is done, you can access all the command line tools without actually browsing over to their directory. To check if this is working, type the command <em>adb</em> and see if you are able to get an output like this.</p>
+
+<p><img src="/images/posts/ib1/2.png" alt="2" /></p>
+
+<p>To run the application on your computer, it is important to have a good emulator. Now the android virtual device manager utility in Eclipse allows you to create your own emulators. To know how to create these virtual devices, i would recommend you check <a href="https://developer.android.com/tools/devices/index.html">this</a> article out. However, for this series, i am going to be using Genymotion to create my own emulators. There are many reasons for this. First of all, it is lightning fast and not as slow as the android emulators. Secondly, it is a rooted emulator unlike the android emulators. This means you have much more freedom of installing your own custom applications that can be used for auditing other android apps.</p>
+
+<p>Once you install genymotion, you should sign up for a new account (it’s free) and create different emulators based on your need. Here is what my emulators look like.</p>
+
+<p><img src="/images/posts/ib1/3.png" alt="3" /></p>
+
+<p>Now get the latest code for the InsecureBankv2 application from <a href="https://github.com/dineshshetty/Android-InsecureBankv2">here</a>.</p>
+
+<p><img src="/images/posts/ib1/4.png" alt="4" /></p>
+
+<p>Start one of your genymotion emulators and see if you are able to get them running. Starting an emulator is as simple as clicking on the play button.</p>
+
+<p><img src="/images/posts/ib1/5.png" alt="5" /></p>
+
+<p>Inside the folder that you just cloned from github, there will be an apk file. You can install that application onto your emulator using the command <em>adb install InsecureBankv2.apk</em></p>
+
+<p><img src="/images/posts/ib1/6.png" alt="6" /></p>
+
+<p>You will see that it successfully installed. And you can see the same on the emulator as well. But sometimes you might want to compile the application rather than run it with an apk file. To do that, open Eclipse and go to <em>File -&gt; Switch Workspace</em>, and choose the Insecure bank folder that you just created. Now go to <em>File -&gt; Import</em> and select <em>Existing Android code into workspace</em>.</p>
+
+<p><img src="/images/posts/ib1/7.png" alt="7" /></p>
+
+<p>Select your application folder and you will see that Eclipse will import the application into your workspace. Now click on the play button on the top to run your application. Make sure your genymotion emulator is running as well. Select to run it as an android application.</p>
+
+<p><img src="/images/posts/ib1/8.png" alt="8" /></p>
+
+<p>You will see that the application starts successfully on the genymotion emulator.</p>
+
+<p><img src="/images/posts/ib1/9.png" alt="9" /></p>
+
+<p>Also start the backend python server that the android application communicates with using the command <em>python app.py –port 8888</em></p>
+
+<p><img src="/images/posts/ib1/10.png" alt="10" /></p>
+
+<p>In the application, go to Preferences and enter the IP address and port number of your system.</p>
+
+<p><img src="/images/posts/ib1/11.png" alt="11" /></p>
+
+<p>And now you can login to the application using the default credentials.</p>
+
+<ul>
+  <li>dinesh/Dinesh@123$</li>
+  <li>jack/Jack@123$</li>
+</ul>
+
+<p>Also make sure that you install the following utilities. We will cover them in detail as and when they are required.</p>
+
+<ol>
+  <li><a href="https://www.mwrinfosecurity.com/products/drozer/">Drozer</a></li>
+  <li><a href="https://github.com/swdunlop/AndBug">Andbug</a></li>
+  <li><a href="https://github.com/iSECPartners/Introspy-Android">Introspy</a></li>
+  <li><a href="https://code.google.com/p/dex2jar/">dex2jar</a></li>
+  <li><a href="https://code.google.com/p/android-apktool/">apktool</a></li>
+</ol>
+
+<p>Also, connect to your emulator using the command <em>adb shell</em> and see what are the things you can do. I would really recommend you to have a look <a href="http://developer.android.com/tools/help/adb.html">here</a> and try out all the commands possible with the Android debug bridge.</p>
+
+<p>Another thing that you can read up is what you can do with all the command line tools available in Android. You can read it from <a href="http://developer.android.com/tools/projects/projects-cmdline.html">here</a>. In the next article, we will start at actual exploitation of the InsecureBankv2 application.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

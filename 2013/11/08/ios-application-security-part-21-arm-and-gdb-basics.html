@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application Security Part 21 – ARM and GDB Basics | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application Security Part 21 – ARM and GDB Basics" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="All the iOS devices released uptil now are based on the ARM architecture. All the Objective-C code that we write while developing iOS applications is first converted into ARM assembly before being converted to machine code (1s and 0s). With good understanding of the ARM assembly language and with good knowledge of debugging using GDB, it is possible for a hacker to decipher the Objective-C code during runtime and even modify it." />
+<meta property="og:description" content="All the iOS devices released uptil now are based on the ARM architecture. All the Objective-C code that we write while developing iOS applications is first converted into ARM assembly before being converted to machine code (1s and 0s). With good understanding of the ARM assembly language and with good knowledge of debugging using GDB, it is possible for a hacker to decipher the Objective-C code during runtime and even modify it." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-11-08T14:50:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application Security Part 21 – ARM and GDB Basics" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-11-08T14:50:00+00:00","datePublished":"2013-11-08T14:50:00+00:00","description":"All the iOS devices released uptil now are based on the ARM architecture. All the Objective-C code that we write while developing iOS applications is first converted into ARM assembly before being converted to machine code (1s and 0s). With good understanding of the ARM assembly language and with good knowledge of debugging using GDB, it is possible for a hacker to decipher the Objective-C code during runtime and even modify it.","headline":"iOS Application Security Part 21 – ARM and GDB Basics","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/11/08/ios-application-security-part-21-arm-and-gdb-basics.html"},"url":"/2013/11/08/ios-application-security-part-21-arm-and-gdb-basics.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application Security Part 21 – ARM and GDB Basics</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 08 Nov 2013
+    
+  </div>
+  
+  <p>All the iOS devices released uptil now are based on the ARM architecture. All the Objective-C code that we write while developing iOS applications is first converted into ARM assembly before being converted to machine code (1s and 0s). With good understanding of the ARM assembly language and with good knowledge of debugging using GDB, it is possible for a hacker to decipher the Objective-C code during runtime and even modify it.</p>
+
+<p>For this article, we will be using a sample application <a href="https://github.com/prateek147/gdb-demo">GDB-Demo</a> from my github account. Make sure to install and run it on your iOS device. If you don’t have a registered developer account to run this on your device, you can follow the instructions mentioned <a href="http://highaltitudehacks.com/2013/07/25/ios-application-security-part-7-installing-and-running-custom-applications-on-device-without-a-registered-developer-account">here</a></p>
+
+<!-- more -->
+
+<p>.</p>
+
+<p>Now let’s SSH into the device.</p>
+
+<p><img src="/images/posts/ios21/1.png" alt="1" /></p>
+
+<p>Now lets start GDB and ask GDB to hook into our application as soon as it is started. This is done by using the command <em>attach –waitfor Appname</em>. Optionally, you can also start the application on your device and hook into the running process using the <em>attach</em> command as shown below.</p>
+
+<p>. <img src="/images/posts/ios21/2.png" alt="2" /></p>
+
+<p>Now once GDB has hooked into the application, you will notice that the application is in a paused state. You can resume the application by just using the <em>c</em> command. But let’s do some investigation before that. Just like any other architecture, the memory in ARM is divided into registers. All these registers are 32 bit in size (except in iOS 7 which is 64 bit) and their purpose is to hold and move data between each other. You can find information about these registers by just using the <em>info registers</em> command.</p>
+
+<p><img src="/images/posts/ios21/3.png" alt="3" /></p>
+
+<p>Please note that this command does not print out all the registers in ARM. To print all the registers, use the command <em>info all-registers</em></p>
+
+<p><img src="/images/posts/ios21/4.png" alt="4" /></p>
+
+<p>To dump the diassembly, just use the <em>disassemble</em> or <em>disas</em> command. This will give us the assembly dump for the next few instructions. We can also dump the assembly of a particular function by specifying the function name after the <em>disas</em> command. For e.g, to dump the assembly for the main function, use the <em>disas main</em> command.</p>
+
+<p><img src="/images/posts/ios21/5.png" alt="5" /></p>
+
+<p>If we look at the application that we just installed on our device, we will see that it is just a simple application that prompts for a username and password.</p>
+
+<p><img src="/images/posts/ios21/IMG_0099.PNG" alt="IMG 0099" /></p>
+
+<p>We can also see from the class-dump-z output of the application that there is a class named <em>ViewController</em> and a method named <em>-(void)loginButtonTapped:(id)tapped;</em></p>
+
+<p><img src="/images/posts/ios21/6.png" alt="6" /></p>
+
+<p>With GDB, we can also set breakpoints in the application. You can type the method names to set breakpoints to. Just use the command <em>b functionName</em>. You can also specify the method signature without the class if you are unsure and GDB will ask you which class you want to set the breakpoint on.</p>
+
+<p><img src="/images/posts/ios21/7.png" alt="7" /></p>
+
+<p>Please note that instance methods are prefixed with a minus sign <em>-</em> whereas class methods are prefixed with a plus sign <em>+</em> as shown below. For e.g, <em>sharedInstance</em> is a class method that returns the shared instance of a singleton class.</p>
+
+<p><img src="/images/posts/ios21/8.png" alt="8" /></p>
+
+<p>You can see all your breakpoints using the command <em>info breakpoints</em>.</p>
+
+<p><img src="/images/posts/ios21/9.png" alt="9" /></p>
+
+<p>You can remove any breakpoint by using the command <em>delete</em> followed by the ID of the breakpoint.</p>
+
+<p><img src="/images/posts/ios21/10.png" alt="10" /></p>
+
+<p>Anyways, lets set a breakpoint for the method <em>loginButtonTapped:</em>.</p>
+
+<p><img src="/images/posts/ios21/11.png" alt="11" /></p>
+
+<p>We can then resume the app by using the <em>continue</em> or the <em>c</em> command.</p>
+
+<p><img src="/images/posts/ios21/12.png" alt="12" /></p>
+
+<p>Lets tap on the login button in the app. This will trigger our breakpoint.</p>
+
+<p><img src="/images/posts/ios21/13.png" alt="13" /></p>
+
+<p>We can then find some of the next instruction by using the disassemble command.</p>
+
+<p><img src="/images/posts/ios21/14.png" alt="14" /></p>
+
+<p>To set breakpoint any particular instruction, add the asterix sign before the address for that instruction.</p>
+
+<p><img src="/images/posts/ios21/15.png" alt="15" /></p>
+
+<p>In <a href="http://highaltitudehacks.com/2013/06/16/ios-application-security-part-3-understanding-the-objective-c-runtime/">part 3</a> of this article series, we also learnt about the function objc_msgSend. Objective-C is based on messaging and whenever a message is being sent, the objc_msgSend fucntion gets called. In the disassembly code for the function <em>loginButtonTapped:</em> that we printed out, there are a lot of objc_msgSend calls. A good way to find this out is to look for the <em>blx</em> instruction. Wherever you see a blx instruction, you can be sure that an objc_msgSend call is happening.</p>
+
+<p><img src="/images/posts/ios21/16.png" alt="16" /></p>
+
+<p>Whenever a new method is called or a property is accessed, the objc_msgSend function gets called. So if we can set a breakpoint for the objc_msgSend call and find a way to print out the method being called and the object that calls this method, then this will give us a very good insight into the flow of the app. We had already looked at how Snoop-it was able to find out all the traced calls in <a href="http://highaltitudehacks.com/2013/08/20/ios-application-security-part-9-analyzing-security-of-ios-applications-using-snoop-it">part 9</a> of this series. To find out the methods being called, first we need to look at calling convention for ARM. Here is a screenshot of the ARM calling convention from <a href="http://en.wikipedia.org/wiki/Calling_convention">Wikipedia</a>.</p>
+
+<p><img src="/images/posts/ios21/17.png" alt="17" /></p>
+
+<p>The important line to note here is this.</p>
+
+<p><img src="/images/posts/ios21/18.png" alt="18" /></p>
+
+<p>So we can set a breakpoint for every objc_msgSend call and find the parameters passed to this function by using the values of r0-r3 registers. Let’s have a look at the signature for objc_msgSend call. Here is a screenshot taken from Apple’s <a href="https://developer.apple.com/library/mac/documentation/cocoa/reference/objcruntimeref/Reference/reference.html#//apple_ref/c/func/objc_msgSend">documentation</a>.</p>
+
+<p><img src="/images/posts/ios21/19.png" alt="19" /></p>
+
+<p>So the first two arguments to the function are <em>self - A pointer that points to the instance of the class that is to receive the message</em> and <em>op - The selector of the method that handles the message.</em>. The selector is nothing but the signature for the message. For e.g if a method has the prototype <em>-(void)addOjectsToArray:(NSArray *)array</em> then the signature for it would be <em>addOjectsToArray:</em>. And we also know that r0 to r3 are used to hold argument values passed to a subroutine, hence we can conclude that <em>r0 will contain self</em> and <em>r1 will contain op</em>.</p>
+
+<p>Let’s understand this through an example. Set up a breakpoint for the objc_msgSend call and continue until the breakpoint is hit.</p>
+
+<p><img src="/images/posts/ios21/20.png" alt="20" /></p>
+
+<p>As we learnt, r0 should contain a pointer to the instance of the class that is to receive the message, r1 should contain the selector and after that starting from r2 should be the arguments for the method. But first we should learn about the <em>x</em> command. x stands for examine and helps us to examine memory in many different formats. So we can specify the format in which we want to examine the memory. To find out all the options available with this command, use the <em>help x</em> command.</p>
+
+<p><img src="/images/posts/ios21/21.png" alt="21" /></p>
+
+<p>Let’s start by examining r0. We know it will contain a pointer to the instance of the class that will receive the message. Hence the format is address and we use x/a. We use $ before r0 because we want to examine the memory, and hence the $ sign.</p>
+
+<p><img src="/images/posts/ios21/22.png" alt="22" /></p>
+
+<p>We can see that the receiver is an instance of the UIRoundedRectButton class. Now lets try to examine the value in r1 register. We know that it contains the selector, i.e the signature of the method. This is a string and hence we use x/s.</p>
+
+<p><img src="/images/posts/ios21/23.png" alt="23" /></p>
+
+<p>Now, we have to find out the arguments to this method. This can be tricky as we don’t know what format is r2. But looking at the selector which is <em>respondsToSelector:</em> and using some common sense, we can assume that the argument will be a selector, and hence we again use x/s to examine the memory in string format.</p>
+
+<p><img src="/images/posts/ios21/24.png" alt="24" /></p>
+
+<p>Alright, so the argument is <em>debugDescription</em>. From the method selector, we can see that there is only one argument to this function, hence we don’t worry about examining further registers. So now, we can say that the method being called must be something like this.</p>
+
+<p>-[UIRoundedRectButton respondsToSelector:@selector(debugDescription)];</p>
+
+<p>But there are so many objc_msgSend calls and examining all of these calls one by one is such a pain. So lets try and automate this process. In <a href="http://highaltitudehacks.com/2013/06/16/ios-application-security-part-3-understanding-the-objective-c-runtime/">part 3</a> of this series, we learnt how to use the commands option in gdb to print something whenever a breakpint is hit. Let’s use it here as well.</p>
+
+<p><img src="/images/posts/ios21/25.png" alt="25" /></p>
+
+<p>Now press <em>c</em> to continue. You will see all the methods being called. This tells us so much about what is happening in the application.</p>
+
+<p><img src="/images/posts/ios21/26.png" alt="26" /></p>
+
+<p>Now let’s try and print this in Objective-C like syntax. We are going to use the function class_getName mentioned in Apple’s <a href="https://developer.apple.com/library/mac/documentation/cocoa/reference/objcruntimeref/Reference/reference.html#//apple_ref/c/func/objc_msgSend">documentation</a>. As you can see, it requires an argument which is the class object, hence we will pass it r0.</p>
+
+<p><img src="/images/posts/ios21/27.png" alt="27" /></p>
+
+<p>Now rewrite the calls in commands like this.</p>
+
+<p><img src="/images/posts/ios21/28.png" alt="28" /></p>
+
+<p>Type c to continue and now as you can see, the information is in a much more readable format.</p>
+
+<p><img src="/images/posts/ios21/29.png" alt="29" /></p>
+
+<p>This tells us so much about what is happening inside an application. In the next article, we will take our knowledge gained from this article and learn how to perform runtime manipulation with GDB.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>

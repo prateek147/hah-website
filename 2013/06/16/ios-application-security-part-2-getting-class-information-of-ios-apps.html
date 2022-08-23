@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html class="direction--ltr"lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>iOS Application security Part 2 - Getting class information of iOS apps | Prateekg147</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="iOS Application security Part 2 - Getting class information of iOS apps" />
+<meta name="author" content="Prateek Gianchandani" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Have you ever checked out an iOS app and thought it was cool, and wondered if you could find some information about the source code of the app, the third-party libraries it uses, or how the code is designed internally ? Have you ever wondered if it was possible to dump all the images, plist files used in any app either preinstalled on your device or downloaded from the App store? If the answer is Yes, then you have come to the right place." />
+<meta property="og:description" content="Have you ever checked out an iOS app and thought it was cool, and wondered if you could find some information about the source code of the app, the third-party libraries it uses, or how the code is designed internally ? Have you ever wondered if it was possible to dump all the images, plist files used in any app either preinstalled on your device or downloaded from the App store? If the answer is Yes, then you have come to the right place." />
+<meta property="og:site_name" content="Prateekg147" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-06-16T02:56:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="iOS Application security Part 2 - Getting class information of iOS apps" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Prateek Gianchandani"},"dateModified":"2013-06-16T02:56:00+00:00","datePublished":"2013-06-16T02:56:00+00:00","description":"Have you ever checked out an iOS app and thought it was cool, and wondered if you could find some information about the source code of the app, the third-party libraries it uses, or how the code is designed internally ? Have you ever wondered if it was possible to dump all the images, plist files used in any app either preinstalled on your device or downloaded from the App store? If the answer is Yes, then you have come to the right place.","headline":"iOS Application security Part 2 - Getting class information of iOS apps","mainEntityOfPage":{"@type":"WebPage","@id":"/2013/06/16/ios-application-security-part-2-getting-class-information-of-ios-apps.html"},"url":"/2013/06/16/ios-application-security-part-2-getting-class-information-of-ios-apps.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/magnific-popup.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Prateekg147" /><script src="https://code.jquery.com/jquery-3.2.0.min.js"></script> 
+  <script src="/assets/js/jquery.magnific-popup.js"></script>
+</head>
+<body><div class="site-header">
+  <div class="wrapper">
+    <a class="site-title" rel="author" href="/">Blogs<b class="command_prompt"></b></a>
+    <a class="site-title" rel="author" href="/about">About<b class="command_prompt"></b><b class="blinking_cursor">_</b></a>
+    <span class="social_links">
+        
+        
+        <a class="color-cyan-hover" href="https://twitter.com/prateekg147"><i class="fab fa-twitter-square"></i></a>
+        
+        
+        
+        <a class="color-indigo-hover" href="https://www.linkedin.com/in/prateekgianchandani/"><i class="fab fa-linkedin"></i></a>
+        
+        
+        
+        <a class="color-yellow-hover" href="https://github.com/prateek147"><i class="fab fa-github-square"></i></a>
+        
+        
+    </span>
+  </div>
+</div>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        
+  <div class="author-box">
+
+
+<img src="
+    https://pbs.twimg.com/profile_images/1244561732170899457/SRr3p2iV_400x400.jpg
+" class="author-avatar" alt="Avatar" />
+<div class="description">I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE.  I have interests in Exploit Development, Mobile and Browser Security....<a href="/about"> Continue</a>
+</div>
+
+</div>
+
+
+<div class="post">
+  <h1 class="post-title">iOS Application security Part 2 - Getting class information of iOS apps</h1>
+  
+  <div class="post-tags">
+      
+      <a class="tag" href="/tag/security/">security</a>
+      
+  </div>
+  
+  <div class="post-date">
+    Published on 16 Jun 2013
+    
+  </div>
+  
+  <p>Have you ever checked out an iOS app and thought it was cool, and wondered if you could find some information about the source code of the app, the third-party libraries it uses, or how the code is designed internally ? Have you ever wondered if it was possible to dump all the images, plist files used in any app either preinstalled on your device or downloaded from the App store? If the answer is Yes, then you have come to the right place.</p>
+
+<!-- more -->
+
+<p>In this article, we will look at how we can analyze any preinstalled app on your device or any other app downloaded from App store and discover things about the source code of the app like the classes that it uses, the names of the view controllers it uses, the internal libraries, and even intricate details like the variables and methods names used in any particular class or view controller. We will then look at how we can decrypt the applications downloaded from the App store and dump all the images, plist files that the app uses.</p>
+
+<h2 id="dumping-class-information-for-preinstalled-apps-on-the-device">Dumping class information for Preinstalled apps on the device</h2>
+
+<p>Now we are at a stage that we can analyze apps for class information. So let’s dump the class information for the Apple <em>Maps</em> app. The first step would be to locate the Apple <em>Maps</em> app executable. All iOS apps that come preinstalled with the device are stored in the directory <em>/Applications</em>. So let’s navigate to that directory.</p>
+
+<p><img src="/images/posts/ios2/20.png" alt="20" /></p>
+
+<p>Here you will see all the apps that come preinstalled with the device. Now let’s navigate inside the <em>Maps</em> app directory and list the directories.</p>
+
+<p><img src="/images/posts/ios2/21.png" alt="21" /></p>
+
+<p>As you can see, we can see all the images, plist files etc used by this app. We will discuss later how it is possible to fetch all the images and other files from a particular iOS app. Anyways, hidden in all this mess is an executable for the app with the name <em>Maps</em> as can be seen on the left side in the image below. Note that the name of the executable will be the same as the name of the app. Note that we can see some pdf’s in the app bundle as well. I really don’t see the need of including a pdf file in the bundle.</p>
+
+<p><img src="/images/posts/ios2/22.png" alt="22" /></p>
+
+<p>To dump the class information for this app, just use the command <em>class-dump-z Maps</em></p>
+
+<p><img src="/images/posts/ios2/23.png" alt="23" /></p>
+
+<p>As you can see there is just too much output in the terminal right now, hence its better to save the output to a file, in this case with the filename <em>class-dump-Maps</em>.</p>
+
+<p><img src="/images/posts/ios2/24.png" alt="24" /></p>
+
+<p>You can now use <em>sftp</em> to ftp into the device and download the file. You can fetch any file with the command <em>get</em> followed by the path of the file as shown below.</p>
+
+<p><img src="/images/posts/ios2/25.png" alt="25" /></p>
+
+<p>Since the file is now downloaded locally on the system, let’s open it up in <em>TextMate</em> (you can use textedit or any other app as well)</p>
+
+<p><img src="/images/posts/ios2/26.png" alt="26" /></p>
+
+<p>We can learn a lot about the way the code is designed just by looking at the interface files. For e.g over here you can see a View controller named <em>InfoCardController</em>. As you might have already guessed, this is the VC to display more info about a particular location when we tap on the right arrow button as shown in the image below.</p>
+
+<p><img src="/images/posts/ios2/27.PNG" alt="27" /></p>
+
+<p>Now lets have a look at this view in the app. This page is actually displayed by <em>InfoCardViewController</em> which we found from <em>class-dump-z</em> information.</p>
+
+<p><img src="/images/posts/ios2/28.PNG" alt="28" /></p>
+
+<p>If you look at this image and the class information above, you can easily see what are the methods names that get called when you tap on these buttons. For e.g if i tap on <em>Direction to here</em>, the method that will get called is</p>
+
+<p><em>-(void)_directionsTo:(id)to person:(void*)person property:(int)property identifier:(int)identifier;</em></p>
+
+<p>Similarly, if i tap on <em>Add to Bookmarks</em>, the method that will get called is</p>
+
+<p><em>-(void)_addToBookmarks:(id)bookmarks person:(void*)person property:(int)property identifier:(int)identifier;</em></p>
+
+<p>You can find a lot of other information from the app as well, for e.g here is a class named <em>UserLocationSearchResults</em> which inherits from SearchResult.</p>
+
+<p><img src="/images/posts/ios2/28x.png" alt="28x" /></p>
+
+<p>You can download the class information for the Apple <em>Maps</em> app from here.</p>
+
+<p>How much you can explore here is only up to your curiosity :).</p>
+
+<h2 id="dumping-class-information-for-apps-downloaded-from-the-app-store">Dumping class information for apps downloaded from the App store</h2>
+
+<p>Their are two important things to know if you want perform analysis of the apps that you download from the App store.</p>
+
+<ul>
+  <li>The apps are stored in a different location, <em>/var/mobile/Applications/</em></li>
+  <li>Unlike the apps that come preinstalled with the device, the apps are <em>encrypted</em>, hence you will have to <em>decrypt</em> them first.</li>
+</ul>
+
+<p>To decrypt the apps, we will be using a command line tool called <em>Clutch</em>. Please note that <em>Clutch</em> was being offered by <em>Hackulous</em> which has been shut down a few months back. But the binary for <em>Clutch</em> is still available on the internet.</p>
+
+<p>Now you need to upload the binary onto your device. To do that, we are going to use <em>sftp</em>. To upload a file onto the device, just use the <em>put</em> command.</p>
+
+<p><img src="/images/posts/ios2/29.png" alt="29" /></p>
+
+<p>Now, ssh into your device and type <em>clutch</em>. This will give you a list of all the apps that could be <em>cracked</em>.</p>
+
+<p><img src="/images/posts/ios2/30.png" alt="30" /></p>
+
+<p>To crack a particular app, just type <em>clutch app-name</em> For e.g if we want to crack the Facebook app, we will type <em>clutch Facebook</em></p>
+
+<p><img src="/images/posts/ios2/31.png" alt="31" /></p>
+
+<p>Once it is done cracking, it will tell you the location where it has saved the <em>ipa</em> file. Now an <em>ipa</em> file is just a compressed version of the whole app bundle. To unzip it, just use the <em>unzip</em> command and save it to a directory by using the <em>-d</em> command as shown in the figure below. Note that you can also copy this <em>ipa</em> file on your system using <em>sftp</em> and then unzip it over there. You will then have access to all the images of the app as well as any other files that may be present in the unzipped folder.</p>
+
+<p><img src="/images/posts/ios2/32.png" alt="32" /></p>
+
+<p>Now that we have the decrypted file, we can use <em>class-dump-z</em> to dump the class information for it and save it in a file which in this case is named <em>class-info-Facebook</em>.</p>
+
+<p><img src="/images/posts/ios2/33.png" alt="33" /></p>
+
+<p>Once this is done, you can exit the ssh session, log in via <em>sftp</em> and then download the <em>class-info-Facebook</em> file.</p>
+
+<p><img src="/images/posts/ios2/33x.png" alt="33x" /></p>
+
+<p>You can now check out this file using any text viewer. For e.g here is a protocol named <em>FBFacebookRequestSender</em> which has methods for sending asynchronous requests as well as a method to check if the Facebook Session is valid or not.</p>
+
+<p><img src="/images/posts/ios2/34.png" alt="34" /></p>
+
+<h2 id="fetching-images-and-other-files-from-a-particular-app">Fetching images and other files from a particular app.</h2>
+
+<p>As discussed previously in the article, one of the methods would be to use <em>sftp</em> to fetch all the files that you want from that app’s directory. However, there are much easier ways to do this, one of which is to use <a href="http://www.macroplant.com/iexplorer/download-ie3-mac.php">iExplorer</a>. Download it from the official website. Once this is done, just open it up and make sure your device is connected to the system via USB.</p>
+
+<p><img src="/images/posts/ios2/35.png" alt="35" /></p>
+
+<p>To view the filesystem, just click on <em>files</em>.</p>
+
+<p><img src="/images/posts/ios2/36.png" alt="36" /></p>
+
+<p>To check out files for a particular app, click on <em>Apps</em></p>
+
+<p><img src="/images/posts/ios2/37.png" alt="37" /></p>
+
+<p>As you can see, it is very easy to browse the filesystem and upload/download files. In this case, lets download all the image and files present in the <em>Facebook</em> app. On the left side, look for <em>Facebook</em> and click on it. This will take you to the directory containing Facebook app files. All the images and files are containing inside the <em>Facebook.app</em> directory.</p>
+
+<p><img src="/images/posts/ios2/38.png" alt="38" /></p>
+
+<p>To download all the files, just press <em>Cmd + A</em>, and right click and select <em>Export to Folder</em>. Then choose the location where you want to save all the files.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In the first two parts of this article, we have learnt how to setup a mobile auditing environment on a jailbroken device. We then learnt how to dump the class information for any particular app and use it to understand the design of the code and its internal workings. We also learnt how to decrypt an app downloaded from the App store and audit it for information. We then learnt how to un-munge images from apps using both sftp and iExplorer.</p>
+
+<p>Well, the good thing is that it is possible to know all the methods that get called by using the class information that we get from class-dump-z. <em>But is it possible to perform some runtime modification in the app ?</em> For e.g if a method like -(BOOL)isFacebookSessionValid returns false in a particular case, is it possible for us to manipulate the app in such a way that it returns YES and hence let the application do unexpected things ? <em>Further, is it possible to create our own custom method and execute it instead of this method whenever this method gets called ?</em> Is it possible to modify the values of instance variables during runtime, or after any specific instruction ?The answer is <a href="http://cycript.org">YES</a>, and we will learn about it in the next article :).</p>
+
+<p>This article was originally published on the <a href="http://resources.infosecinstitute.com/">resources</a> page at <a href="http://infosecinstitute.com/">Infosec Institute</a>. For more information, please visit my author <a href="http://resources.infosecinstitute.com/author/prateek/">page</a>.</p>
+
+</div>
+
+
+
+
+
+<div class="related">
+  <h2>related posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html">
+            ARM64 Reversing and Exploitation Part 3 - A Simple ROP Chain
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html">
+            ARM64 Reversing and Exploitation Part 2 - Use After Free
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html">
+            ARM64 Reversing and Exploitation Part 1 - ARM Instruction Set + Simple Heap Overflow
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+  
+  <h2>all tags</h2>
+  <div class="tag-cloud"><a href="/tag/android/" class="set-1">android</a> <a href="/tag/authentication/" class="set-1">authentication</a> <a href="/tag/backtrack/" class="set-1">backtrack</a> <a href="/tag/burpsuite/" class="set-1">burpsuite</a> <a href="/tag/defcon/" class="set-1">defcon</a> <a href="/tag/dns/" class="set-1">dns</a> <a href="/tag/honeypots/" class="set-1">honeypots</a> <a href="/tag/ios/" class="set-1">ios</a> <a href="/tag/maintaining-access/" class="set-1">maintaining-access</a> <a href="/tag/meshnet/" class="set-1">meshnet</a> <a href="/tag/metasploit/" class="set-1">metasploit</a> <a href="/tag/networking/" class="set-1">networking</a> <a href="/tag/privacy/" class="set-1">privacy</a> <a href="/tag/security/" class="set-5">security</a> <a href="/tag/timing-analysis-attacks/" class="set-1">timing-analysis-attacks</a> <a href="/tag/w3af/" class="set-1">w3af</a> <a href="/tag/web-application-security/" class="set-1">web-application-security</a></div>
+  
+
+
+
+
+<script>
+  let i = 0;
+  const text = '';
+  const speed = parseInt('50');
+  
+  function typeWriter() {
+    if (i < text.length) {
+      document.getElementById('animated-post-description').innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+
+  document.getElementById('animated-post-description').style.display = 'initial';
+  typeWriter();
+
+  // Image modal
+  var $imgs = [];
+  $('img').each(function(idx) {
+    var obj = {
+      src: $(this).attr('src')
+    }
+    $imgs.push(obj);
+    var elem = $(this);
+    $(this).click(function() {
+      $('.modal').magnificPopup('open', idx);
+    });
+  });
+
+  $('.modal').magnificPopup({
+    items: $imgs,
+    type: 'image',
+    closeOnContentClick: true,
+    mainClass: 'mfp-img-mobile',
+    image: {
+      verticalFit: true
+    }
+    
+  });
+</script>
+
+      </div>
+    </main><footer class="site-footer">
+  <div class="wrapper">
+    <div class="credits"><a href="https://github.com/bitbrain/jekyll-dash">dash</a> theme for Jekyll by <a href="https://github.com/bitbrain">bitbrain</a> made with <i class="fas fa-heart"></i><div class="toggleWrapper">
+    <input type="checkbox" class="dn" id="theme-toggle" onclick="modeSwitcher()" checked />
+    <label for="theme-toggle" class="toggle">
+    <span class="toggle__handler">
+      <span class="crater crater--1"></span>
+      <span class="crater crater--2"></span>
+      <span class="crater crater--3"></span>
+    </span>
+        <span class="star star--1"></span>
+        <span class="star star--2"></span>
+        <span class="star star--3"></span>
+        <span class="star star--4"></span>
+        <span class="star star--5"></span>
+        <span class="star star--6"></span>
+    </label>
+</div>
+<script type="text/javascript">
+const theme = localStorage.getItem('theme');
+
+if (theme === "light") {
+    document.documentElement.setAttribute('data-theme', 'light');
+} else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+}
+const userPrefers = getComputedStyle(document.documentElement).getPropertyValue('content');
+
+function activateDarkTheme() {
+    document.getElementById('theme-toggle').checked = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('theme--dark');
+    document.documentElement.classList.remove('theme--light');
+	document.getElementById("theme-toggle").className = 'light';
+	window.localStorage.setItem('theme', 'dark');
+}
+
+function activateLightTheme() {
+    document.getElementById('theme-toggle').checked = false;
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.documentElement.classList.add('theme--light');
+    document.documentElement.classList.remove('theme--dark');
+	document.getElementById("theme-toggle").className = 'dark';
+	window.localStorage.setItem('theme', 'light');
+}
+
+if (theme === "dark") {
+    activateDarkTheme();
+} else if (theme === "light") {
+    activateLightTheme();
+} else if  (userPrefers === "light") {
+    activateDarkTheme();
+} else {
+    activateDarkTheme();
+}
+
+function modeSwitcher() {
+	let currentMode = document.documentElement.getAttribute('data-theme');
+	if (currentMode === "dark") {
+	    activateLightTheme();
+	} else {
+	    activateDarkTheme();
+	}
+}
+</script></div>
+  </div>
+</footer>
+
+
+<script>
+      window.FontAwesomeConfig = {
+        searchPseudoElements: true
+      }
+    </script>
+  </body>
+
+</html>
