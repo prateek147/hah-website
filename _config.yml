@@ -28,7 +28,7 @@ dash:
   # generate social links in footer
   # supported colors: green, red, orange, blue, cyan, pink, teal, yellow, indigo, purple
   social_links:
-     - url: https://8ksec.io
+    - url: https://8ksec.io
       icon: company
       color: cyan
     - url: https://twitter.com/prateekg147
