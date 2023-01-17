@@ -3,10 +3,8 @@ title: Prateekg147
 author: Prateek Gianchandani
 email: prateek@damnvulnerableiosapp.com
 description: > # this means to ignore newlines until "show_exerpts:"
-I am Prateek Gianchandani. Currently i am working as a Security Researcher in UAE. 
-I have interests in Exploit Development, Mobile and Browser Security. 
-I have spoken/trained at Conferences like Blackhat USA, Defcon, Brucon, PHDays, 
-Owasp Appsec USA, Hack in Paris, x33fcon etc. <a href="/about">
+I am Prateek Gianchandani. I have interests in Exploit Development, Mobile and Browser Security, 
+and i am the founder of <a href="https://8ksec.io>8ksec.io</a><a href="/about">
   Continue</a>
 show_excerpts: true # set to true to show excerpts on the homepage
 
@@ -28,9 +26,6 @@ dash:
   # generate social links in footer
   # supported colors: green, red, orange, blue, cyan, pink, teal, yellow, indigo, purple
   social_links:
-    - url: https://8ksec.io
-      icon: company
-      color: cyan
     - url: https://twitter.com/prateekg147
       icon: twitter-square
       color: cyan
