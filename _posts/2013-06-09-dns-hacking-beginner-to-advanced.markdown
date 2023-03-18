@@ -139,4 +139,4 @@ As we can see, Fierce dumps out information about the subdomains of google.com
 DNS protocol is a very critical component of the Internet as it resolves IP address into hostnames and makes life easier for us. However, if the nameservers are not properly configured they might leak out the whole DNS server database to any malicious hacker. Even if the servers are properly configured, they can be bruteforced to leak information about their mail servers, IP addresses, etc. It is therefore important to properly configure your DNS servers and be aware of the security issues with DNS.
 
 This article was originally published on the [resources](http://resources.infosecinstitute.com/) page at [Infosec Institute](http://infosecinstitute.com/). For more information, please visit my author [page](http://resources.infosecinstitute.com/author/prateek/).
-	
+
