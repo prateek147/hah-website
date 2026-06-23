@@ -11,7 +11,7 @@ I am Prateek Gianchandani. I have interests in Exploit Development, Mobile and B
 
 ### Where can you contact me ?
 You can DM me on [Twitter](https://twitter.com/prateekg147) or send me an [Email](mailto:prateek@damnvulnerableiosapp.com)
-For Private Trainings, please send an email at contact AT 8ksec.io
+<!-- Hidden for now (kept in source): For Private Trainings, please send an email at contact AT 8ksec.io -->
 
 ![my image](/images/nirekha.jpg)
 

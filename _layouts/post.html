@@ -37,8 +37,9 @@ layout: default
 {% assign size = site.related_posts | size %}
 {% if size != 0 %}
 <div class="related">
+  <!-- Hidden for now (kept in source): 8KSec Services block
   <h2>8KSec Services</h2>
-  <p>If you are interested in any kind of Mobile Security Assessments or Trainings, reach out to us at <a href="https://8ksec.io/">8ksec.io</a>.</p> 
+  <p>If you are interested in any kind of Mobile Security Assessments or Trainings, reach out to us at <a href="https://8ksec.io/">8ksec.io</a>.</p>
   <p>We also offer the following Trainings, feel free to contact us to get a quote or for more details about the course content.</p>
   <ol>
     <li>Offensive Mobile Reversing and Exoloitation</li>
@@ -52,6 +53,7 @@ layout: default
     <li>Practical Mobile Forensics</li>
     <li>Web3 Security: Exploiting and Defending Decentralized Applications</li>
   </ol>
+  -->
   <h2>related posts</h2>
   <ul class="related-posts">
     {% for post in site.related_posts limit:3 %}
